@@ -1,0 +1,42 @@
+.btn {
+  background-color: transparent !important;
+  background-image: none;
+  border: 0.5px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 13px;
+  /* identical to box height, or 93% */
+
+  text-align: center;
+
+  color: #ffffff;
+}
+
+.dropdown {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+// .dropdown {
+//   position: absolute;
+//   height: 13px;
+//   left: 14.8%;
+//   right: 15.2%;
+//   top: calc(50% - 13px / 2 - 1.31px);
+
+//   font-family: "Poppins";
+//   font-style: normal;
+//   font-weight: 700;
+//   font-size: 14px;
+//   line-height: 13px;
+//   /* identical to box height, or 93% */
+
+//   text-align: center;
+
+//   color: #ffffff;
+// }

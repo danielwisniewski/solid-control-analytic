@@ -1,0 +1,38 @@
+.dropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+::ng-deep .site-meter-row {
+  background-color: #99ccff !important;
+  color: black !important;
+}
+::ng-deep .production-total-meter-row {
+  background-color: #00ff00 !important;
+  color: black !important;
+}
+
+::ng-deep .production-meter-row {
+  background-color: #ccffcc !important;
+  color: black !important;
+}
+
+::ng-deep .non-production-meter-row {
+  background-color: #ffcc00 !important;
+}
+
+::ng-deep .indirect-production-meter-row {
+  background-color: #99cc00 !important;
+}
+
+::ng-deep .general-load-total-meter {
+  background-color: #ffff00 !important;
+  color: black !important;
+}
+
+::ng-deep .general-load-meter {
+  background-color: #ffff99 !important;
+  color: black !important;
+}

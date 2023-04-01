@@ -1,0 +1,6 @@
+<app-dropdown-core
+  [title]="title"
+  [dropdownListOptions]="(meterTypes$ | async)!"
+  [activeOption]="(activeOption$ | async)!"
+  (optionChanged)="changeActiveOption($event)"
+></app-dropdown-core>

@@ -1,0 +1,89 @@
+<div class="row mt-0 mb-0" *ngIf="activeSiteId$">
+  <div class="col-12" *ngIf="elecSiteMeterId$ | async">
+    <app-daily-profile-linechart
+      [meterId]="(elecSiteMeterId$ | async) || undefined"
+    >
+    </app-daily-profile-linechart>
+  </div>
+</div>
+<div class="row mt-0 mb-0">
+  <div
+    *ngIf="elecSiteMeter$ | async"
+    [ngClass]="(getClassName() | async) || 'col-12'"
+  >
+    <app-energy-usage-barchart
+      [siteId]="(activeSiteId$ | async) || undefined"
+      [meterType]="meterTypes.elecMeter"
+      [activeTimerange]="(activeTimerange$ | async)!"
+    >
+    </app-energy-usage-barchart>
+  </div>
+  <div
+    [ngClass]="(getClassName() | async) || 'col-12'"
+    *ngIf="waterSiteMeter$ | async"
+  >
+    <app-energy-usage-barchart
+      [siteId]="(activeSiteId$ | async) || undefined"
+      [meterType]="meterTypes.waterMeter"
+      [activeTimerange]="(activeTimerange$ | async)!"
+    >
+    </app-energy-usage-barchart>
+  </div>
+
+  <div
+    [ngClass]="(getClassName() | async) || 'col-12'"
+    *ngIf="gasSiteMeter$ | async"
+  >
+    <app-energy-usage-barchart
+      [siteId]="(activeSiteId$ | async) || undefined"
+      [meterType]="meterTypes.gasMeter"
+      [activeTimerange]="(activeTimerange$ | async)!"
+    >
+    </app-energy-usage-barchart>
+  </div>
+
+  <div
+    [ngClass]="(getClassName() | async) || 'col-12'"
+    *ngIf="heatSiteMeter$ | async"
+  >
+    <app-energy-usage-barchart
+      [siteId]="(activeSiteId$ | async) || undefined"
+      [meterType]="meterTypes.heatMeter"
+      [activeTimerange]="(activeTimerange$ | async)!"
+    >
+    </app-energy-usage-barchart>
+  </div>
+</div>
+<div class="row" style="height: 40vh">
+  <div class="col-12">
+    <iframe
+      #grafana
+      src="http://localhost:4200/scgrafana/d/8zArUSf4k/energia?orgId=1&from=now-30d&to=now&var-siteMeters=p:demo:r:2b53edc4-ee02f457&kiosk"
+      width="100%"
+      height="100%"
+      frameborder="0"
+      [scrolling]="'no'"
+      (load)="doStyle(1, grafana)"
+    ></iframe>
+  </div>
+</div>
+
+<ng-template #spinner>
+  <div class="alert alert-danger text-center" role="alert">
+    <h4 class="title">Nie znaleziono licznika głównego dla budynku</h4>
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+</ng-template>
+
+<button
+  class="btn btn-dark btm-sml"
+  (click)="onButton('p:demo:r:2b53edc4-f7463a90')"
+>
+  Gaithersburg
+</button>
+<button
+  class="btn btn-dark btm-sml"
+  (click)="onButton('p:demo:r:2b53edc4-7f7883c7')"
+>
+  Headquarters
+</button>

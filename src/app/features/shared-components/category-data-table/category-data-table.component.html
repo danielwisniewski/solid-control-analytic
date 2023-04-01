@@ -1,0 +1,31 @@
+<div class="card card-data-box mb-0">
+  <div class="card-header bg-info">
+    <h4 class="text-center m-0">{{ categoryName }}</h4>
+  </div>
+  <div class="card-body p-1">
+    <div class="table-responsive pb-0" style="overflow: hidden">
+      <table class="table mb-0">
+        <thead class="text-primary text-center">
+          <tr>
+            <th class="text-info">Nazwa punku</th>
+            <th class="text-info">Wartość</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let point of points">
+            <td>{{ point.name }}</td>
+            <td
+              [ngClass]="{
+                'bg-writable': point.isWritable,
+                'bg-overridden': point.isOverridden,
+                'bg-danger': point.isAlarm
+              }"
+            >
+              <p class="text-right">{{ point.value }}</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

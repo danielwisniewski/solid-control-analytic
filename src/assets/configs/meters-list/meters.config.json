@@ -1,0 +1,76 @@
+{
+    "costCenters": {
+        "filter": "costCenterMainMeter"
+    },
+    "configuration": {
+        "totalMeters": {
+            "columns": [
+                {
+                    "checkboxable": true,
+                    "sortable": false,
+                    "cellClass": "text-center",
+                    "maxWidth": 30
+                },
+                {
+                    "name": "Nadrzędny",
+                    "prop": "costCenterMeterRef",
+                    "cellTemplateName": "display",
+                    "headerClass": "text-center",
+                    "cellClass": "text-start",
+                    "sortable": false
+                },
+                {
+                    "name": "Nazwa",
+                    "prop": "navName",
+                    "cellTemplateName": "display",
+                    "headerClass": "text-center",
+                    "cellClass": "text-center",
+                    "sortable": false,
+                    "maxWidth": 250
+                },
+                {
+                    "name": "Opis",
+                    "prop": "descPL",
+                    "cellTemplateName": "edit",
+                    "headerClass": "text-center",
+                    "sortable": false
+                }
+            ],
+            "query": {
+                "arguments": "siteId",
+                "body": "return `(costCenterMainMeter or costCenterMeter) and siteRef->id==${siteId}`"
+            },
+            "displayCheck": {
+                "arguments": "row, column, value",
+                "body": "return !row.hasOwnProperty('costCenterSiteMeter') && !row.hasOwnProperty('costCenterMainMeter') && !row.hasOwnProperty('productionDepartmentMeter')"
+            }
+        },
+        "meters": {
+            "columns": [
+                {
+                    "checkboxable": true,
+                    "maxWidth": 20,
+                    "sortable": false
+                },
+                {
+                    "name": "Nazwa",
+                    "prop": "id",
+                    "cellTemplateName": "display",
+                    "sortable": false
+                }
+            ],
+            "query": {
+                "arguments": "siteId",
+                "body": "return `elec and meter and not costCenterSiteMeter and not costCenterMainMeter and not costCenterMeter and siteRef->id==${siteId}`"
+            },
+            "displayCheck": {
+                "arguments": "row, column, value",
+                "body": "return row.hasOwnProperty('costCenterMeterRef')"
+            },
+            "displayCheckActive": {
+                "arguments": "row, column, value",
+                "body": "return true"
+            }
+        }
+    }
+}

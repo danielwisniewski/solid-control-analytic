@@ -1,0 +1,7 @@
+<app-dropdown-core
+  [title]="title"
+  [dropdownListOptions]="timerangeList"
+  [activeOption]="(activeTimerange$ | async)!.dis"
+  (optionChanged)="timerangeChanged($event)"
+  icon="icon-watch-time"
+></app-dropdown-core>

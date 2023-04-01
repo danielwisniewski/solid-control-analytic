@@ -1,0 +1,70 @@
+/* You can add global styles to this file, and also import other style files */
+.styled-scrollbars {
+  /* Foreground, Background */
+  scrollbar-color: #999 #333;
+}
+.styled-scrollbars::-webkit-scrollbar {
+  width: 3px; /* Mostly for vertical scrollbars */
+  height: 10px; /* Mostly for horizontal scrollbars */
+}
+.styled-scrollbars::-webkit-scrollbar-thumb {
+  /* Foreground */
+  background: #999;
+}
+.styled-scrollbars::-webkit-scrollbar-track {
+  /* Background */
+  background: #333;
+}
+
+@mixin scroll-style(
+  $size: 10px,
+  $thumb: none,
+  $thumb-color: grey,
+  $thumb-radius: 10px,
+  $track-color: transparent,
+  $track-radius: 10px
+) {
+  // Respaldo para Firefox
+  scrollbar-color: $thumb-color $track-color;
+  scrollbar-width: thin;
+
+  // Navegadores basados en webkit
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+    &-track {
+      background-color: $track-color;
+      border-radius: $track-radius;
+    }
+    &-thumb {
+      background-color: $thumb-color;
+      background-image: $thumb;
+      border-radius: $thumb-radius;
+    }
+  }
+}
+
+.scroll {
+  @include scroll-style(
+    $size: var(--scroll-size, 10px),
+    $thumb: var(--scroll-thumb, none),
+    $thumb-color: var(--scroll-thumb-color, grey),
+    $thumb-radius: var(--scroll-thumb-radius, var(--scroll-radius)),
+    $track-color: var(--scroll-track, transparent),
+    $track-radius: var(--scroll-track-radius, var(--scroll-radius))
+  );
+
+  // Ejemplo 3
+  &-3 {
+    --scroll-size: 5px;
+    --scroll-radius: 10px;
+    --scroll-track: rgb(255 255 255 / 10%);
+    --scroll-thumb-color: #fff;
+  }
+}
+
+// /* Importing Bootstrap SCSS file. */
+// @import "~bootstrap/scss/bootstrap";
+
+// /* Importing Datepicker SCSS file. */
+// @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";

@@ -1,0 +1,24 @@
+<div class="card card-stats">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-5">
+        <div class="info-icon text-center" [class]="iconColor">
+          <i [class]="'tim-icons ' + icon"> </i>
+        </div>
+      </div>
+      <div class="col-7">
+        <div class="numbers">
+          <p class="card-category">{{ title }}</p>
+          <h3 class="card-title">{{ value }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <hr />
+
+    <div class="stats">
+      <i class="tim-icons icon-refresh-01"> </i> {{ description }}
+    </div>
+  </div>
+</div>

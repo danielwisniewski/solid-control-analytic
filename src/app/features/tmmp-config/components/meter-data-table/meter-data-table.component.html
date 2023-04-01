@@ -1,0 +1,36 @@
+<ngx-datatable
+  class="material"
+  columnMode="force"
+  rowHeight="auto"
+  [columns]="columns"
+  [rows]="rows"
+  [headerHeight]="50"
+  [loadingIndicator]="!rows"
+  [rowClass]="rowColors"
+  [selectionType]="selectionType"
+  [rowIdentity]="rowIdentity"
+  [selected]="selected"
+  [displayCheck]="displayCheck"
+  [selectCheck]="selectCheck"
+  (select)="onSelect($event)"
+  (activate)="onActivate($event)"
+>
+</ngx-datatable>
+
+<ng-template let-row="row" let-value="value" #display>
+  <span>{{ formatValue(value) }}</span>
+</ng-template>
+
+<ng-template let-row="row" let-value="value" let-column="column" #edit>
+  <div class="d-flex justify-content-between align-items-center">
+    <input
+      type="textarea"
+      class="form-control"
+      style="border: none; height: 100%; color: unset"
+      placeholder="Example input"
+      [value]="value"
+      (focusout)="onParameterChange($event, row, column)"
+    />
+    <i class="tim-icons icon-pencil"></i>
+  </div>
+</ng-template>
