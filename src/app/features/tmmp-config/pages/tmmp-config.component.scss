@@ -6,27 +6,7 @@
 }
 
 ::ng-deep .site-meter-row {
-  //background-color: #99ccff !important;
-  background: hsla(210, 100%, 80%, 1);
-
-  background: linear-gradient(
-    90deg,
-    hsla(210, 100%, 80%, 1) 0%,
-    hsla(210, 100%, 80%, 1) 100%
-  );
-
-  background: -moz-linear-gradient(
-    90deg,
-    hsla(210, 100%, 80%, 1) 0%,
-    hsla(210, 100%, 80%, 1) 100%
-  );
-
-  background: -webkit-linear-gradient(
-    90deg,
-    hsla(210, 100%, 80%, 1) 0%,
-    hsla(210, 100%, 80%, 1) 100%
-  );
-
+  background-color: #99ccff !important;
   color: black !important;
 }
 ::ng-deep .production-total-meter-row {

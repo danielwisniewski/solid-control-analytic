@@ -66,7 +66,6 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     ToastrModule,
     NgxDatatableModule,
     BsDatepickerModule,
-    ToastrModule.forRoot(),
   ],
 })
 export class SharedModule {}
