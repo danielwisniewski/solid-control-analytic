@@ -63,7 +63,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     CollapseModule.forRoot(),
     BsDropdownModule.forRoot(),
     ModalModule.forRoot(),
-    ToastrModule,
+    ToastrModule.forRoot(),
     NgxDatatableModule,
     BsDatepickerModule,
   ],

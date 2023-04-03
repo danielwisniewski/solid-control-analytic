@@ -36,3 +36,56 @@ export function sortByStoreNum(a: any, b: any) {
 export function queryToZinc(query: string) {
   return HStr.make(query).toZinc();
 }
+
+export function generateRowColors(row: any) {
+  return {
+    'indirect-production-meter-row':
+      row.hasOwnProperty('indirectProductionMeter') ||
+      row.hasOwnProperty('compressorsMeter') ||
+      row.hasOwnProperty('ventilationMeter'),
+    'general-load-total-meter':
+      row.hasOwnProperty('generalLoadTotalMeter') ||
+      row.hasOwnProperty('generalLoadMeter'),
+    'non-production-meter-row':
+      row.hasOwnProperty('nonProductionTotalMeter') ||
+      row.hasOwnProperty('nonProductionMeter'),
+    'production-total-meter-row': row.hasOwnProperty(
+      'productionDepartmentMeter'
+    ),
+    'production-total-row':
+      row.hasOwnProperty('productionTotalMeter') ||
+      row.hasOwnProperty('indirectProductionTotalMeter') ||
+      row.hasOwnProperty('compressorsTotalMeter') ||
+      row.hasOwnProperty('ventilationTotalMeter'),
+    'production-meter-row': row.hasOwnProperty('productionLineMeter'),
+    'site-meter-row': row.hasOwnProperty('costCenterSiteMeter'),
+  };
+}
+
+export function templateLogic(row: any) {
+  const rowIndentation = {
+    'margin-left':
+      row.hasOwnProperty('productionLineMeter') ||
+      row.hasOwnProperty('compressorsMeter') ||
+      row.hasOwnProperty('ventilationMeter')
+        ? '4rem'
+        : row.hasOwnProperty('costCenterMeter') ||
+          row.hasOwnProperty('compressorsTotalMeter') ||
+          row.hasOwnProperty('ventilationTotalMeter')
+        ? '2rem'
+        : '0px',
+  };
+  const addButtonVisible: boolean =
+    (!row.hasOwnProperty('costCenterSiteMeter') &&
+      row.hasOwnProperty('costCenterMainMeter') &&
+      !row.hasOwnProperty('indirectProductionTotalMeter')) ||
+    row.hasOwnProperty('productionDepartmentMeter');
+
+  const deleteButtonVisible: boolean = row.hasOwnProperty('costCenterMeter');
+
+  return {
+    rowIndentation: rowIndentation,
+    addButtonVisible: addButtonVisible,
+    deleteButtonVisible: deleteButtonVisible,
+  };
+}

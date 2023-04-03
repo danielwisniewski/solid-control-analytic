@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TmmpConfigComponent } from './pages/tmmp-config.component';
+import { CostCentersComponent } from './pages/cost-centers/cost-centers.component';
 
-const routes: Routes = [{ path: '', component: TmmpConfigComponent }];
+const routes: Routes = [{ path: '', component: CostCentersComponent }];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
