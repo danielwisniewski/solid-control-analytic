@@ -1,7 +1,7 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { TableColumn } from '@swimlane/ngx-datatable';
-import { HStr, HaysonGrid } from 'haystack-core';
-import { catchError, finalize, startWith, take } from 'rxjs';
+import { HStr, HaysonDict, HaysonGrid } from 'haystack-core';
+import { BehaviorSubject, catchError, finalize, startWith, take } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { ToastrPopupService } from './toastr-popup.service';
 import { queryToZinc } from '../utils/utils.functions';

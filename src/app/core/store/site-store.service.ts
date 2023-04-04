@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HaysonGrid, HDict, HGrid, HRef } from 'haystack-core';
+import { HaysonGrid, HDict, HGrid } from 'haystack-core';
 import {
   BehaviorSubject,
   defer,
@@ -8,6 +8,7 @@ import {
   Subject,
   switchMap,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { AuthService } from '../auth/auth-service.service';
 import { RequestReadService } from '../services/requests/read/request-read.service';
@@ -29,6 +30,16 @@ export class SiteStoreService {
           this.fetchSitesData();
         }
       });
+
+    this.activeSite$
+      .pipe(
+        tap((value: HDict | undefined) => {
+          console.log(typeof value !== 'undefined');
+          if (typeof value !== 'undefined')
+            localStorage.setItem('site', JSON.stringify(value.toJSON()));
+        })
+      )
+      .subscribe();
   }
   private readonly onDestroy$ = new Subject<void>();
   private sitesData: HGrid<HDict> | undefined;
@@ -43,10 +54,15 @@ export class SiteStoreService {
   });
 
   private fetchSitesData(): Observable<HGrid<HDict>> {
+    if (localStorage.getItem('site') && localStorage.getItem('site') !== '') {
+      this.activeSite$.next(
+        HDict.make(JSON.parse(localStorage.getItem('site')!))
+      );
+    }
     return this.req.readByFilter('site').pipe(
       switchMap((res: HaysonGrid) => {
         const sitesGrid = HGrid.make(res);
-        if (sitesGrid.first) {
+        if (sitesGrid.first && localStorage.getItem('site') == '') {
           this.activeSite$.next(sitesGrid.first);
         }
         this.sitesData = sitesGrid; // cache the fetched data
@@ -58,6 +74,7 @@ export class SiteStoreService {
   private clearSitesData(): void {
     this.sitesData = undefined;
     this.activeSite$.next(HDict.make({}));
+    localStorage.setItem('site', '');
   }
 
   ngOnDestroy(): void {

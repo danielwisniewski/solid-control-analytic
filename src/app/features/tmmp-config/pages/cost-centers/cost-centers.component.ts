@@ -1,19 +1,12 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TableColumn } from '@swimlane/ngx-datatable';
-import { HaysonGrid, HStr } from 'haystack-core';
+import { HaysonGrid } from 'haystack-core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { ToastrService } from 'ngx-toastr';
-import { Observable, Subscription, tap } from 'rxjs';
+
+import { Subscription, tap } from 'rxjs';
 import { startWith, switchMap } from 'rxjs';
-import { finalize } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { SiteStoreService } from 'src/app/core/store/site-store.service';
 import {
@@ -23,6 +16,7 @@ import {
   templateLogic,
 } from '../../utils/utils.functions';
 import { CostCentersService } from '../../services/cost-centers.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-cost-centers-table',

@@ -24,6 +24,13 @@
     [ngStyle]="templateLogic(row).rowIndentation"
   >
     {{ value }}
+    <a
+      *ngIf="row.hasOwnProperty('costCenterMeter')"
+      class="ml-2 text-primary"
+      style="float: right"
+      [routerLink]="[row.id.val]"
+      ><i class="tim-icons icon-double-right">Przypisz liczniki</i></a
+    >
   </span>
 </ng-template>
 

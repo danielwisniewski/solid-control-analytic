@@ -87,10 +87,10 @@ export const sidebarRoutes: RouteInfo[] = [
     icontype: 'tim-icons icon-bell-55',
   },
   {
-    path: '/doc',
-    title: 'Dokumentacja',
+    path: '/tmmp-config',
+    title: 'Konfiguracja',
     type: 'link',
-    icontype: 'tim-icons icon-notes',
+    icontype: 'tim-icons icon-settings-gear-63',
   },
 ];
 

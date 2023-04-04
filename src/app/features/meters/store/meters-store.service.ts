@@ -77,12 +77,4 @@ export class MetersStoreService {
       })
     );
   }
-
-  getCostCenters() {
-    return this.equipStore.equipData$.pipe(
-      map((equip) => {
-        return equip.filter((row: HDict) => row.has('meter')).toJSON();
-      })
-    );
-  }
 }
