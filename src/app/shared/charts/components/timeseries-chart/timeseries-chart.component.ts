@@ -29,7 +29,7 @@ export class TimeseriesChartComponent implements OnChanges {
   @Input() chartTypeOptionVisible: boolean = false;
   @Input() meterTypeOptionVisible: boolean = false;
   @Input() dataTypeOptionVisible: boolean = false;
-
+  @Input() height: string = '30vh';
   chartConfig: ChartConfiguration | undefined;
 
   @Output() normalizationChanged = new EventEmitter<NormalizationOptions[]>();

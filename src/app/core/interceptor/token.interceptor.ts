@@ -20,15 +20,15 @@ export class TokenInterceptor implements HttpInterceptor {
     const token = localStorage.getItem('token');
 
     if (token) {
+      const isExport = request.url.includes('/skyspark/export');
       request = request.clone({
         setHeaders: {
           Authorization: `${token}`,
-          Accept: 'application/vnd.haystack+json;version=4',
+          Accept: !isExport ? 'application/vnd.haystack+json;version=4' : '*/*',
           'Content-Type': 'text/zinc; charset=utf-8',
         },
       });
     }
-
     return next.handle(request);
   }
 }

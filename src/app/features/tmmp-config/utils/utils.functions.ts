@@ -3,6 +3,11 @@ import { HStr } from 'haystack-core';
 
 export function formatHaystackValue(value: any) {
   if (value._kind && value._kind === 'ref') return value.dis;
+  if (value._kind && value._kind === 'number') {
+    let unit = value.unit || '';
+    if (unit.startsWith('_')) unit = unit.substring(1);
+    return `${value.val.toFixed(1)} ${unit}`;
+  }
   return value;
 }
 
@@ -78,10 +83,13 @@ export function templateLogic(row: any) {
   const addButtonVisible: boolean =
     (!row.hasOwnProperty('costCenterSiteMeter') &&
       row.hasOwnProperty('costCenterMainMeter') &&
+      !row.hasOwnProperty('gas') &&
       !row.hasOwnProperty('indirectProductionTotalMeter')) ||
     row.hasOwnProperty('productionDepartmentMeter');
 
-  const deleteButtonVisible: boolean = row.hasOwnProperty('costCenterMeter');
+  const deleteButtonVisible: boolean =
+    (row.hasOwnProperty('costCenterMeter') && !row.hasOwnProperty('gas')) ||
+    row.hasOwnProperty('gasStation');
 
   return {
     rowIndentation: rowIndentation,

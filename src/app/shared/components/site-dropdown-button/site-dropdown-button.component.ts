@@ -1,4 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  Input,
+} from '@angular/core';
 import { HDict, HGrid, HList } from 'haystack-core';
 import { map, Observable } from 'rxjs';
 import { SiteStoreService } from 'src/app/core/store/site-store.service';
@@ -11,7 +16,7 @@ import { SiteStoreService } from 'src/app/core/store/site-store.service';
 })
 export class SiteDropdownButtonComponent implements OnInit {
   constructor(private sitesStore: SiteStoreService) {}
-
+  @Input() showPortfolioOption: boolean = false;
   title: string = 'Wybierz budynek';
   sitesList$: Observable<HDict[]> = this.sitesStore.sitesData$.pipe(
     map((sites) => {

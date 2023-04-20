@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class="card-body mt-0 pt-0">
-    <div class="chart-area m-0 pt-0">
+    <div class="chart-area m-0 pt-0" [style]="{ height: height }">
       <canvas
         *ngIf="chartConfig; else spinner"
         baseChart
@@ -34,7 +34,7 @@
 </div>
 
 <ng-template #spinner>
-  <app-loading-spinner></app-loading-spinner>
+  <app-loading-spinner [style]="'height: ' + height"></app-loading-spinner>
 </ng-template>
 
 <div

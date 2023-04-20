@@ -22,7 +22,7 @@ import {
 import { TimerangeOption } from 'src/app/core/store/timerange-store.service';
 import { DailyProfileLinechartService } from '../../services/daily-profile-linechart.service';
 import { ChartGenerationService } from '../../services/chart-generation.service';
-import { CHART_COLOR } from '../../chart-utils';
+import { CHART_COLOR } from '../../utils/chart-utils';
 
 @Component({
   selector: 'app-daily-profile-linechart',

@@ -24,14 +24,13 @@ export class LoginActivateGuard implements CanActivate {
     | boolean
     | UrlTree {
     const token = localStorage.getItem('token');
-
-    if (token) {
+    console.log(!!token);
+    if (!!token) {
       if (!this.authService.userLoggedIn$.getValue()) {
         this.authService.userLoggedIn$.next(true);
       }
       return true;
     } else {
-      this.router.navigate(['login']);
       this.authService.userLoggedIn$.next(false);
       return false;
     }

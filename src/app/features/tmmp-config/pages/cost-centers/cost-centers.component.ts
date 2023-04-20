@@ -1,4 +1,10 @@
-import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TableColumn } from '@swimlane/ngx-datatable';
 import { HaysonGrid } from 'haystack-core';
@@ -16,20 +22,23 @@ import {
   templateLogic,
 } from '../../utils/utils.functions';
 import { CostCentersService } from '../../services/cost-centers.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-cost-centers-table',
   templateUrl: './cost-centers.component.html',
   styleUrls: ['./cost-centers.component.scss'],
 })
-export class CostCentersComponent implements OnDestroy {
+export class CostCentersComponent implements OnInit, OnDestroy {
   constructor(
     private siteService: SiteStoreService,
     private req: RequestReadService,
     private modalService: BsModalService,
-    private costCentersService: CostCentersService
+    private costCentersService: CostCentersService,
+    private route: ActivatedRoute
   ) {}
+  isGas: boolean = this.route.snapshot.url[0].path.includes('gas');
+  ngOnInit(): void {}
   @ViewChild('display') display: TemplateRef<any> | undefined;
   @ViewChild('edit') edit: TemplateRef<any> | undefined;
   @ViewChild('buttonColumn') buttonColumn: TemplateRef<any> | undefined;
@@ -42,7 +51,9 @@ export class CostCentersComponent implements OnDestroy {
       filter((site) => !!site && !!site.get('id')),
       map((site) => site?.get('id')?.toZinc(true)),
       switchMap((siteId) => {
-        const query = `costCenterTable(${siteId})`;
+        const query = `costCenterTable(${siteId}, "${
+          this.isGas ? 'gas' : 'elec'
+        }")`;
         return this.req.readExprAll(queryToZinc(query)).pipe(
           tap((res) => {
             this.tableColumns = this.generateTableColumns(res);
@@ -87,7 +98,7 @@ export class CostCentersComponent implements OnDestroy {
   onAddButton(row: any) {
     if (this.addModal) {
       this.modalRef = this.modalService.show(this.addModal);
-      this.costCenterToAdd = row;
+      if (!this.isGas) this.costCenterToAdd = row;
     }
   }
 
@@ -98,10 +109,14 @@ export class CostCentersComponent implements OnDestroy {
   }
 
   submitForm(form: NgForm) {
-    this.costCentersService.addCostCenterToSkyspark(
-      form.value,
-      this.costCenterToAdd
-    );
+    if (!this.isGas) {
+      this.costCentersService.addCostCenterToSkyspark(
+        form.value,
+        this.costCenterToAdd
+      );
+    } else {
+      this.costCentersService.addGasStationToSkyspark(form.value);
+    }
   }
 
   rowColors(row: any) {

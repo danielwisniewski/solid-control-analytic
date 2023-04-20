@@ -24,20 +24,6 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'utilityMeters',
-    component: MainLayoutComponent,
-    canActivate: [LoginActivateGuard],
-    loadChildren: () =>
-      import('./features/meters/meters.module').then((m) => m.MetersModule),
-  },
-  {
-    path: 'pages',
-    component: MainLayoutComponent,
-    canActivate: [LoginActivateGuard],
-    loadChildren: () =>
-      import('./features/pages.module').then((m) => m.PagesModule),
-  },
-  {
     path: 'tmmp-config',
     component: MainLayoutComponent,
     canActivate: [LoginActivateGuard],
@@ -45,6 +31,22 @@ const routes: Routes = [
       import('./features/tmmp-config/tmmp-config.module').then(
         (m) => m.TmmpConfigModule
       ),
+  },
+  {
+    path: 'charts',
+    component: MainLayoutComponent,
+    canActivate: [LoginActivateGuard],
+    loadChildren: () =>
+      import('./features/ventilation/ventilation.module').then(
+        (m) => m.VentilationModule
+      ),
+  },
+  {
+    path: 'reports',
+    component: MainLayoutComponent,
+    canActivate: [LoginActivateGuard],
+    loadChildren: () =>
+      import('./features/reports/reports.module').then((m) => m.ReportsModule),
   },
 ];
 

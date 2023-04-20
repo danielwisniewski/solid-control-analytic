@@ -1,0 +1,85 @@
+<div class="content">
+  <div class="row">
+    <div class="col-lg-8 col-md-8">
+      <h2 class="text-start">{{ getTitle() }}</h2>
+    </div>
+    <div class="col-lg-2 col-md-4">
+      <app-site-dropdown-button
+        [showPortfolioOption]="false"
+      ></app-site-dropdown-button>
+    </div>
+    <div class="col-lg-2 col-md-4">
+      <app-timerange-dropdown
+        (timerangeChanged)="onTimerangeChange($event)"
+        [timerange]="(timerange | async)!"
+      ></app-timerange-dropdown>
+    </div>
+  </div>
+  <div class="row row-cols-2" *ngIf="getDashboardLayout() === 1">
+    <div class="col-lg-4 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart1$ | async)!"
+        height="30rem"
+      ></app-timeseries-chart>
+    </div>
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart2$ | async)!"
+        height="30rem"
+      >
+      </app-timeseries-chart>
+    </div>
+    <div class="col-lg-4 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart3$ | async)!"
+        height="30rem"
+      >
+      </app-timeseries-chart>
+    </div>
+
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <app-grid-table
+        [data]="(table1$ | async)!"
+        [timerange]="(timerange | async) || []"
+      >
+      </app-grid-table>
+    </div>
+  </div>
+
+  <div class="row row-cols-2" *ngIf="getDashboardLayout() === 2">
+    <div class="col-lg-4 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart1$ | async)!"
+        height="30rem"
+      ></app-timeseries-chart>
+    </div>
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart2$ | async)!"
+        height="30rem"
+      >
+      </app-timeseries-chart>
+    </div>
+    <div class="col-lg-4 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart3$ | async)!"
+        height="30rem"
+      >
+      </app-timeseries-chart>
+    </div>
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <app-timeseries-chart
+        [chartConfiguration]="(chart4$ | async)!"
+        height="30rem"
+      >
+      </app-timeseries-chart>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12">
+      <app-grid-table
+        [data]="(table1$ | async)!"
+        [timerange]="(timerange | async) || []"
+      >
+      </app-grid-table>
+    </div>
+  </div>
+</div>

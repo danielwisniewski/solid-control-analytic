@@ -34,7 +34,6 @@ export class SiteStoreService {
     this.activeSite$
       .pipe(
         tap((value: HDict | undefined) => {
-          console.log(typeof value !== 'undefined');
           if (typeof value !== 'undefined')
             localStorage.setItem('site', JSON.stringify(value.toJSON()));
         })
@@ -59,7 +58,7 @@ export class SiteStoreService {
         HDict.make(JSON.parse(localStorage.getItem('site')!))
       );
     }
-    return this.req.readByFilter('site').pipe(
+    return this.req.readByFilter('site and sc').pipe(
       switchMap((res: HaysonGrid) => {
         const sitesGrid = HGrid.make(res);
         if (sitesGrid.first && localStorage.getItem('site') == '') {

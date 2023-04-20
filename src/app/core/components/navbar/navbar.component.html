@@ -26,9 +26,7 @@
           <span class="navbar-toggler-bar bar3"> </span>
         </button>
       </div>
-      <a class="navbar-brand" href="javascript:void(0)">
-        {{ locationTitle$ | async }}
-      </a>
+      <a class="navbar-brand" href="javascript:void(0)"> </a>
     </div>
     <button
       aria-label="Toggle navigation"
@@ -56,26 +54,15 @@
               <img alt="Profile Photo" src="assets/img/mike.jpg" />
             </div>
             <b class="caret d-none d-lg-block d-xl-block"> </b>
-            <p class="d-lg-none">Log out</p>
+            <p class="d-lg-none">Wyloguj</p>
           </a>
           <ul
             class="dropdown-menu dropdown-navbar dropdown-menu-right"
             *dropdownMenu
           >
             <li class="nav-link">
-              <a class="nav-item dropdown-item" href="javascript:void(0)">
-                Profile
-              </a>
-            </li>
-            <li class="nav-link">
-              <a class="nav-item dropdown-item" href="javascript:void(0)">
-                Settings
-              </a>
-            </li>
-            <li class="dropdown-divider"></li>
-            <li class="nav-link">
               <a class="nav-item dropdown-item" (click)="onLogout()">
-                Log out
+                Wyloguj
               </a>
             </li>
           </ul>

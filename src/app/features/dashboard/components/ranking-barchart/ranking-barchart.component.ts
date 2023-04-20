@@ -89,8 +89,10 @@ export class RankingBarchartComponent implements OnInit, OnChanges {
           this.dataGrid = grid;
           this.barChart = this.chartGenerationService.generateChart(grid);
 
-          if (this.isRankingChart)
-            this.barChart.options!.scales!['x']!.type = 'category';
+          if (this.isRankingChart) {
+            delete this.barChart.options!.scales;
+            this.barChart.type = 'doughnut';
+          }
         });
     }
   }

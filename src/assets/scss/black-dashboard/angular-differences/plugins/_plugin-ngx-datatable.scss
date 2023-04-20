@@ -82,11 +82,12 @@ ngx-datatable {
     text-align: right;
   }
   &.ngx-datatable .datatable-header .datatable-header-cell {
-    font-size: 1.45em;
+    font-size: 1.15em;
     font-weight: 300;
+    color: $gray-200;
 
     .sort-btn:after {
-      opacity: 0.4;
+      opacity: 0.8;
       content: "\f0dc";
       position: relative;
       display: inline-block;

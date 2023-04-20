@@ -7,22 +7,24 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HDict, HGrid, HStr, HaysonDict, HaysonGrid } from 'haystack-core';
+import {
+  HDict,
+  HGrid,
+  HRef,
+  HStr,
+  HaysonDict,
+  HaysonGrid,
+} from 'haystack-core';
 import {
   BehaviorSubject,
   Observable,
   Subscription,
   combineLatest,
   debounceTime,
-  distinctUntilChanged,
   filter,
   fromEvent,
   map,
-  of,
   pluck,
-  switchMap,
-  tap,
-  withLatestFrom,
 } from 'rxjs';
 import { MeterAssignmentService } from '../../services/meter-assignment.service';
 
@@ -42,13 +44,13 @@ export class MeterAssignmentComponent
   navNameInput: ElementRef | undefined;
 
   mainMeterId: string = this.route.snapshot.paramMap.get('id') || '';
-  meterData$: Observable<string | undefined> = this.serv
+  isGas: boolean = this.route.snapshot.url[0].path.includes('gas');
+  meterData$: Observable<HDict | undefined> = this.serv
     .getMeterData(this.route.snapshot.paramMap.get('id') || '')
     .pipe(
       map((val) => {
-        if (val && val.hasOwnProperty('navName'))
-          return val['navName'] as string;
-        else return undefined;
+        const value = HDict.make(val);
+        return value;
       })
     );
 
@@ -57,21 +59,21 @@ export class MeterAssignmentComponent
   );
   nameFilter$ = new BehaviorSubject<string>('');
 
-  availableMeters$: Observable<HaysonGrid> = combineLatest([
-    this.serv.getMetersList(),
+  availableMeters$: Observable<HGrid> = combineLatest([
+    this.serv.getMetersList(this.mainMeterId, this.isGas ? 'gas' : 'elec'),
     this.nameFilter$,
   ]).pipe(
     map(([res, filter]) => {
-      console.log(filter === '' || filter.length == 1);
-      if (filter === '' || filter.length == 1) return res;
+      if (filter === '' || filter.length == 1) return HGrid.make(res);
       else {
         let grid = HGrid.make(res);
-        grid = grid.filter((row: HDict): boolean => {
-          if (row.has('navName'))
-            return row.get<HStr>('navName')!.toString().includes(filter);
-          else return true;
+        return grid.filter((row: HDict): boolean => {
+          return row
+            .toDis()
+            .toString()
+            .toLowerCase()
+            .includes(filter.toLowerCase());
         });
-        return grid.toJSON();
       }
     })
   );
@@ -83,7 +85,7 @@ export class MeterAssignmentComponent
       .pipe(
         pluck('target', 'value'),
         filter((res: any) => res.length > 0),
-        debounceTime(333)
+        debounceTime(500)
       )
       .subscribe((res) => this.nameFilter$.next(res));
   }
@@ -92,7 +94,17 @@ export class MeterAssignmentComponent
     this.sub?.unsubscribe();
   }
 
-  onAssignButton(row: HaysonDict) {
+  onAssignButton(row: HDict) {
     this.serv.assignMeter(this.mainMeterId, row);
+  }
+
+  onDeleteAssingment(row: HaysonDict) {
+    this.serv.deleteAssignment(row);
+  }
+
+  getMeterName(row: HDict) {
+    if (row.has('costCenterMeterRef'))
+      return row.get<HRef>('costCenterMeterRef')?.dis;
+    else return;
   }
 }

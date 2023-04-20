@@ -5,14 +5,9 @@ import {
   ElementRef,
   AfterViewInit,
   OnDestroy,
-  ChangeDetectorRef,
-  NgZone,
 } from '@angular/core';
-import { Router, RouterEvent, Event, ResolveEnd } from '@angular/router';
-import { HDict } from 'haystack-core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
-import { SiteStoreService } from 'src/app/core/store/site-store.service';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth-service.service';
 import { RouteInfo, sidebarRoutes } from '../sidebar/sidebar.component';
 
@@ -26,36 +21,30 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   sidebarMiniActive: boolean = true;
   isCollapsed: boolean = true;
 
-  locationTitle$ = new BehaviorSubject<string>('Dashboard 2');
-
   private toggleButton!: HTMLElement;
-
-  private routerSub$: Subscription = new Subscription();
 
   private listTitles: RouteInfo[] = sidebarRoutes.filter(
     (listTitle) => listTitle
   );
-  private currentPath: string = '/dashboard';
+  private routerEventsSubscription: Subscription;
+  private currentPath: string = this.router.routerState.snapshot.url;
+
+  title: string = '';
 
   constructor(
-    private router: Router,
     private element: ElementRef,
-    private ngZone: NgZone,
-
+    private router: Router,
     private authService: AuthService
-  ) {}
-
-  ngOnInit(): void {
-    this.routerSub$ = this.router.events
-      .pipe(filter((e: Event): e is RouterEvent => e instanceof ResolveEnd))
-      .subscribe((e: RouterEvent) => {
-        this.currentPath = e.url;
-        this.sidebarClose();
-        this.ngZone.run(() => {
-          this.locationTitle$.next(this.updateTitle());
-        });
-      });
+  ) {
+    this.routerEventsSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentPath = event.urlAfterRedirects;
+        this.updateTitle();
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.toggleButton = (<HTMLElement>this.element.nativeElement).querySelector(
@@ -103,9 +92,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   updateTitle(): string {
     let activeRoute: RouteInfo[] = this.listTitles.filter(
       (listTitle: RouteInfo) => {
-        return this.currentPath.split('/')[1] === listTitle.path.split('/')[1];
+        const index = this.currentPath.split('/').length;
+        return (
+          this.currentPath.split('/')[index - 1] ===
+          listTitle.path.split('/')[index - 1]
+        );
       }
     );
+    this.title = activeRoute[0].title;
     return activeRoute[0].title;
   }
 
@@ -114,7 +108,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.routerSub$.unsubscribe();
     this.updateColor();
+    this.routerEventsSubscription.unsubscribe();
   }
 }

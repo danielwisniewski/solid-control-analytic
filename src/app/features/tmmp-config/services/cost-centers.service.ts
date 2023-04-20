@@ -134,6 +134,38 @@ export class CostCentersService {
       });
   }
 
+  addGasStationToSkyspark(values: any) {
+    const query = `scAddGasStation("${values.centerName}", "${
+      values.centerDesc
+    }", ${this.siteService.activeSite$.getValue()?.get('id')?.toZinc(true)})`;
+
+    this.req
+      .readExprAll(queryToZinc(query))
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.siteService.activeSite$.next(
+            this.siteService.activeSite$.getValue()
+          );
+        })
+      )
+      .subscribe((res) => {
+        if (res.rows && res.rows.length > 0) {
+          this.message.displaySuccessMessage(
+            `Stacja gazowa ${res.rows[0][
+              'navName'
+            ]?.toString()} została dodana.`
+          );
+        } else {
+          this.message.displayErrorMessage(
+            `Wystąpił problem podczas dodawania stacji gazowej. ${
+              res.meta!['errTrace']
+            }`
+          );
+        }
+      });
+  }
+
   getCostCenterTable(siteId: string) {
     const query = `costCenterTable(${siteId})`;
     return this.req.readExprAll(queryToZinc(query)).pipe(

@@ -1,4 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import {
   BsDaterangepickerConfig,
   BsLocaleService,
@@ -20,7 +29,7 @@ interface IRange {
   styleUrls: ['./timerange-dropdown.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimerangeDropdownComponent implements OnInit {
+export class TimerangeDropdownComponent implements OnInit, OnChanges {
   ranges: IRange[] = [
     {
       value: [
@@ -63,10 +72,28 @@ export class TimerangeDropdownComponent implements OnInit {
       label: 'Obecny rok',
     },
   ];
-
+  @Output() timerangeChanged = new EventEmitter<string[]>();
   now: Date = new Date();
-  bsRangeValue: Date[] | undefined;
+
+  @Input() timerange: string[] = [
+    DateTime.local().startOf('month').toFormat('yyyy-MM-dd').toString(),
+    DateTime.local().toFormat('yyyy-MM-dd').toString(),
+  ];
+
+  bsRangeValue: Date[] = [
+    DateTime.local().startOf('month').toJSDate(),
+    new Date(),
+  ];
   constructor(private localeService: BsLocaleService) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['timerange']) return;
+    const data: Date[] = [
+      new Date(changes['timerange'].currentValue[0]),
+      new Date(changes['timerange'].currentValue[1]),
+    ];
+    this.bsRangeValue = [data[0], data[1]];
+  }
 
   bsConfig: BsDaterangepickerConfig = new BsDaterangepickerConfig();
 
@@ -89,6 +116,13 @@ export class TimerangeDropdownComponent implements OnInit {
 
   onHidden(event: any) {
     this.bsRangeValue = event;
+    const start: string = DateTime.fromJSDate(this.bsRangeValue![0])
+      .toFormat('yyyy-MM-dd')
+      .toString();
+    const end: string = DateTime.fromJSDate(this.bsRangeValue![1])
+      .toFormat('yyyy-MM-dd')
+      .toString();
+    this.timerangeChanged.emit([start, end]);
   }
 
   getVal(): string {

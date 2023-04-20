@@ -125,10 +125,7 @@ export class SitePageComponent implements OnInit {
       margin-top: 1rem;
     }
 
-    .grafana-app {
-      top: -40px;
-      height: calc(100% + 40px)
-    }
+
 
     .scrollbar-view > div {
       padding-left: 0px;

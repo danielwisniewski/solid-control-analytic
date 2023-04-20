@@ -3,5 +3,5 @@
   [dropdownListOptions]="sitesList$ | async"
   [activeOption]="(activeSite$ | async)!"
   (optionChanged)="changeActiveSite($event)"
-  [showPortfolioOption]="true"
+  [showPortfolioOption]="showPortfolioOption"
 ></app-dropdown-core>

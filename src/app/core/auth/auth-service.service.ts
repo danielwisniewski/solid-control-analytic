@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, Subscription, map, skip, take, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -12,19 +11,28 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(username: string, password: string) {
-    this.http
+    const loginData = btoa(
+      JSON.stringify({
+        name: username,
+        password: password,
+      })
+    );
+    return this.http
       .get<any>(
-        `http://localhost:3000/auth/generateToken?username=${username}&password=${password}`
+        `http://localhost:3000/auth/generateToken?username=${loginData}`
       )
       .pipe(
+        take(1),
         map((res) => {
-          const token = res.data.Authorization;
-          localStorage.setItem('token', token);
-          this.userLoggedIn$.next(true);
-          this.router.navigate(['']);
+          if (typeof res !== 'string') {
+            const token = res.data.Authorization;
+            localStorage.setItem('token', token);
+            this.userLoggedIn$.next(true);
+            this.router.navigate(['']);
+          }
+          return res;
         })
-      )
-      .subscribe();
+      );
   }
 
   logout() {
@@ -32,11 +40,21 @@ export class AuthService {
       .get(`${environment.skysparkServer}/close`)
       .pipe(
         map(() => {
-          localStorage.removeItem('token');
           this.userLoggedIn$.next(false);
-          this.router.navigate(['login']);
         })
       )
       .subscribe();
   }
+
+  userStatusChange: Subscription = this.userLoggedIn$
+    .pipe(
+      skip(1),
+      tap((status: boolean) => {
+        if (!status) {
+          localStorage.removeItem('token');
+          this.router.navigate(['login']);
+        }
+      })
+    )
+    .subscribe();
 }

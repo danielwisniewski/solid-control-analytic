@@ -7,8 +7,7 @@ import {
   TEXT_COLOR,
   generateGradientStroke,
   selectMainColor,
-  defaultOptions,
-} from './chart-utils';
+} from './utils/chart-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -48,15 +47,6 @@ export class LineChartService {
             };
           }
         ),
-      },
-      options: {
-        ...defaultOptions,
-        plugins: {
-          legend: {
-            ...defaultOptions.plugins?.legend,
-            display: options.dataset.length > 1 ? true : false,
-          },
-        },
       },
       type: 'line',
     };

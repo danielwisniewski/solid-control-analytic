@@ -22,6 +22,7 @@ import { DataTypeRadioButtonComponent } from './charts/components/timeseries-cha
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { TimerangeDropdownComponent } from './components/timerange-dropdown/timerange-dropdown.component';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { GridTableComponent } from './components/grid-table/grid-table.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     MeterTypeRadioButtonComponent,
     DataTypeRadioButtonComponent,
     TimerangeDropdownComponent,
+    GridTableComponent,
   ],
   exports: [
     FormsModule,
@@ -55,6 +57,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     NgxDatatableModule,
     TimerangeDropdownComponent,
     BsDatepickerModule,
+    GridTableComponent,
   ],
   imports: [
     FormsModule,

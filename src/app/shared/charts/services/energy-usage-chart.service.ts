@@ -34,7 +34,9 @@ export class EnergyUsageChartService {
       siteIdZinc = `navRef("equip", readById(${siteIdZinc}))`;
 
     const EnergyUsageReqOptions: EnergyUsageOptions = {
-      mode: EnergyUsageModeOptions.barChart,
+      mode: category
+        ? EnergyUsageModeOptions.donut
+        : EnergyUsageModeOptions.barChart,
       norms: normalizationOptions,
       point: meterType,
       rollup: {
@@ -47,7 +49,7 @@ export class EnergyUsageChartService {
     const energyUsageReqOptionsString = JSON.stringify(EnergyUsageReqOptions);
 
     const Expression = category
-      ? `energyUsage([${siteIdZinc}], toSpan(${activeTimerange.value}), ${energyUsageReqOptionsString}).renameCol("usage", "v0")`
+      ? `energyUsage([${siteIdZinc}], toSpan(${activeTimerange.value}), ${energyUsageReqOptionsString})`
       : `energyUsage([${siteIdZinc}], toSpan(${activeTimerange.value}), ${energyUsageReqOptionsString}).renameCol("site", "ts").hisRollup(sum, ${activeTimerange.rollup})`;
 
     return HStr.make(Expression).toZinc();

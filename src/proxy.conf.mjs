@@ -12,9 +12,12 @@ export default {
     pathRewrite: {
       "/skyspark": `api/demo`,
     },
-    bypass: function (req, res, proxyOptions) {
-      req.headers["Accept"] = "application/vnd.haystack+json;version=4";
-      req.headers["Content-Type"] = "text/zinc; charset=utf-8";
+  },
+  "/user": {
+    target: "http://localhost:8080",
+    secure: false,
+    pathRewrite: {
+      "/user": `user/auth`,
     },
   },
 };

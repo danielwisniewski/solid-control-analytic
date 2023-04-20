@@ -1,35 +1,48 @@
-<div class="content">
-  <div class="dropdowns">
-    <app-site-dropdown-button class="mr-2"></app-site-dropdown-button>
+<div class="row mt-2" *ngIf="isGas">
+  <div class="col">
+    <h2 class="m-auto">Lista stacji gazowych</h2>
   </div>
-  <div class="row mt-3">
-    <div class="col">
-      <ngx-datatable
-        class="material m-auto"
-        columnMode="force"
-        rowHeight="auto"
-        [columns]="tableColumns"
-        [rows]="tableRows"
-        [rowClass]="rowColors"
-      >
-      </ngx-datatable>
-    </div>
+  <div class="col">
+    <button
+      class="btn btn-info"
+      style="float: right"
+      (click)="onAddButton('gas')"
+    >
+      Dodaj stację gazową
+    </button>
+  </div>
+</div>
+<div class="row mt-3">
+  <div class="col">
+    <ngx-datatable
+      class="bootstrap m-auto"
+      columnMode="force"
+      rowHeight="auto"
+      [columns]="tableColumns"
+      [rows]="tableRows"
+      [rowClass]="rowColors"
+    >
+    </ngx-datatable>
   </div>
 </div>
 
 <ng-template let-row="row" let-value="value" let-column="column" #display>
-  <span *ngIf="column.prop != 'navName'">{{ formatValue(value) }}</span>
+  <span *ngIf="column.prop != 'id'">{{ formatValue(value) }}</span>
   <span
-    *ngIf="column.prop == 'navName'"
+    *ngIf="column.prop == 'id'"
     [ngStyle]="templateLogic(row).rowIndentation"
   >
-    {{ value }}
+    {{ formatValue(value) }}
     <a
-      *ngIf="row.hasOwnProperty('costCenterMeter')"
-      class="ml-2 text-primary"
+      *ngIf="
+        row.hasOwnProperty('costCenterMeter') &&
+        !row.hasOwnProperty('productionDepartmentMeter')
+      "
+      class="ml-2 text-info d-flex align-items-center"
       style="float: right"
       [routerLink]="[row.id.val]"
-      ><i class="tim-icons icon-double-right">Przypisz liczniki</i></a
+      ><i class="tim-icons icon-double-right mr-1"> </i>
+      <span>Przypisz liczniki</span></a
     >
   </span>
 </ng-template>
@@ -69,7 +82,9 @@
 
 <ng-template #delete>
   <div class="modal-header bg-danger pb-2">
-    <h4 class="modal-title pull-left text-white">Usuń centrum kosztowe</h4>
+    <h4 class="modal-title pull-left text-white">
+      {{ isGas ? "Usuń stację gazową" : "Usuń centrum kosztowe" }}
+    </h4>
     <button
       type="button"
       class="btn-close close pull-right"
@@ -81,12 +96,14 @@
   </div>
   <div class="modal-body" *ngIf="costCenterToDelete">
     <p class="text-start mt-3">
-      Czy na pewno chcesz usunąć Centrum kosztowe
+      Czy na pewno chcesz usunąć
+      {{ isGas ? "Stację gazową" : "Centrum kosztowe" }}
       <span class="alert-link">{{ costCenterToDelete.navName }}</span> w budynku
-      <span class="alert-link">{{ costCenterToDelete.siteRef.dis }} </span> z
-      opisem:
-      <span class="alert-link">{{ costCenterToDelete.descPL }}</span> wraz ze
-      wszystkimi podlicznikami?
+      <span class="alert-link">{{ costCenterToDelete.siteRef.dis }} </span>
+      <span class="alert-link" *ngIf="costCenterToDelete.descPL.length > 0"
+        >z opisem: {{ costCenterToDelete.descPL }}</span
+      >
+      wraz ze wszystkimi podlicznikami?
     </p>
   </div>
   <div class="modal-footer">
@@ -107,7 +124,9 @@
 
 <ng-template #add>
   <div class="modal-header bg-info pb-2">
-    <h4 class="modal-title pull-left text-white">Dodaj centrum kosztowe</h4>
+    <h4 class="modal-title pull-left text-white">
+      {{ isGas ? "Dodaj stację gazową" : "Dodaj centrum kosztowe" }}
+    </h4>
     <button
       type="button"
       class="btn-close close pull-right"
