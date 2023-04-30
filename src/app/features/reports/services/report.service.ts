@@ -11,11 +11,11 @@ export class ReportService {
   constructor(private req: RequestReadService) {}
 
   generateReport(
-    timerange: string[],
+    timerange: string,
     type: string,
     rollup: string
   ): Observable<HGrid> {
-    const query = `${type}(toDateSpan(${timerange[0]}..${timerange[1]}), ${rollup})`;
+    const query = `${type}(${timerange}, ${rollup})`;
 
     return this.req
       .readExprAll(queryToZinc(query))

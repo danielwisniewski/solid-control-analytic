@@ -1,12 +1,13 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { TableColumn } from '@swimlane/ngx-datatable';
-import { HStr, HaysonDict, HaysonGrid } from 'haystack-core';
-import { BehaviorSubject, catchError, finalize, startWith, take } from 'rxjs';
+import { HDict, HRef, HStr, HaysonGrid } from 'haystack-core';
+import { catchError, finalize, startWith, take } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { ToastrPopupService } from './toastr-popup.service';
 import { queryToZinc } from '../utils/utils.functions';
-import { SiteStoreService } from 'src/app/core/store/site-store.service';
+
 import { map } from 'rxjs';
+import { SiteStore } from 'src/app/core/store/site.store';
 @Injectable({
   providedIn: 'root',
 })
@@ -14,7 +15,7 @@ export class CostCentersService {
   constructor(
     private req: RequestReadService,
     private message: ToastrPopupService,
-    private siteService: SiteStoreService
+    private siteService: SiteStore
   ) {}
 
   generateTableColumns(
@@ -24,12 +25,13 @@ export class CostCentersService {
     buttonTemplate: TemplateRef<any> | undefined
   ): TableColumn[] {
     const tableColumns: TableColumn[] = [];
-
-    response?.cols?.forEach((column) => {
+    response?.cols?.forEach((column, index) => {
       if (column.meta && column.meta['visible']) {
         tableColumns.push({
           name: column.meta['dis']?.toString(),
           prop: column.name,
+          isTreeColumn:
+            column.name === 'id' || column.name === 'costCenterMeterRef',
           headerClass: 'text-center',
           cellClass: 'text-start',
           sortable: false,
@@ -174,5 +176,26 @@ export class CostCentersService {
       }),
       startWith([])
     );
+  }
+
+  private rowExpanded: string[] = [];
+
+  onTreeAction(row: HDict, action: 'expand' | 'collapse') {
+    console.log(row);
+    const id = row.get<HRef>('id')?.toZinc(true);
+    if (action === 'expand') {
+      if (id !== null && typeof id !== 'undefined') this.rowExpanded.push(id);
+    } else if (action === 'collapse') {
+      const index = this.rowExpanded.findIndex((r) => r === id);
+      if (index > -1) delete this.rowExpanded[index];
+    }
+    console.log(this.rowExpanded);
+  }
+
+  shouldBeExpanded(row: HDict): 'collapsed' | 'expanded' {
+    const id = row.get('id')?.toZinc(true);
+    console.log();
+    if (this.rowExpanded.findIndex((r) => r === id) > -1) return 'expanded';
+    else return 'collapsed';
   }
 }

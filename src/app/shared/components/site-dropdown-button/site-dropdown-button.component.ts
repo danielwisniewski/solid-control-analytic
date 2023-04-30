@@ -1,12 +1,7 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-} from '@angular/core';
-import { HDict, HGrid, HList } from 'haystack-core';
-import { map, Observable } from 'rxjs';
-import { SiteStoreService } from 'src/app/core/store/site-store.service';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { HDict } from 'haystack-core';
+import { filter, map, Observable } from 'rxjs';
+import { SiteStore } from 'src/app/core/store/site.store';
 
 @Component({
   selector: 'app-site-dropdown-button',
@@ -14,21 +9,26 @@ import { SiteStoreService } from 'src/app/core/store/site-store.service';
   styleUrls: ['./site-dropdown-button.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SiteDropdownButtonComponent implements OnInit {
-  constructor(private sitesStore: SiteStoreService) {}
+export class SiteDropdownButtonComponent {
+  constructor(private sitesStore: SiteStore) {}
+
   @Input() showPortfolioOption: boolean = false;
+
   title: string = 'Wybierz budynek';
-  sitesList$: Observable<HDict[]> = this.sitesStore.sitesData$.pipe(
+  sitesList$: Observable<HDict[] | undefined> = this.sitesStore.sites$.pipe(
+    filter((sites) => !!sites),
     map((sites) => {
-      return sites.getRows();
+      return sites?.getRows();
     })
   );
-  activeSite$: Observable<string | undefined> =
-    this.sitesStore.activeSite$.pipe(map((site) => site?.toDis()));
 
-  ngOnInit(): void {}
+  activeSite$: Observable<string | undefined> =
+    this.sitesStore.activeSite$.pipe(
+      filter((site) => !!site && !!site.toDis()),
+      map((site) => site?.toDis() ?? undefined)
+    );
 
   changeActiveSite(site: HDict): void {
-    this.sitesStore.activeSite$.next(site);
+    if (!!site) this.sitesStore.changeActiveSite(site);
   }
 }

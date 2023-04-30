@@ -1,11 +1,10 @@
-import { HDateTime, HGrid, HRef, HTime, Kind } from 'haystack-core';
+import { HDateTime, HGrid, HTime, Kind } from 'haystack-core';
 import { generateLabelName } from './dataset.util';
 
 export function generateLabels(grid: HGrid): string[] {
   if (grid.isEmpty()) return [];
 
   const isTimeseries = grid.getColumn(0)?.name === 'ts';
-
   if (isTimeseries) return generateTimeseriesLabels(grid);
   else {
     const ALL_LABELS = grid.getColumnNames();

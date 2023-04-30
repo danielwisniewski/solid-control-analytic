@@ -1,0 +1,34 @@
+<div class="content">
+  <div class="row">
+    <div class="col-lg-8 col-md-8">
+      <h2 class="text-start">{{ (dashboardState$ | async)?.title }}</h2>
+    </div>
+    <div class="col-lg-2 col-md-4">
+      <app-site-dropdown-button
+        [showPortfolioOption]="false"
+      ></app-site-dropdown-button>
+    </div>
+    <div class="col-lg-2 col-md-4">
+      <app-timerange-dropdown
+        [type]="(dashboardState$ | async)?.datepicker?.type ?? 'range'"
+      ></app-timerange-dropdown>
+    </div>
+  </div>
+
+  <mat-grid-list
+    [cols]="(dashboardState$ | async)?.layout?.colNumber ?? 12"
+    [rowHeight]="((dashboardState$ | async)?.layout?.rowHeight ?? 30) + 'rem'"
+  >
+    <mat-grid-tile
+      *ngFor="
+        let tile of (dashboardState$ | async)?.layout?.tiles;
+        let index = index;
+        trackBy: trackBy
+      "
+      [colspan]="tile.cols"
+      [rowspan]="tile.rows"
+    >
+      <app-dashboard-tile [tile]="tile"> </app-dashboard-tile>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

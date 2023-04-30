@@ -1,7 +1,7 @@
 <app-dropdown-core
   [title]="title"
   [dropdownListOptions]="sitesList$ | async"
-  [activeOption]="(activeSite$ | async)!"
+  [activeOption]="activeSite$ | async"
   (optionChanged)="changeActiveSite($event)"
   [showPortfolioOption]="showPortfolioOption"
 ></app-dropdown-core>

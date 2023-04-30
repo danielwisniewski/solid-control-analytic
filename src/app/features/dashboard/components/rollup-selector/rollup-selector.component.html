@@ -1,0 +1,14 @@
+<div class="radio-switch ml-1">
+  <label
+    *ngFor="let rollup of tile?.rollups; let i = index; trackBy: trackBy"
+    class="radio-switch__label"
+    [ngClass]="{
+      'radio-switch__label--selected': activeRollup.value === rollup.value
+    }"
+    (click)="onRollupChangeFunc(rollup)"
+  >
+    <input type="radio" class="radio-switch__input" />
+
+    <span style="cursor: pointer">{{ rollup.display }}</span>
+  </label>
+</div>

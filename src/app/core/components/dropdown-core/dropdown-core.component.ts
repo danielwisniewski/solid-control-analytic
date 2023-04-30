@@ -17,9 +17,9 @@ import { EventEmitter } from '@angular/core';
 export class DropdownCoreComponent implements OnInit {
   @Input() title: string = 'Wybierz budynek';
   @Input()
-  activeOption: string | null = this.title;
+  activeOption: string | undefined | null = this.title;
   @Input()
-  dropdownListOptions: HDict[] | null = null;
+  dropdownListOptions: HDict[] | undefined | null = null;
   @Input() icon: string = 'icon-square-pin';
   @Input() showPortfolioOption: boolean = false;
 

@@ -1,7 +1,6 @@
 import { BarOptions, LineOptions } from '../../interfaces/bar-options';
-import { Chart, ChartOptions } from 'chart.js';
-import { HDateTime, HGrid, HNum, HTime, Kind } from 'haystack-core';
-import { lang } from 'src/app/features/dashboard/lexicons/dashboard-page.lexicon';
+import { Chart } from 'chart.js';
+import { HGrid, HNum } from 'haystack-core';
 
 export const CHART_COLOR: string[] = [
   'rgb(255,215,0)',

@@ -22,20 +22,20 @@ export function generateTooltip(reqResponse: HGrid): ChartOptions {
         boxPadding: 6,
         callbacks: {
           label(context) {
-            let label = context.dataset.label;
-            const colDis = reqResponse.getColumn(
-              context.dataIndex
-            )?.displayName;
+            let label = context.dataset.label ?? '';
+            const colDis = reqResponse.getColumn(label)?.dis;
 
             if (isPie) label = context.label;
 
             if (colDis && colDis[0] === colDis[0].toUpperCase()) label = colDis;
 
-            const UNIT =
+            let UNIT =
               reqResponse
                 .getColumn(context.datasetIndex)
                 ?.meta.get<HStr>('unit')
                 ?.toString() || getUnit(reqResponse);
+
+            if (UNIT.startsWith('_')) UNIT = UNIT.slice(1);
 
             return `${label}: ${context.formattedValue} ${UNIT}`;
           },

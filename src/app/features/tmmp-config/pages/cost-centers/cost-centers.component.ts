@@ -7,14 +7,13 @@ import {
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TableColumn } from '@swimlane/ngx-datatable';
-import { HaysonGrid } from 'haystack-core';
+import { HDict, HaysonGrid } from 'haystack-core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { Subscription, tap } from 'rxjs';
 import { startWith, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
-import { SiteStoreService } from 'src/app/core/store/site-store.service';
 import {
   formatHaystackValue,
   generateRowColors,
@@ -23,6 +22,7 @@ import {
 } from '../../utils/utils.functions';
 import { CostCentersService } from '../../services/cost-centers.service';
 import { ActivatedRoute } from '@angular/router';
+import { SiteStore } from 'src/app/core/store/site.store';
 
 @Component({
   selector: 'app-cost-centers-table',
@@ -31,12 +31,13 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class CostCentersComponent implements OnInit, OnDestroy {
   constructor(
-    private siteService: SiteStoreService,
+    private siteService: SiteStore,
     private req: RequestReadService,
     private modalService: BsModalService,
     private costCentersService: CostCentersService,
     private route: ActivatedRoute
   ) {}
+
   isGas: boolean = this.route.snapshot.url[0].path.includes('gas');
   ngOnInit(): void {}
   @ViewChild('display') display: TemplateRef<any> | undefined;
@@ -57,7 +58,15 @@ export class CostCentersComponent implements OnInit, OnDestroy {
         return this.req.readExprAll(queryToZinc(query)).pipe(
           tap((res) => {
             this.tableColumns = this.generateTableColumns(res);
-            this.tableRows = res.rows ?? [];
+            const d = res.rows?.map((row) => {
+              return {
+                ...row,
+                treeStatus: this.costCentersService.shouldBeExpanded(
+                  HDict.make(row)
+                ),
+              };
+            });
+            this.tableRows = d ?? [];
           }),
           startWith([])
         );
@@ -129,5 +138,18 @@ export class CostCentersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.tableDataSubscription$.unsubscribe();
+  }
+
+  onTreeAction(event: any) {
+    const index = event.rowIndex;
+    const row = event.row;
+    if (row.treeStatus === 'collapsed') {
+      row.treeStatus = 'expanded';
+      this.costCentersService.onTreeAction(HDict.make(row), 'expand');
+    } else {
+      row.treeStatus = 'collapsed';
+      this.costCentersService.onTreeAction(HDict.make(row), 'collapse');
+    }
+    this.tableRows = [...this.tableRows];
   }
 }

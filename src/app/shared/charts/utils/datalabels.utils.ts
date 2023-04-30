@@ -14,6 +14,12 @@ export function generateDataLabels(reqResponse: HGrid): ChartOptions {
         datalabels: {
           color: TEXT_COLOR,
           display: true,
+          font: {
+            family: 'Poppins, sans-serif',
+            size: 13,
+            weight: 'bold',
+            style: 'oblique',
+          },
           formatter(value, context) {
             let sum: number = context.dataset.data.reduce(
               (a, b) => Number(a) + Number(b),

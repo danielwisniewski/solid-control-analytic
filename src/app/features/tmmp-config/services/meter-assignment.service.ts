@@ -13,8 +13,8 @@ import {
 } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { queryToZinc } from '../utils/utils.functions';
-import { SiteStoreService } from 'src/app/core/store/site-store.service';
 import { ToastrPopupService } from './toastr-popup.service';
+import { SiteStore } from 'src/app/core/store/site.store';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,7 @@ import { ToastrPopupService } from './toastr-popup.service';
 export class MeterAssignmentService {
   constructor(
     private req: RequestReadService,
-    private siteStore: SiteStoreService,
+    private siteStore: SiteStore,
     private message: ToastrPopupService
   ) {}
   update$ = new BehaviorSubject<boolean>(false);
@@ -56,7 +56,6 @@ export class MeterAssignmentService {
       filter((site) => !!site && !!site.get('id')),
       map((site) => site?.get('id')?.toZinc(true)),
       switchMap((siteId) => {
-        //const query = `readAll(meter and elec and siteRef->id==${siteId})`;
         const query = `readAll(meter and ${type} and not costCenterMeter and not costCenterMainMeter)`;
 
         return this.req.readExprAll(queryToZinc(query));
@@ -78,9 +77,8 @@ export class MeterAssignmentService {
 
   assignMeter(mainMeterId: string, submeter: HDict) {
     const submeterId = submeter.get('id')?.toZinc(true);
-    const mainId = `@${mainMeterId}`;
 
-    const query = `readById(${submeterId}).set("costCenterMeterRef", parseRef("${mainId}")).recEdit`;
+    const query = `readById(${submeterId}).set("costCenterMeterRef", parseRef("${mainMeterId}")).recEdit`;
 
     this.req
       .readExprAll(queryToZinc(query))

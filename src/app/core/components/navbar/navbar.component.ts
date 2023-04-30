@@ -6,10 +6,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { BehaviorSubject, Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth-service.service';
-import { RouteInfo, sidebarRoutes } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-navbar',
@@ -22,27 +19,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed: boolean = true;
 
   private toggleButton!: HTMLElement;
-
-  private listTitles: RouteInfo[] = sidebarRoutes.filter(
-    (listTitle) => listTitle
-  );
-  private routerEventsSubscription: Subscription;
-  private currentPath: string = this.router.routerState.snapshot.url;
+  // sidebarRoutes = this.dashboardServ.sidebarRoutes;
+  // private listTitles: RouteInfo[] = this.sidebarRoutes.filter(
+  //   (listTitle) => listTitle
+  // );
 
   title: string = '';
 
-  constructor(
-    private element: ElementRef,
-    private router: Router,
-    private authService: AuthService
-  ) {
-    this.routerEventsSubscription = this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.currentPath = event.urlAfterRedirects;
-        this.updateTitle();
-      }
-    });
-  }
+  constructor(private element: ElementRef, private authService: AuthService) {}
 
   ngOnInit(): void {}
 
@@ -90,17 +74,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateTitle(): string {
-    let activeRoute: RouteInfo[] = this.listTitles.filter(
-      (listTitle: RouteInfo) => {
-        const index = this.currentPath.split('/').length;
-        return (
-          this.currentPath.split('/')[index - 1] ===
-          listTitle.path.split('/')[index - 1]
-        );
-      }
-    );
-    this.title = activeRoute[0].title;
-    return activeRoute[0].title;
+    // let activeRoute: RouteInfo[] = this.listTitles.filter(
+    //   (listTitle: RouteInfo) => {
+    //     const index = this.currentPath.split('/').length;
+    //     return (
+    //       this.currentPath.split('/')[index - 1] ===
+    //       listTitle.path.split('/')[index - 1]
+    //     );
+    //   }
+    // );
+    // this.title = activeRoute[0].title;
+    // return activeRoute[0].title;
+    return '';
   }
 
   onLogout() {
@@ -109,6 +94,5 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.updateColor();
-    this.routerEventsSubscription.unsubscribe();
   }
 }

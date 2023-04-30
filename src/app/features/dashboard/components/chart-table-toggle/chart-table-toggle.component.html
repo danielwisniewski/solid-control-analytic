@@ -1,0 +1,21 @@
+<div class="radio-switch ml-1">
+  <!-- Radio container -->
+  <label
+    class="radio-switch__label"
+    [class]="tileType === 'chart' ? 'radio-switch__label--selected' : ''"
+    (click)="onTypeChange('chart')"
+  >
+    <input type="radio" class="radio-switch__input" />
+
+    <i class="tim-icons icon-chart-pie-36" style="cursor: pointer"></i>
+  </label>
+  <label
+    class="radio-switch__label"
+    [class]="tileType === 'table' ? 'radio-switch__label--selected' : ''"
+    (click)="onTypeChange('table')"
+  >
+    <input type="radio" class="radio-switch__input" />
+
+    <i class="tim-icons icon-align-center" style="cursor: pointer"></i>
+  </label>
+</div>

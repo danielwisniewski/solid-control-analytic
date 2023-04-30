@@ -1,4 +1,5 @@
 <button
+  *ngIf="type === 'range'"
   aria-expanded="false"
   aria-haspopup="true"
   placeholder="Daterangepicker"
@@ -6,9 +7,25 @@
   class="dropdown-toggle btn btn-block"
   type="button"
   bsDaterangepicker
-  [bsConfig]="bsConfig"
+  [bsConfig]="bsDateRangeConfig"
   (bsValueChange)="onHidden($event)"
 >
   <i class="tim-icons icon-watch-time mr-2"></i>
-  {{ getVal() }}
+  {{ displayText$ | async }}
+</button>
+
+<button
+  *ngIf="type === 'single'"
+  aria-expanded="false"
+  aria-haspopup="true"
+  placeholder="Daterangepicker"
+  data-toggle="dropdown"
+  class="dropdown-toggle btn btn-block"
+  type="button"
+  bsDatepicker
+  [bsConfig]="bsDateConfig"
+  (bsValueChange)="onHidden($event)"
+>
+  <i class="tim-icons icon-watch-time mr-2"></i>
+  {{ displayText$ | async }}
 </button>

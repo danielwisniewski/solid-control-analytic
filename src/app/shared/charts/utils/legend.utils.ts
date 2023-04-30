@@ -35,16 +35,8 @@ function generatePieLegend(reqResponse: HGrid): ChartOptions {
   return {
     plugins: {
       legend: {
-        display:
-          reqResponse.meta.has('showLegend') &&
-          reqResponse.meta.get('showLegend')?.equals(true)
-            ? true
-            : false,
-        maxWidth:
-          reqResponse.meta.has('showLegend') &&
-          reqResponse.meta.get('showLegend')
-            ? 300
-            : 1,
+        display: !!reqResponse.meta.get('showLegend') ? true : false,
+        maxWidth: !!reqResponse.meta.get('showLegend') ? 300 : 1,
         position: 'right',
         title: {
           color: TEXT_COLOR,
@@ -55,7 +47,7 @@ function generatePieLegend(reqResponse: HGrid): ChartOptions {
         labels: {
           color: TEXT_COLOR,
           font: {
-            size: 11,
+            size: 12,
             family: 'Poppins, sans-serif',
           },
           usePointStyle: true,

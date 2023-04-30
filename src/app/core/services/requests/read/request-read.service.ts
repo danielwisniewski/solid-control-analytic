@@ -2,50 +2,21 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { HaysonGrid, HGrid, HRef } from 'haystack-core';
-import {
-  catchError,
-  filter,
-  interval,
-  Observable,
-  of,
-  switchMap,
-  take,
-  tap,
-  throwError,
-} from 'rxjs';
-import { AuthService } from 'src/app/core/auth/auth-service.service';
-import { ToastrPopupService } from 'src/app/features/tmmp-config/services/toastr-popup.service';
+import { interval, Observable, switchMap, take, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequestReadService {
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private toastrPopup: ToastrPopupService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   readByFilter(filter: string): Observable<HaysonGrid> {
     const text = `ver:"3.0"
     filter
     "${filter}"`;
 
-    return this.http.post(`${environment.skysparkServer}/read`, text).pipe(
-      catchError((err) => {
-        console.log('Handling error locally and rethrowing it...', err);
-        this.toastrPopup.displayErrorMessage(
-          err.message,
-          'Nie udało się pobrać danych'
-        );
-        if (err.status === 403) {
-          localStorage.setItem('token', '');
-          this.authService.userLoggedIn$.next(false);
-        }
-        return throwError(err);
-      })
-    );
+    return this.http.post(`${environment.skysparkServer}/read`, text);
   }
 
   readById(request: HGrid | HRef | undefined): Observable<HaysonGrid> {
@@ -62,16 +33,7 @@ export class RequestReadService {
     id
     ${idToRequest}`;
 
-    return this.http.post(`${environment.skysparkServer}/read`, text).pipe(
-      catchError((err) => {
-        console.log('Handling error locally and rethrowing it...', err);
-        if (err.status === 403) {
-          localStorage.setItem('token', '');
-          this.authService.userLoggedIn$.next(false);
-        }
-        return throwError(err);
-      })
-    );
+    return this.http.post(`${environment.skysparkServer}/read`, text);
   }
 
   readExpr(expr: string): Observable<HaysonGrid> {
@@ -79,16 +41,7 @@ export class RequestReadService {
     expr
     "${expr}"`;
 
-    return this.http.post(`${environment.skysparkServer}/eval`, text).pipe(
-      catchError((err) => {
-        console.log('Handling error locally and rethrowing it...', err);
-        if (err.status === 403) {
-          localStorage.setItem('token', '');
-          this.authService.userLoggedIn$.next(false);
-        }
-        return throwError(err);
-      })
-    );
+    return this.http.post(`${environment.skysparkServer}/eval`, text);
   }
 
   readExprAll(expr: string): Observable<HaysonGrid> {
@@ -96,15 +49,7 @@ export class RequestReadService {
     expr
     ${expr}`;
 
-    return this.http.post(`${environment.skysparkServer}/eval`, text).pipe(
-      catchError((err) => {
-        if (err.status === 403) {
-          localStorage.setItem('token', '');
-          this.authService.userLoggedIn$.next(false);
-        }
-        return throwError(err);
-      })
-    );
+    return this.http.post(`${environment.skysparkServer}/eval`, text);
   }
 
   generateExportRequest(viewName: string, state: any, filename: string) {
@@ -120,7 +65,6 @@ export class RequestReadService {
       .pipe(
         take(1),
         tap((res: any) => {
-          console.log(res);
           const blob = new Blob([res], {
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,',
           });
@@ -138,15 +82,14 @@ export class RequestReadService {
   ping(): void {
     interval(60 * 1000)
       .pipe(
-        switchMap(() => this.authService.userLoggedIn$.asObservable()),
-        filter((val) => val),
         switchMap(() => {
           return this.http.get(`${environment.skysparkServer}/about`);
-        }),
-        catchError((err) => of(err.status)),
-        filter((err) => err === 403),
-        tap(() => this.authService.userLoggedIn$.next(false))
+        })
       )
       .subscribe();
+  }
+
+  about(): Observable<HaysonGrid> {
+    return this.http.get(`${environment.skysparkServer}/about`);
   }
 }

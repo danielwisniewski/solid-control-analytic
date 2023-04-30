@@ -13,7 +13,7 @@
     </a> -->
   </div>
   <ul class="nav">
-    <li *ngFor="let menuitem of menuItems" routerLinkActive="active">
+    <li *ngFor="let menuitem of menuItems | async" routerLinkActive="active">
       <!--If is a single link-->
       <a [routerLink]="[menuitem.path]" *ngIf="menuitem.type === 'link'">
         <i class="{{ menuitem.icontype }}"></i>

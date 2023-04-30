@@ -24,7 +24,6 @@ export class LoginActivateGuard implements CanActivate {
     | boolean
     | UrlTree {
     const token = localStorage.getItem('token');
-    console.log(!!token);
     if (!!token) {
       if (!this.authService.userLoggedIn$.getValue()) {
         this.authService.userLoggedIn$.next(true);

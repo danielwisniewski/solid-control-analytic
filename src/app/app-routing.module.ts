@@ -7,21 +7,12 @@ import { LoginActivateGuard } from './core/guards/login-activate.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'dashboard/halls',
     pathMatch: 'full',
   },
   {
     path: 'login',
     component: LoginPageComponent,
-  },
-  {
-    path: 'dashboard',
-    component: MainLayoutComponent,
-    canActivate: [LoginActivateGuard],
-    loadChildren: () =>
-      import('./features/dashboard/dashboard.module').then(
-        (m) => m.DashboardModule
-      ),
   },
   {
     path: 'tmmp-config',
@@ -33,12 +24,12 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'charts',
+    path: 'dashboard',
     component: MainLayoutComponent,
     canActivate: [LoginActivateGuard],
     loadChildren: () =>
-      import('./features/ventilation/ventilation.module').then(
-        (m) => m.VentilationModule
+      import('./features/dashboard/dashboard.module').then(
+        (m) => m.DashboardModule
       ),
   },
   {

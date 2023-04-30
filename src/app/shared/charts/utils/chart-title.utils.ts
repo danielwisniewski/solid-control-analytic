@@ -21,14 +21,9 @@ export function generateTitle(reqResponse: HGrid): ChartOptions {
     return {
       plugins: {
         title: {
-          display:
-            reqResponse.meta.has('showTitle') &&
-            reqResponse.meta.has('title') &&
-            reqResponse.meta.get('showTitle')?.toString() === 'true',
+          display: true,
           color: TEXT_COLOR,
-          text: reqResponse.meta.has('title')
-            ? reqResponse.meta.get('title')?.toString()
-            : undefined,
+          text: reqResponse.meta.get('title')?.toString() ?? ' ',
           font: {
             size: 17,
             family: 'Poppins, sans-serif',
@@ -58,15 +53,10 @@ export function generateSubTitle(reqResponse: HGrid): ChartOptions {
     return {
       plugins: {
         subtitle: {
-          display:
-            reqResponse.meta.has('showSubTitle') &&
-            reqResponse.meta.has('subtitle') &&
-            reqResponse.meta.get('showSubTitle')?.toString() === 'true',
+          display: true,
           color: TEXT_COLOR,
           padding: 10,
-          text: reqResponse.meta.has('subtitle')
-            ? reqResponse.meta.get('subtitle')?.toString()
-            : undefined,
+          text: reqResponse.meta.get('subtitle')?.toString() ?? ' ',
           font: {
             size: 14,
             family: 'Poppins, sans-serif',

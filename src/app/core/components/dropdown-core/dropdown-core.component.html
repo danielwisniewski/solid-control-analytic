@@ -9,7 +9,7 @@
     type="button"
   >
     <i class="tim-icons mr-2" [class]="icon"></i>
-    {{ activeOption | uppercase }}
+    {{ activeOption ?? "Wybierz budynek" | uppercase }}
   </button>
   <div aria-labelledby="dropdownMenuButton" class="dropdown-menu" *dropdownMenu>
     <a
@@ -25,7 +25,7 @@
       (click)="changeActiveOption(option)"
       *ngFor="let option of dropdownListOptions"
     >
-      {{ option["dis"] }}
+      {{ option?.toDis() }}
     </a>
   </div>
 </div>

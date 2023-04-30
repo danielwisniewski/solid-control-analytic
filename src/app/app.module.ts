@@ -13,7 +13,6 @@ import { FooterComponent } from './core/components/footer/footer.component';
 import { MainLayoutComponent } from './core/components/main-layout/main-layout.component';
 
 import { SharedModule } from './shared/shared.module';
-import { DashboardModule } from './features/dashboard/dashboard.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { TranslateModule } from '@ngx-translate/core';
@@ -35,7 +34,6 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     AppRoutingModule,
     HttpClientModule,
     SharedModule,
-    DashboardModule,
     TranslateModule.forRoot(),
     BsDatepickerModule.forRoot(),
   ],

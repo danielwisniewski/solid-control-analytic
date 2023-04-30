@@ -6,13 +6,13 @@ import 'chartjs-adapter-luxon';
 import { HGrid } from 'haystack-core';
 
 import { CHART_COLOR, onResize } from '../utils/chart-utils';
-import { generateTimeUnit, generateScales } from '../utils/scales.utils';
+import { generateScales } from '../utils/scales.utils';
 import { generateSubTitle, generateTitle } from '../utils/chart-title.utils';
 import { generateTooltip } from '../utils/tooltip.utils';
 import { generateLegend } from '../utils/legend.utils';
 import { generateLabels } from '../utils/labels.utils';
 import { generateDatasetsArray } from '../utils/dataset.util';
-import { chartjsType, getChartType } from '../utils/type.utils';
+import { chartjsType } from '../utils/type.utils';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { generateDataLabels } from '../utils/datalabels.utils';
 @Injectable({

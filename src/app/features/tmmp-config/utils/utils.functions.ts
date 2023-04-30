@@ -8,6 +8,10 @@ export function formatHaystackValue(value: any) {
     if (unit.startsWith('_')) unit = unit.substring(1);
     return `${value.val.toFixed(1)} ${unit}`;
   }
+  if (value._kind && value._kind === 'dateTime') {
+    const date = new Date(value.val);
+    return date.toLocaleDateString();
+  }
   return value;
 }
 
@@ -43,42 +47,42 @@ export function queryToZinc(query: string) {
 }
 
 export function generateRowColors(row: any) {
-  return {
-    'indirect-production-meter-row':
-      row.hasOwnProperty('indirectProductionMeter') ||
-      row.hasOwnProperty('compressorsMeter') ||
-      row.hasOwnProperty('ventilationMeter'),
-    'general-load-total-meter':
-      row.hasOwnProperty('generalLoadTotalMeter') ||
-      row.hasOwnProperty('generalLoadMeter'),
-    'non-production-meter-row':
-      row.hasOwnProperty('nonProductionTotalMeter') ||
-      row.hasOwnProperty('nonProductionMeter'),
-    'production-total-meter-row': row.hasOwnProperty(
-      'productionDepartmentMeter'
-    ),
-    'production-total-row':
-      row.hasOwnProperty('productionTotalMeter') ||
-      row.hasOwnProperty('indirectProductionTotalMeter') ||
-      row.hasOwnProperty('compressorsTotalMeter') ||
-      row.hasOwnProperty('ventilationTotalMeter'),
-    'production-meter-row': row.hasOwnProperty('productionLineMeter'),
-    'site-meter-row': row.hasOwnProperty('costCenterSiteMeter'),
-  };
+  // return {
+  //   'indirect-production-meter-row':
+  //     row.hasOwnProperty('indirectProductionMeter') ||
+  //     row.hasOwnProperty('compressorsMeter') ||
+  //     row.hasOwnProperty('ventilationMeter'),
+  //   'general-load-total-meter':
+  //     row.hasOwnProperty('generalLoadTotalMeter') ||
+  //     row.hasOwnProperty('generalLoadMeter'),
+  //   'non-production-meter-row':
+  //     row.hasOwnProperty('nonProductionTotalMeter') ||
+  //     row.hasOwnProperty('nonProductionMeter'),
+  //   'production-total-meter-row': row.hasOwnProperty(
+  //     'productionDepartmentMeter'
+  //   ),
+  //   'production-total-row':
+  //     row.hasOwnProperty('productionTotalMeter') ||
+  //     row.hasOwnProperty('indirectProductionTotalMeter') ||
+  //     row.hasOwnProperty('compressorsTotalMeter') ||
+  //     row.hasOwnProperty('ventilationTotalMeter'),
+  //   'production-meter-row': row.hasOwnProperty('productionLineMeter'),
+  //   'site-meter-row': row.hasOwnProperty('costCenterSiteMeter'),
+  // };
 }
 
 export function templateLogic(row: any) {
   const rowIndentation = {
-    'margin-left':
-      row.hasOwnProperty('productionLineMeter') ||
-      row.hasOwnProperty('compressorsMeter') ||
-      row.hasOwnProperty('ventilationMeter')
-        ? '4rem'
-        : row.hasOwnProperty('costCenterMeter') ||
-          row.hasOwnProperty('compressorsTotalMeter') ||
-          row.hasOwnProperty('ventilationTotalMeter')
-        ? '2rem'
-        : '0px',
+    // 'margin-left':
+    //   row.hasOwnProperty('productionLineMeter') ||
+    //   row.hasOwnProperty('compressorsMeter') ||
+    //   row.hasOwnProperty('ventilationMeter')
+    //     ? '4rem'
+    //     : row.hasOwnProperty('costCenterMeter') ||
+    //       row.hasOwnProperty('compressorsTotalMeter') ||
+    //       row.hasOwnProperty('ventilationTotalMeter')
+    //     ? '2rem'
+    //     : '0px',
   };
   const addButtonVisible: boolean =
     (!row.hasOwnProperty('costCenterSiteMeter') &&

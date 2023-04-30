@@ -18,9 +18,12 @@
       class="bootstrap m-auto"
       columnMode="force"
       rowHeight="auto"
+      [treeFromRelation]="'costCenterMeterRef.val'"
+      [treeToRelation]="'id.val'"
       [columns]="tableColumns"
       [rows]="tableRows"
       [rowClass]="rowColors"
+      (treeAction)="onTreeAction($event)"
     >
     </ngx-datatable>
   </div>

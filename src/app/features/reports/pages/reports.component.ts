@@ -3,38 +3,27 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject, Observable, combineLatest, switchMap } from 'rxjs';
 import { ReportService } from '../services/report.service';
 import { HGrid } from 'haystack-core';
+import { TimerangeStore } from 'src/app/core/store/timerange.store';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
 })
-export class ReportsComponent implements OnInit {
-  constructor(private service: ReportService) {}
+export class ReportsComponent {
+  constructor(
+    private service: ReportService,
+    private TimerangeStore: TimerangeStore
+  ) {}
 
   activeRollup = new BehaviorSubject<'15min' | '1hr' | '1day' | '1mo'>('1day');
 
-  timerange = new BehaviorSubject<string[]>([
-    DateTime.local()
-      .minus({ days: 7 })
-      .startOf('day')
-      .toFormat('yyyy-MM-dd')
-      .toString(),
-    DateTime.local().toFormat('yyyy-MM-dd').toString(),
-  ]);
-
   table1$: Observable<HGrid> = combineLatest([
-    this.timerange,
+    this.TimerangeStore.activeTimerange$,
     this.activeRollup,
   ]).pipe(
     switchMap(([timerange, rollup]) => {
       return this.service.generateReport(timerange, `costCenterReport`, rollup);
     })
   );
-
-  ngOnInit(): void {}
-
-  onTimerangeChange(range: string[]) {
-    this.timerange.next(range);
-  }
 }

@@ -1,0 +1,42 @@
+<ng-container *ngIf="tile?.type === 'chart'">
+  <mat-grid-tile-header
+    class="rollup-selector pt-0 mt-0 mr-2 justify-content-between"
+  >
+    <app-chart-table-toggle
+      [tileType]="tile?.type ?? 'chart'"
+      (tileTypeToggled)="onTypeChange($event)"
+    >
+    </app-chart-table-toggle>
+    <app-rollup-selector
+      *ngIf="tile?.hasRollupSelector"
+      [tile]="tile"
+      (onRollupChange)="onRollupChange($event)"
+    ></app-rollup-selector>
+  </mat-grid-tile-header>
+
+  <app-timeseries-chart
+    [chartConfiguration]="tileData$ | async"
+    style="width: -webkit-fill-available !important; z-index: 0"
+    [height]="30 * (tile?.rows ?? 1) - 2 + 'rem'"
+    class="p-2"
+  >
+  </app-timeseries-chart>
+</ng-container>
+<ng-container *ngIf="tile?.type === 'table'">
+  <mat-grid-tile-header
+    class="rollup-selector pt-0 mt-0 mr-2 justify-content-between"
+  >
+    <app-chart-table-toggle
+      [tileType]="tile?.type ?? 'chart'"
+      (tileTypeToggled)="onTypeChange($event)"
+    >
+    </app-chart-table-toggle>
+  </mat-grid-tile-header>
+  <app-grid-table
+    [data]="tileData$ | async"
+    style="width: -webkit-fill-available; padding-top: 0px !important"
+    class="p-2"
+    (onDownload)="onDownload()"
+  >
+  </app-grid-table>
+</ng-container>

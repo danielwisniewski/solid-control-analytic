@@ -7,12 +7,13 @@ import {
   EventEmitter,
   SimpleChanges,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { MeterType } from 'src/app/shared/interfaces/meter-type';
 import { NormalizationOptions } from '../../enums/charts.enum';
+import { HGrid } from 'haystack-core';
+import { ChartGenerationService } from '../../services/chart-generation.service';
 
 @Component({
   selector: 'app-timeseries-chart',
@@ -21,9 +22,9 @@ import { NormalizationOptions } from '../../enums/charts.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeseriesChartComponent implements OnChanges {
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private chartGenService: ChartGenerationService) {}
 
-  @Input() chartConfiguration: ChartConfiguration | undefined;
+  @Input() chartConfiguration: HGrid | undefined | null;
   @Input() chartTitle: string | undefined;
   @Input() normalizationRadioVisible: boolean = false;
   @Input() chartTypeOptionVisible: boolean = false;
@@ -40,12 +41,17 @@ export class TimeseriesChartComponent implements OnChanges {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   ngOnChanges(change: SimpleChanges): void {
-    if (change['chartConfiguration']) {
+    this.chartConfig = change['chartConfiguration'].currentValue;
+    if (!!change['chartConfiguration'].currentValue) {
       if (this.chart) {
-        this.chartConfig = change['chartConfiguration'].currentValue;
+        this.chartConfig = this.chartGenService.generateChart(
+          change['chartConfiguration'].currentValue
+        );
         this.chart.update();
       } else {
-        this.chartConfig = change['chartConfiguration'].currentValue;
+        this.chartConfig = this.chartGenService.generateChart(
+          change['chartConfiguration'].currentValue
+        );
       }
     }
   }

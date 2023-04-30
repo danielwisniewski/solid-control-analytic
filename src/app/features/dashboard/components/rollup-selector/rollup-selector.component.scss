@@ -1,0 +1,33 @@
+.rollup-selector {
+  height: 2rem !important;
+  top: 2rem;
+  background-color: transparent !important;
+  z-index: 10;
+}
+
+.radio-switch {
+  background-color: transparent;
+  border-radius: 9999px;
+  display: inline-flex;
+  padding: 0.1rem;
+  border: solid 0.5px #525f7f;
+}
+
+.radio-switch__label {
+  border-radius: 9999px;
+  cursor: pointer;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0;
+
+  font-size: 13px;
+}
+
+.radio-switch__label--selected {
+  /* For selected radio only */
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.radio-switch__input {
+  display: none;
+}

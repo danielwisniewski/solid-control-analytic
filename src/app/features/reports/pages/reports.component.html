@@ -80,20 +80,12 @@
       </div>
     </div>
     <div class="col-lg-3 col-md-12 mt-1">
-      <app-timerange-dropdown
-        (timerangeChanged)="onTimerangeChange($event)"
-        [timerange]="(timerange | async)!"
-      ></app-timerange-dropdown>
+      <app-timerange-dropdown></app-timerange-dropdown>
     </div>
   </div>
-  <div class="row">
-    <div class="col-12">
-      <app-grid-table
-        [data]="(table1$ | async)!"
-        [timerange]="(timerange | async) || []"
-        [rollup]="(activeRollup | async) || '1day'"
-      >
-      </app-grid-table>
+  <div class="row mt-3">
+    <div class="col-12" style="height: calc(100vh - 150px)">
+      <app-grid-table [data]="(table1$ | async)!"> </app-grid-table>
     </div>
   </div>
 </div>

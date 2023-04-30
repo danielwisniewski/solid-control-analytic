@@ -5,200 +5,200 @@
   flex-wrap: wrap;
 }
 
-::ng-deep .site-meter-row {
-  background: hsla(210, 100%, 80%, 1);
+// ::ng-deep .site-meter-row {
+//   background: hsla(210, 100%, 80%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(210, 100%, 80%, 0.1) 0%,
-    hsla(210, 45%, 64%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(210, 100%, 80%, 0.1) 0%,
+//     hsla(210, 45%, 64%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(210, 100%, 80%, 0.1) 0%,
-    hsla(210, 45%, 64%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(210, 100%, 80%, 0.1) 0%,
+//     hsla(210, 45%, 64%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(210, 100%, 80%, 0.1) 0%,
-    hsla(210, 45%, 64%, 0.4) 50%
-  );
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(210, 100%, 80%, 0.1) 0%,
+//     hsla(210, 45%, 64%, 0.4) 50%
+//   );
 
-  color: black !important;
-}
-::ng-deep .production-total-row {
-  background: hsla(120, 100%, 33%, 1);
+//   color: black !important;
+// }
+// ::ng-deep .production-total-row {
+//   background: hsla(120, 100%, 33%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(120, 100%, 33%, 0.1) 0%,
-    hsla(120, 100%, 23%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(120, 100%, 33%, 0.1) 0%,
+//     hsla(120, 100%, 23%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(120, 100%, 33%, 0.1) 0%,
-    hsla(120, 100%, 23%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(120, 100%, 33%, 0.1) 0%,
+//     hsla(120, 100%, 23%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(120, 100%, 33%, 0.1) 0%,
-    hsla(120, 100%, 23%, 0.4) 50%
-  );
-  color: black !important;
-}
-::ng-deep .production-total-meter-row {
-  background: hsla(120, 100%, 50%, 1);
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(120, 100%, 33%, 0.1) 0%,
+//     hsla(120, 100%, 23%, 0.4) 50%
+//   );
+//   color: black !important;
+// }
+// ::ng-deep .production-total-meter-row {
+//   background: hsla(120, 100%, 50%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(120, 100%, 50%, 0.1) 0%,
-    hsla(120, 100%, 40%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(120, 100%, 50%, 0.1) 0%,
+//     hsla(120, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(120, 100%, 50%, 0.1) 0%,
-    hsla(120, 100%, 40%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(120, 100%, 50%, 0.1) 0%,
+//     hsla(120, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(120, 100%, 50%, 0.1) 0%,
-    hsla(120, 100%, 40%, 0.4) 50%
-  );
-  color: black !important;
-}
-::ng-deep .production-meter-row {
-  background: hsla(120, 100%, 90%, 1);
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(120, 100%, 50%, 0.1) 0%,
+//     hsla(120, 100%, 40%, 0.4) 50%
+//   );
+//   color: black !important;
+// }
+// ::ng-deep .production-meter-row {
+//   background: hsla(120, 100%, 90%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(120, 100%, 90%, 0.1) 0%,
-    hsla(120, 29%, 72%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(120, 100%, 90%, 0.1) 0%,
+//     hsla(120, 29%, 72%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(120, 100%, 90%, 0.1) 0%,
-    hsla(120, 29%, 72%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(120, 100%, 90%, 0.1) 0%,
+//     hsla(120, 29%, 72%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(120, 100%, 90%, 0.1) 0%,
-    hsla(120, 29%, 72%, 0.4) 50%
-  );
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(120, 100%, 90%, 0.1) 0%,
+//     hsla(120, 29%, 72%, 0.4) 50%
+//   );
 
-  color: black !important;
-}
-::ng-deep .non-production-meter-row {
-  background: hsla(48, 100%, 50%, 1);
+//   color: black !important;
+// }
+// ::ng-deep .non-production-meter-row {
+//   background: hsla(48, 100%, 50%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(48, 100%, 50%, 0.1) 0%,
-    hsla(48, 100%, 40%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(48, 100%, 50%, 0.1) 0%,
+//     hsla(48, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(48, 100%, 50%, 0.1) 0%,
-    hsla(48, 100%, 40%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(48, 100%, 50%, 0.1) 0%,
+//     hsla(48, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(48, 100%, 50%, 0.1) 0%,
-    hsla(48, 100%, 40%, 0.4) 50%
-  );
-}
-::ng-deep .indirect-production-total-meter-row {
-  background: hsla(93, 100%, 50%, 1);
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(48, 100%, 50%, 0.1) 0%,
+//     hsla(48, 100%, 40%, 0.4) 50%
+//   );
+// }
+// ::ng-deep .indirect-production-total-meter-row {
+//   background: hsla(93, 100%, 50%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(93, 100%, 50%, 0.1) 0%,
-    hsla(93, 100%, 40%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(93, 100%, 50%, 0.1) 0%,
+//     hsla(93, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(93, 100%, 50%, 0.1) 0%,
-    hsla(93, 100%, 40%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(93, 100%, 50%, 0.1) 0%,
+//     hsla(93, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(93, 100%, 50%, 0.1) 0%,
-    hsla(93, 100%, 40%, 0.4) 50%
-  );
-}
-::ng-deep .indirect-production-meter-row {
-  background: hsla(75, 100%, 40%, 1);
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(93, 100%, 50%, 0.1) 0%,
+//     hsla(93, 100%, 40%, 0.4) 50%
+//   );
+// }
+// ::ng-deep .indirect-production-meter-row {
+//   background: hsla(75, 100%, 40%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(75, 100%, 40%, 0.1) 0%,
-    hsla(75, 100%, 40%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(75, 100%, 40%, 0.1) 0%,
+//     hsla(75, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(75, 100%, 40%, 0.1) 0%,
-    hsla(75, 100%, 40%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(75, 100%, 40%, 0.1) 0%,
+//     hsla(75, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(75, 100%, 40%, 0.1) 0%,
-    hsla(75, 100%, 40%, 0.4) 50%
-  );
-}
-::ng-deep .general-load-total-meter {
-  background: hsla(60, 100%, 50%, 1);
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(75, 100%, 40%, 0.1) 0%,
+//     hsla(75, 100%, 40%, 0.4) 50%
+//   );
+// }
+// ::ng-deep .general-load-total-meter {
+//   background: hsla(60, 100%, 50%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(60, 100%, 50%, 0.1) 0%,
-    hsla(60, 100%, 40%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(60, 100%, 50%, 0.1) 0%,
+//     hsla(60, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(60, 100%, 50%, 0.1) 0%,
-    hsla(60, 100%, 40%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(60, 100%, 50%, 0.1) 0%,
+//     hsla(60, 100%, 40%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(60, 100%, 50%, 0.1) 0%,
-    hsla(60, 100%, 40%, 0.4) 50%
-  );
-  color: black !important;
-}
-::ng-deep .general-load-meter {
-  background: hsla(60, 100%, 80%, 1);
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(60, 100%, 50%, 0.1) 0%,
+//     hsla(60, 100%, 40%, 0.4) 50%
+//   );
+//   color: black !important;
+// }
+// ::ng-deep .general-load-meter {
+//   background: hsla(60, 100%, 80%, 1);
 
-  background: radial-gradient(
-    circle,
-    hsla(60, 100%, 80%, 0.1) 0%,
-    hsla(60, 45%, 64%, 0.4) 50%
-  );
+//   background: radial-gradient(
+//     circle,
+//     hsla(60, 100%, 80%, 0.1) 0%,
+//     hsla(60, 45%, 64%, 0.4) 50%
+//   );
 
-  background: -moz-radial-gradient(
-    circle,
-    hsla(60, 100%, 80%, 0.1) 0%,
-    hsla(60, 45%, 64%, 0.4) 50%
-  );
+//   background: -moz-radial-gradient(
+//     circle,
+//     hsla(60, 100%, 80%, 0.1) 0%,
+//     hsla(60, 45%, 64%, 0.4) 50%
+//   );
 
-  background: -webkit-radial-gradient(
-    circle,
-    hsla(60, 100%, 80%, 0.1) 0%,
-    hsla(60, 45%, 64%, 0.4) 50%
-  );
-  color: black !important;
-}
+//   background: -webkit-radial-gradient(
+//     circle,
+//     hsla(60, 100%, 80%, 0.1) 0%,
+//     hsla(60, 45%, 64%, 0.4) 50%
+//   );
+//   color: black !important;
+// }

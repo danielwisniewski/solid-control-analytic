@@ -3,6 +3,7 @@ import { HGrid, HNum, HRef } from 'haystack-core';
 import { CHART_COLOR } from './chart-utils';
 import { chartjsType, getChartType } from './type.utils';
 import { generateTitle } from './chart-title.utils';
+import { generateUnitsObject } from './scales.utils';
 
 export function generateDatasetsArray(
   reqResponse: HGrid,
@@ -42,6 +43,12 @@ function generateTimeseriesDataset(
 
     colorCounter++;
 
+    const unit = reqResponse.getColumn(i)?.meta.get('unit')?.toString();
+
+    const unitObject = generateUnitsObject(reqResponse);
+
+    const yAxisID = unitObject.find((r) => r.unit === unit)?.axisName ?? 'y0';
+
     const CHART_DATASET: ChartDataset = {
       data: generateDataByColumnIndex(reqResponse, i),
       label: label,
@@ -56,6 +63,7 @@ function generateTimeseriesDataset(
       borderColor: generatedColors.solidColor,
       hoverBackgroundColor: generatedColors.hoverColors,
       hoverBorderColor: generatedColors.hoverColors,
+      yAxisID: yAxisID,
     };
     CHART_DATASETS.push(CHART_DATASET);
   }
@@ -69,8 +77,18 @@ function generatePieDataset(
   const CHART_DATASET: ChartDataset = {
     label: generateTitle(reqResponse).plugins?.title?.text?.toString() || '',
     data: [],
-    pointRadius: 0,
-    borderWidth: 1,
+    pointRadius: 1,
+    borderWidth: 0.7,
+    borderRadius:
+      getChartType(reqResponse) === 'donut' &&
+      reqResponse.getColumnsLength() > 2
+        ? 10
+        : 0,
+    spacing:
+      getChartType(reqResponse) === 'donut' &&
+      reqResponse.getColumnsLength() > 2
+        ? 5
+        : 0,
     animation: {
       duration: 900,
     },
@@ -107,9 +125,12 @@ function generatePieDataset(
   return [
     {
       ...CHART_DATASET,
-      pointBackgroundColor: colorsArray.pointBackgroundColor,
+      //pointBackgroundColor: colorsArray.pointBackgroundColor,
       backgroundColor: colorsArray.backgroundColor,
-      borderColor: colorsArray.borderColor,
+      borderColor:
+        getChartType(reqResponse) === 'donut'
+          ? '#1e1e2f'
+          : colorsArray.borderColor,
       hoverBackgroundColor: colorsArray.hoverBackgroundColor,
       hoverBorderColor: colorsArray.hoverBorderColor,
     },
@@ -174,8 +195,10 @@ export function generateLabelName(reqResponse: HGrid, i: number): string {
   let label: string = '';
   const column = reqResponse.getColumn(i);
   label = column?.meta?.toDis() ?? label;
-  if (column?.name.startsWith('v'))
-    label = column.meta?.get<HRef>('equipRef')?.dis ?? column.name;
+  if (label.startsWith('v'))
+    label = column?.meta?.get<HRef>('equipRef')?.dis ?? label;
+
+  if (label.startsWith('ui::time')) label = 'Czas';
 
   return label;
 }
