@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
-import { queryToZinc } from '../../tmmp-config/utils/utils.functions';
 import { Observable, map, of, take } from 'rxjs';
 import { HGrid, HaysonGrid } from 'haystack-core';
 import { SiteStore } from 'src/app/core/store/site.store';
 import { TimerangeStore } from 'src/app/core/store/timerange.store';
 import { DashboardStore } from '../store/dashboard.store';
+import { queryToZinc } from 'src/app/core/functions/utils';
 
 @Injectable({
   providedIn: 'root',

@@ -9,7 +9,7 @@ import { RequestReadService } from 'src/app/core/services/requests/read/request-
 import { AppStore } from 'src/app/core/store/app.store.';
 import { defaultRollups } from '../../dashboard/constants/dashboard.constants';
 import { PageConfig } from '../../dashboard/interfaces/dashboard.interface';
-import { queryToZinc } from '../../tmmp-config/utils/utils.functions';
+import { queryToZinc } from 'src/app/core/functions/utils';
 
 @Injectable({
   providedIn: 'root',

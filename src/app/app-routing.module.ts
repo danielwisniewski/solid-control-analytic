@@ -17,15 +17,6 @@ const routes: Routes = [
       import('./core/modules/login.module').then((m) => m.LoginModule),
   },
   {
-    path: 'tmmp-config',
-    component: MainLayoutComponent,
-    canActivate: [LoginActivateGuard],
-    loadChildren: () =>
-      import('./features/tmmp-config/tmmp-config.module').then(
-        (m) => m.TmmpConfigModule
-      ),
-  },
-  {
     path: 'dashboard',
     component: MainLayoutComponent,
     canActivate: [LoginActivateGuard],
@@ -33,13 +24,6 @@ const routes: Routes = [
       import('./features/dashboard/dashboard.module').then(
         (m) => m.DashboardModule
       ),
-  },
-  {
-    path: 'reports',
-    component: MainLayoutComponent,
-    canActivate: [LoginActivateGuard],
-    loadChildren: () =>
-      import('./features/reports/reports.module').then((m) => m.ReportsModule),
   },
   {
     path: 'creator',

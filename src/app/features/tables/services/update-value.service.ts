@@ -3,10 +3,10 @@ import { HStr } from 'haystack-core';
 import { catchError, finalize, take, tap } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { ToastrPopupService } from 'src/app/core/services/toastr-popup.service';
-import { queryToZinc } from '../../tmmp-config/utils/utils.functions';
 import swal from 'sweetalert2';
 import { SiteStore } from 'src/app/core/store/site.store';
 import { DashboardStore } from '../../dashboard/store/dashboard.store';
+import { queryToZinc } from 'src/app/core/functions/utils';
 
 @Injectable({
   providedIn: 'root',
