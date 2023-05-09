@@ -1,0 +1,27 @@
+<div class="dropdown" dropdown>
+  <button
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="dropdown-toggle btn btn-block"
+    data-toggle="dropdown"
+    dropdownToggle
+    id="dropdownMenuButton"
+    type="button"
+  >
+    <i class="tim-icons mr-2" [class]="variable?.icon"></i>
+    {{ activeOption?.dis ?? variable?.title ?? "Opcje" }}
+  </button>
+  <div aria-labelledby="dropdownMenuButton" class="dropdown-menu" *dropdownMenu>
+    <h6 class="dropdown-header">
+      {{ variable?.title ?? "Opcje" }}
+    </h6>
+    <a
+      class="dropdown-item"
+      *ngFor="let option of options"
+      (click)="changeActiveOption(option)"
+      style="cursor: pointer"
+    >
+      {{ option?.dis }}
+    </a>
+  </div>
+</div>

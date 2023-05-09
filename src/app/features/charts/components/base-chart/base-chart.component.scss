@@ -1,0 +1,19 @@
+:host ::ng-deep h6 {
+  color: #212529;
+}
+
+.modal-footer {
+  justify-content: center;
+}
+
+app-loading-spinner {
+  position: absolute;
+  // top: calc(50% - 2rem);
+  // left: calc(50% - 2rem);
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 11;
+  background-color: #212529da;
+}

@@ -13,7 +13,7 @@ import {
 } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { queryToZinc } from '../utils/utils.functions';
-import { ToastrPopupService } from './toastr-popup.service';
+import { ToastrPopupService } from '../../../core/services/toastr-popup.service';
 import { SiteStore } from 'src/app/core/store/site.store';
 
 @Injectable({

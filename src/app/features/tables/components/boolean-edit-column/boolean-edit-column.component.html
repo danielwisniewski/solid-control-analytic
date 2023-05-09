@@ -1,0 +1,17 @@
+<div class="d-flex justify-content-center">
+  <label
+    class="switch"
+    [ngClass]="!!value ? 'switch--on' : 'switch--off'"
+    style="cursor: pointer"
+  >
+    <input
+      type="checkbox"
+      class="switch__input"
+      [value]="value"
+      (change)="onClick()"
+    />
+
+    <!-- Circle -->
+    <div class="switch__circle"></div>
+  </label>
+</div>

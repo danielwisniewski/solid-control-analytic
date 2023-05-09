@@ -68,3 +68,10 @@
 
 // /* Importing Datepicker SCSS file. */
 // @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+@import "~@angular/material/prebuilt-themes/pink-bluegrey.css";
+
+.config-dialog {
+  //background: linear-gradient(0deg, #3358f4 0%, #1d8cf8 100%);
+  // background-color: #212529 !important;
+  //background-color: white;
+}

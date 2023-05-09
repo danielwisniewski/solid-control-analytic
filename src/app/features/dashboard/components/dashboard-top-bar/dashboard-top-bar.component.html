@@ -1,1 +1,32 @@
-<p>dashboard-top-bar works!</p>
+<div class="d-flex" style="justify-content: space-between; flex-wrap: wrap">
+  <div style="flex-grow: 4">
+    <h2 class="text-start">
+      {{ (pageConfig | async)?.title }}
+      <span
+        *ngIf="isCreatorMode"
+        style="font-size: 18px; cursor: pointer"
+        class="ml-4"
+        (click)="openDialog()"
+      >
+        <span> <i class="tim-icons icon-pencil"></i> </span>
+      </span>
+    </h2>
+  </div>
+  <div *ngFor="let variable of (pageConfig | async)?.variables">
+    <app-dashboard-variable-dropdown [variable]="variable">
+    </app-dashboard-variable-dropdown>
+  </div>
+  <div style="flex-grow: 1" *ngIf="!!(pageConfig | async)?.showSiteSelector">
+    <app-site-dropdown-button
+      [showPortfolioOption]="false"
+    ></app-site-dropdown-button>
+  </div>
+  <div
+    style="flex-grow: 1"
+    *ngIf="!!(pageConfig | async)?.showTimerangeSelector"
+  >
+    <app-timerange-dropdown
+      [type]="(pageConfig | async)?.datepicker?.type ?? 'range'"
+    ></app-timerange-dropdown>
+  </div>
+</div>

@@ -1,0 +1,264 @@
+<div>
+  <mat-grid-tile-header
+    class="rollup-selector pt-0 mt-0 mr-2 justify-content-between"
+  >
+    <app-chart-table-toggle
+      [tileType]="tile?.type ?? 'chart'"
+      *ngIf="!!tile?.meta?.showTileTypeSelector"
+    >
+    </app-chart-table-toggle>
+    <h1 class="text-center" *ngIf="!!tile?.meta?.showTitle">
+      {{ tile?.meta?.title }}
+    </h1>
+    <h1 style="color: white; z-index: 11">{{ tile?.tile }}</h1>
+    <app-rollup-selector
+      *ngIf="tile?.hasRollupSelector && tile?.type === 'chart'"
+      [tile]="tile"
+    ></app-rollup-selector>
+    <div class="col-auto mt-3 ml-4">
+      <button
+        type="button"
+        class="btn btn-danger mb-2 btn-simple pt-1 pb-1 mt-0"
+        (click)="onRemovePanel()"
+      >
+        Usuń
+      </button>
+    </div>
+  </mat-grid-tile-header>
+  <h4
+    *ngIf="tile?.meta?.showSubtitle"
+    class="m-auto text-center"
+    style="position: absolute; top: 3rem; left: 50%"
+  >
+    {{ tile?.meta?.subtitle }}
+  </h4>
+
+  <ng-container *ngIf="!!tile && !!tile.meta">
+    <div class="row">
+      <div class="form-row align-items-center mr-3 ml-3">
+        <div class="col-auto" style="max-width: 75px">
+          <label class="" for="width">Szerokość</label>
+          <input
+            type="number"
+            class="form-control mb-2"
+            id="columnNumber"
+            [(ngModel)]="tile.cols"
+            (ngModelChange)="(this.change)"
+          />
+        </div>
+        <div class="col-auto" style="max-width: 75px">
+          <label class="" for="width">Wysokość</label>
+          <input
+            type="number"
+            class="form-control mb-2"
+            id="columnNumber"
+            [(ngModel)]="tile.rows"
+            (ngModelChange)="(this.change)"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Typ panelu</label>
+          <select
+            class="form-control"
+            id="exampleFormControlSelect1"
+            [(ngModel)]="tile.type"
+            (ngModelChange)="change()"
+          >
+            <option [ngValue]="'chart'">Wykres</option>
+            <option [ngValue]="'table'">Tabela</option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <label class="" for="width">Tytuł</label>
+          <input
+            type="text"
+            class="form-control mb-2"
+            id="columnNumber"
+            [(ngModel)]="tile.meta.title"
+            (ngModelChange)="change()"
+          />
+        </div>
+        <div class="col-auto">
+          <label class="" for="width">Podtytuł</label>
+          <input
+            type="text"
+            class="form-control mb-2"
+            id="columnNumber"
+            [(ngModel)]="tile.meta.subtitle"
+            (ngModelChange)="change()"
+          />
+        </div>
+        <div class="col-auto">
+          <label class="" for="width">Tytuł, gdy brak danych</label>
+          <input
+            type="text"
+            class="form-control mb-2"
+            id="columnNumber"
+            [(ngModel)]="tile.meta.noDataTitle"
+            (ngModelChange)="change()"
+          />
+        </div>
+        <div class="col-auto">
+          <label class="" for="width">Podtytuł, gdy brak danych</label>
+          <input
+            type="text"
+            class="form-control mb-2"
+            id="columnNumber"
+            [(ngModel)]="tile.meta.noDataSubtitle"
+            (ngModelChange)="change()"
+          />
+        </div>
+        <div class="col-auto d-flex align-items-center flex-column">
+          <label class="" for="inlineFormInput">Pokaż tytuł</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.showTitle"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div class="col-auto d-flex align-items-center flex-column">
+          <label class="" for="inlineFormInput">Pokaż podtytuł</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.showSubtitle"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div class="col-auto d-flex align-items-center flex-column">
+          <label class="" for="inlineFormInput">Zmień typu panelu</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.showTileTypeSelector"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div class="col-auto d-flex align-items-center flex-column">
+          <label class="" for="inlineFormInput">Pobierz raport</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.hasDownloadButton"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div class="col-auto d-flex align-items-center flex-column">
+          <label class="" for="inlineFormInput">Pokaż rollup</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.hasRollupSelector"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div class="form-group" *ngIf="tile.type === 'chart'">
+          <label for="exampleFormControlSelect1">Typ wykresu</label>
+          <select
+            class="form-control"
+            id="exampleFormControlSelect1"
+            [(ngModel)]="tile.meta.chartType"
+            (ngModelChange)="change()"
+          >
+            <option [ngValue]="'bar'">Słupkowy</option>
+            <option [ngValue]="'line'">Liniowy</option>
+            <option [ngValue]="'pie'">Pie</option>
+            <option [ngValue]="'ranking'">Ranking</option>
+            <option [ngValue]="'donut'">Donut</option>
+          </select>
+        </div>
+        <div
+          class="col-auto d-flex align-items-center flex-column"
+          *ngIf="tile.type === 'chart'"
+        >
+          <label class="" for="inlineFormInput">Pokaż legende</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.showLegend"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div class="form-group" *ngIf="tile.type === 'chart'">
+          <label for="exampleFormControlSelect1">Położenie legendy</label>
+          <select
+            class="form-control"
+            id="exampleFormControlSelect1"
+            [(ngModel)]="tile.meta.legendPosition"
+            (ngModelChange)="change()"
+          >
+            <option [ngValue]="'top'">Nad</option>
+            <option [ngValue]="'bottom'">Pod</option>
+            <option [ngValue]="'right'">Po prawej</option>
+            <option [ngValue]="'left'">Po lewej</option>
+            <option [ngValue]="'chartArea'">Na wykresie</option>
+          </select>
+        </div>
+        <div
+          class="col-auto d-flex align-items-center flex-column"
+          *ngIf="tile.type === 'chart'"
+        >
+          <label class="" for="inlineFormInput">Pivot tabeli</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.pivotAllowed"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div
+          class="col-auto d-flex align-items-center flex-column"
+          *ngIf="tile.type === 'chart' && tile.meta.chartType === 'bar'"
+        >
+          <label class="" for="inlineFormInput">Stacked bar?</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.stacked"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+        <div
+          class="col-auto d-flex align-items-center flex-column"
+          *ngIf="tile.type === 'table'"
+        >
+          <label class="" for="inlineFormInput">Filtruj kolumny</label>
+          <label class="switch switch--on">
+            <input
+              type="checkbox"
+              class="switch__input"
+              [(ngModel)]="tile.meta.filterColumns"
+              (ngModelChange)="change()"
+            />
+            <div class="switch__circle"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { RouteInfo } from '../components/sidebar/sidebar.component';
 import { RequestReadService } from '../services/requests/read/request-read.service';
 import { BehaviorSubject, filter, retry, switchMap, take, tap } from 'rxjs';
-import { HDict, HGrid, HaysonGrid } from 'haystack-core';
-import { AppConfig } from 'src/app/features/dashboard/interfaces/dashboard.interface';
+import { HGrid, HaysonGrid } from 'haystack-core';
+
 import { SiteStore } from './site.store';
+import { AppConfig } from '../interfaces/AppConfig.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,6 @@ export class AppStore {
       .about()
       .pipe(
         switchMap((res) => {
-          this.test();
           const GRID = HGrid.make(res);
           const version: string =
             GRID.first?.get('moduleVersion')?.toString() ?? '3.0';
@@ -35,26 +35,18 @@ export class AppStore {
           if (GRID.first.has('sites'))
             this.siteStore.sites$.next(GRID.first.get('sites'));
 
+          if (GRID.first.has('dashboards')) {
+            GRID.first.set(
+              'dashboards',
+              GRID.first.get<HGrid>('dashboards')!.getRows().toHayson()
+            );
+          }
+
           const config: unknown = GRID.first.toJSON() as unknown;
+
           const dashConfig = config as AppConfig;
           this.appConfig$.next(dashConfig);
-          // this.sidebarRoutes$.next([...dashConfig?.menu]);
-        })
-      )
-
-      .subscribe();
-  }
-
-  private test() {
-    this.req
-      .readByFilter('appConfig')
-      .pipe(
-        tap((res) => {
-          const grid = HGrid.make(res);
-          const config = grid.first?.get('config')?.toJSON() as unknown;
-          const dashConfig = config as AppConfig;
-          this.sidebarRoutes$.next(dashConfig?.menu);
-          //this.appConfig$.next(dashConfig);
+          this.sidebarRoutes$.next([...dashConfig?.menu]);
         })
       )
       .subscribe();

@@ -1,0 +1,243 @@
+<h2
+  mat-dialog-title
+  class="d-flex justify-content-between"
+  cdkDrag
+  cdkDragRootElement=".cdk-overlay-pane"
+>
+  <span>Ustawienia strony</span>
+  <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+    <path
+      d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"
+    ></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+  </svg>
+</h2>
+
+<mat-dialog-content style="height: calc(100% - 96px)">
+  <mat-accordion *ngIf="!!pageConfig">
+    <!-- ----------- USTAWIENIA ROZMIARU STRONY ----------- -->
+    <mat-expansion-panel class="bg-dark mt-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Ustawienia rozmiaru strony</mat-panel-title>
+        <mat-panel-description
+          >Podstawowe ustawienia rozmiaru strony</mat-panel-description
+        >
+      </mat-expansion-panel-header>
+      <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+        <input
+          matInput
+          type="number"
+          [(ngModel)]="pageConfig.layout.colNumber"
+          (ngModelChange)="change()"
+        />
+        <mat-hint>Liczba kolumn na stronie</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+        <input
+          matInput
+          type="number"
+          [(ngModel)]="pageConfig.layout.rowHeight"
+          (ngModelChange)="change()"
+        />
+        <mat-hint>Wysokość jednego wiersza (% ekranu)</mat-hint>
+      </mat-form-field>
+    </mat-expansion-panel>
+
+    <!-- ----------- USTAWIENIA GÓRNEJ BELKI ----------- -->
+    <mat-expansion-panel class="bg-dark mt-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Górna belka</mat-panel-title>
+        <mat-panel-description
+          >Konfiguracja elementów wyświetlanych na górnej
+          belce</mat-panel-description
+        >
+      </mat-expansion-panel-header>
+      <mat-form-field appearance="fill" class="w-100 mt-3">
+        <input
+          matInput
+          [(ngModel)]="pageConfig.title"
+          (ngModelChange)="change()"
+        />
+        <mat-hint>Tytuł strony</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="w-100 mt-3 mb-3">
+        <input
+          matInput
+          [(ngModel)]="pageConfig.skysparkFunc"
+          (ngModelChange)="change()"
+        />
+        <mat-hint>Nazwa funkcji w Skyspark</mat-hint>
+      </mat-form-field>
+      <section class="mt-3 w-25 d-inline">
+        <mat-checkbox
+          [(ngModel)]="pageConfig.showSiteSelector"
+          (ngModelChange)="change()"
+          class="mr-2"
+          >Pokaż menu do wyboru budynku</mat-checkbox
+        >
+        <mat-checkbox
+          [(ngModel)]="pageConfig.showTimerangeSelector"
+          (ngModelChange)="change()"
+          class="mr-2"
+          >Pokaż menu do wyboru daty</mat-checkbox
+        >
+      </section>
+      <mat-form-field
+        appearance="fill"
+        class="mt-2 pr-2 w-50"
+        *ngIf="!!pageConfig.showTimerangeSelector"
+      >
+        <mat-label>Typ wyboru daty</mat-label>
+        <mat-select
+          [(ngModel)]="pageConfig.datepicker"
+          (selectionChange)="change()"
+        >
+          <mat-option value="single">Pojedyńcza data</mat-option>
+          <mat-option value="range">Zakres</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-expansion-panel>
+
+    <!-- ----------- ZMIENNE ----------- -->
+    <mat-expansion-panel class="bg-dark mt-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Zmienne</mat-panel-title>
+        <mat-panel-description
+          >Konfiguracja dodatkowych zmiennych na stronie</mat-panel-description
+        >
+      </mat-expansion-panel-header>
+      <mat-expansion-panel
+        *ngFor="let variable of pageConfig.variables; let variableIndex = index"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title
+            >Nazwa zmiennej: {{ variable.title }}</mat-panel-title
+          >
+          <mat-panel-description>
+            <button
+              class="w-50 btn btn-danger btn-sm text-end"
+              (click)="pageConfig.variables?.splice(variableIndex, 1)"
+            >
+              USUŃ
+            </button>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="variable.title"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Tytuł zmiennej</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="variable.name"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Nazwa zmiennej</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="variable.icon"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Ikona</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="mt-2 pr-2 w-50">
+          <mat-label>Dostępne opcje do wyboru</mat-label>
+          <mat-select [(ngModel)]="variable.type" (selectionChange)="change()">
+            <mat-option value="values">Wprowadzone ręcznie</mat-option>
+            <mat-option value="query">Zwrócone przez query</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-expansion-panel
+          *ngIf="variable.type == 'values'"
+          class="bg-info mt-3"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>Zadeklarowane zmienne</mat-panel-title>
+            <mat-panel-description
+              >Ręcznie zadeklarowane wartości</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <mat-accordion
+            class="mt-2 d-flex justify-content-around align-items-center"
+            *ngFor="let option of variable.options; let optionIndex = index"
+          >
+            <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="option.dis"
+                (ngModelChange)="change()"
+              />
+              <mat-hint>Wyświetlana nazwa</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="option.val"
+                (ngModelChange)="change()"
+              />
+              <mat-hint>Przesyłana wartość</mat-hint>
+            </mat-form-field>
+            <button
+              class="w-25 mt-3 btn btn-danger btn-sm"
+              style="max-width: 45px"
+              (click)="variable.options.splice(optionIndex, 1)"
+            >
+              X
+            </button>
+          </mat-accordion>
+          <button
+            class="mt-3 btn btn-simple text-center w-100 btn-success"
+            (click)="variable.options.push({ dis: 'Example', val: 'example' })"
+          >
+            Dodaj
+          </button>
+        </mat-expansion-panel>
+      </mat-expansion-panel>
+      <button
+        class="btn btn-simple btn-success mt-3 w-100"
+        (click)="pageConfig.variables?.push({ name: 'newVar', options: [] })"
+      >
+        DODAJ
+      </button>
+    </mat-expansion-panel>
+  </mat-accordion>
+</mat-dialog-content>
+<mat-dialog-actions class="sticky-bottom">
+  <div
+    class="form-row align-items-center justify-content-between w-100"
+    *ngIf="!!pageConfig && !!pageConfig.layout"
+  >
+    <button type="button" class="btn btn-primary" (click)="onSave()">
+      Zapisz
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-success btn-simple"
+      (click)="onAddPanel()"
+    >
+      Dodaj panel
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-primary btn-simple"
+      (click)="generateSkysparkFunction()"
+    >
+      Generuj funckję
+    </button>
+
+    <button mat-dialog-close class="btn btn-info">Anuluj</button>
+  </div>
+</mat-dialog-actions>

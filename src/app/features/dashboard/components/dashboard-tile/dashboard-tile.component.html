@@ -1,42 +1,63 @@
-<ng-container *ngIf="tile?.type === 'chart'">
-  <mat-grid-tile-header
-    class="rollup-selector pt-0 mt-0 mr-2 justify-content-between"
+<div class="card card-chart">
+  <div
+    class="card-header mt-0 pt-1 pb-1 d-flex justify-content-between"
+    style="height: 40px"
   >
+    <span
+      (click)="openDialog()"
+      *ngIf="isCreatorMode"
+      style="font-size: 18px"
+      class="ml-4"
+    >
+      <span> <i class="tim-icons icon-pencil"></i> </span>
+    </span>
+    <h3
+      style="flex-grow: 10; flex-shrink: 1"
+      class="text-start ml-3"
+      *ngIf="!!tile?.meta?.showTitle"
+    >
+      {{ tile?.meta?.title }}
+    </h3>
     <app-chart-table-toggle
       [tileType]="tile?.type ?? 'chart'"
       (tileTypeToggled)="onTypeChange($event)"
+      *ngIf="!!tile?.meta?.showTileTypeSelector"
+      class="text-start"
     >
     </app-chart-table-toggle>
     <app-rollup-selector
-      *ngIf="tile?.hasRollupSelector"
+      *ngIf="tile?.hasRollupSelector && tile?.type === 'chart'"
       [tile]="tile"
       (onRollupChange)="onRollupChange($event)"
     ></app-rollup-selector>
-  </mat-grid-tile-header>
-
-  <app-timeseries-chart
-    [chartConfiguration]="tileData$ | async"
-    style="width: -webkit-fill-available !important; z-index: 0"
-    [height]="30 * (tile?.rows ?? 1) - 2 + 'rem'"
-    class="p-2"
-  >
-  </app-timeseries-chart>
-</ng-container>
-<ng-container *ngIf="tile?.type === 'table'">
-  <mat-grid-tile-header
-    class="rollup-selector pt-0 mt-0 mr-2 justify-content-between"
-  >
-    <app-chart-table-toggle
-      [tileType]="tile?.type ?? 'chart'"
-      (tileTypeToggled)="onTypeChange($event)"
+    <span
+      style="font-size: 18px"
+      class="ml-4"
+      (click)="onDownload()"
+      *ngIf="!!tile?.meta?.hasDownloadButton"
     >
-    </app-chart-table-toggle>
-  </mat-grid-tile-header>
-  <app-grid-table
-    [data]="tileData$ | async"
-    style="width: -webkit-fill-available; padding-top: 0px !important"
-    class="p-2"
-    (onDownload)="onDownload()"
-  >
-  </app-grid-table>
-</ng-container>
+      <i
+        class="tim-icons icon-cloud-download-93 ml-2"
+        style="cursor: pointer"
+      ></i>
+    </span>
+  </div>
+  <div class="card-body p-1">
+    <ng-container *ngIf="tile?.type === 'chart'">
+      <app-base-chart
+        [chartConfiguration]="tileData$ | async"
+        [height]="height.toString()"
+      >
+      </app-base-chart>
+    </ng-container>
+    <ng-container *ngIf="tile?.type === 'table'">
+      <app-grid-table
+        [data]="tileData$ | async"
+        style="width: -webkit-fill-available"
+        (onDownload)="onDownload()"
+        [height]="height.toString()"
+      >
+      </app-grid-table>
+    </ng-container>
+  </div>
+</div>

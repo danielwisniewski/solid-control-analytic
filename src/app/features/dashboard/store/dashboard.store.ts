@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { AppStore } from 'src/app/core/store/app.store.';
 import { SiteStore } from 'src/app/core/store/site.store';
 import { TimerangeStore } from 'src/app/core/store/timerange.store';
-import { AppStore } from 'src/app/core/store/app.store.';
 import {
   BehaviorSubject,
   Observable,
@@ -9,8 +9,9 @@ import {
   filter,
   map,
   shareReplay,
+  tap,
 } from 'rxjs';
-import { DashboardState } from '../interfaces/dashboard.interface';
+import { PageConfig, PageVariable } from '../interfaces/dashboard.interface';
 import { defaultRollups } from '../constants/dashboard.constants';
 
 @Injectable({
@@ -24,35 +25,35 @@ export class DashboardStore {
   ) {}
 
   routerParam$ = new BehaviorSubject<string | undefined>(undefined);
+  detailsPageId$ = new BehaviorSubject<string | undefined>(undefined);
+  activeDashboard$ = new BehaviorSubject<PageConfig | undefined>(undefined);
 
-  dashboardState$: Observable<DashboardState> = combineLatest([
+  pageVariables$ = new BehaviorSubject<any>(undefined);
+  activeTile$ = new BehaviorSubject<number>(0);
+
+  dashboardConfig$: Observable<PageConfig | undefined> = combineLatest([
     this.routerParam$,
     this.TimerangeStore.activeTimerange$,
     this.AppStore.appConfig$,
     this.SiteStore.activeSite$,
   ]).pipe(
     filter((res) => res.every((r) => !!r)),
-    map(([routeParam, timerange, config, site]) => {
-      const dashboardConfig = config?.dashboards?.find(
-        (dashboard) => dashboard.path === routeParam
+    map(([activeDashboardRoute, activeTimerange, appConfig, activeSite]) => {
+      // Find configuration of the dashboard based on route path
+      const routeToCompare = !!this.detailsPageId$.getValue()
+        ? `${activeDashboardRoute}/details`
+        : activeDashboardRoute;
+      const dashboardConfig = appConfig?.dashboards?.find(
+        (dashboard) => dashboard.path === routeToCompare
       );
 
+      // Assign default rollup when no set
       dashboardConfig?.layout.tiles.map((tile) => {
         if (tile.hasRollupSelector && typeof tile.rollups === 'undefined')
           tile.rollups = defaultRollups;
       });
-
-      return {
-        site: site,
-        layout: dashboardConfig?.layout,
-        skysparkFunc: dashboardConfig?.skysparkFunc,
-        timerange: timerange,
-        title: dashboardConfig?.title,
-        datepicker: dashboardConfig?.datepicker,
-      };
+      return dashboardConfig;
     }),
-
-    filter((res) => !!res.layout && !!res.skysparkFunc && !!res.site),
-    shareReplay(1)
+    tap((res) => this.activeDashboard$.next(res))
   );
 }

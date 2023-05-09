@@ -1,0 +1,13 @@
+<div class="input-addon">
+  <!-- Input -->
+  <input
+    type="text"
+    class="input-addon__input text-center"
+    [(ngModel)]="value"
+    (focusout)="updateValue()"
+  />
+
+  <div class="input-addon__addon input-addon__addon--appended">
+    <i class="tim-icons icon-pencil"></i>
+  </div>
+</div>

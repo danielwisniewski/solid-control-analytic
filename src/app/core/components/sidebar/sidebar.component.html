@@ -15,7 +15,10 @@
   <ul class="nav">
     <li *ngFor="let menuitem of menuItems | async" routerLinkActive="active">
       <!--If is a single link-->
-      <a [routerLink]="[menuitem.path]" *ngIf="menuitem.type === 'link'">
+      <a
+        [routerLink]="[menuitem.path]"
+        *ngIf="menuitem.type === 'link' && !!menuitem?.visible"
+      >
         <i class="{{ menuitem.icontype }}"></i>
         <p>{{ menuitem.title }}</p>
       </a>
@@ -23,7 +26,7 @@
       <a
         data-toggle="collapse"
         routerLinkActive="active"
-        *ngIf="menuitem.type === 'sub'"
+        *ngIf="menuitem.type === 'sub' && !!menuitem.visible"
         (click)="menuitem.isCollapsed = !menuitem.isCollapsed"
         [attr.aria-expanded]="!menuitem.isCollapsed"
         [attr.aria-controls]="menuitem.collapse"
@@ -36,7 +39,7 @@
       <div
         id="{{ menuitem.collapse }}"
         class="collapse"
-        *ngIf="menuitem.type === 'sub'"
+        *ngIf="menuitem.type === 'sub' && !!menuitem.visible"
         [collapse]="menuitem.isCollapsed!"
         [isAnimated]="true"
       >
@@ -48,7 +51,7 @@
             <!--If is a single link-->
             <a
               [routerLink]="[menuitem.path, childitems.path]"
-              *ngIf="childitems.type === 'link'"
+              *ngIf="childitems.type === 'link' && !!childitems.visible"
             >
               <span class="sidebar-mini-icon">{{ childitems.smallTitle }}</span>
               <span class="sidebar-normal">{{ childitems.title }}</span>
@@ -59,7 +62,7 @@
               (click)="childitems.isCollapsed = !childitems.isCollapsed"
               [attr.aria-expanded]="!childitems.isCollapsed"
               [attr.aria-controls]="childitems.collapse"
-              *ngIf="childitems.type === 'sub'"
+              *ngIf="childitems.type === 'sub' && !!childitems.visible"
             >
               <span class="sidebar-mini-icon">{{ childitems.smallTitle }}</span>
               <span class="sidebar-normal"
@@ -70,7 +73,7 @@
             <div
               id="{{ childitems.collapse }}"
               class="collapse"
-              *ngIf="childitems.type === 'sub'"
+              *ngIf="childitems.type === 'sub' && !!childitems.visible"
               [collapse]="childitems.isCollapsed!"
               [isAnimated]="true"
             >

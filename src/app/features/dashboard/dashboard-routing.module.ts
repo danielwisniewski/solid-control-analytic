@@ -7,6 +7,14 @@ const routes: Routes = [
     path: ':type',
     component: DashboardComponent,
   },
+  {
+    path: ':type/creator',
+    component: DashboardComponent,
+  },
+  {
+    path: ':type/:id',
+    component: DashboardComponent,
+  },
 ];
 
 @NgModule({

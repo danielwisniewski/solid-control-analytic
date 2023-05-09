@@ -1,6 +1,11 @@
-import { Component, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+} from '@angular/core';
 import { Observable, Subscription, tap } from 'rxjs';
-import { DashboardState, Tile } from '../interfaces/dashboard.interface';
+import { PageConfig, Tile } from '../interfaces/dashboard.interface';
 import { DashboardStore } from '../store/dashboard.store';
 import { ActivatedRoute } from '@angular/router';
 
@@ -8,26 +13,34 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-ventilation',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnDestroy {
   constructor(
     private DashboardStore: DashboardStore,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {
-    this.sub = this.route.params.subscribe((route) =>
-      this.DashboardStore.routerParam$.next(route['type'])
-    );
+    this.sub = this.route.params.subscribe((route) => {
+      this.DashboardStore.routerParam$.next(route['type']);
+      this.DashboardStore.detailsPageId$.next(route['id']);
+      this.isCreatorMode = this.route.snapshot.url
+        .toString()
+        .includes('creator');
+    });
   }
-
   private sub: Subscription;
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
-  dashboardState$: Observable<DashboardState> =
-    this.DashboardStore.dashboardState$;
+  isCreatorMode: boolean = false;
+
+  pageConfig$: Observable<PageConfig | undefined> =
+    this.DashboardStore.dashboardConfig$;
 
   trackBy(index: number, item: Tile) {
     return item.tile;
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 }

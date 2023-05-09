@@ -1,0 +1,85 @@
+<div
+  class="dataTables_wrapper mt-3"
+  *ngIf="!isLoading; else spinner"
+  [style]="'height: calc(' + height + 'vh - 50px - 1rem)'"
+>
+  <ngx-datatable
+    #table
+    columnMode="force"
+    style="height: -webkit-fill-available"
+    [rowHeight]="40"
+    [headerHeight]="TableGenerator.filterColumnCounter > 0 ? 75 : 50"
+    [messages]="TableGenerator.messages"
+    class="bootstrap"
+    [columns]="TableGenerator.columns"
+    [rows]="TableGenerator.rows"
+    [scrollbarH]="true"
+    [scrollbarV]="true"
+    [treeFromRelation]="treeFromRelation"
+    [treeToRelation]="treeToRelation"
+    (treeAction)="onTreeAction($event)"
+  >
+  </ngx-datatable>
+</div>
+
+<ng-template #spinner>
+  <app-loading-spinner></app-loading-spinner>
+</ng-template>
+
+<ng-template let-row="row" let-value="value" let-column="column" #editString>
+  <app-string-edit-column
+    [row]="row"
+    [value]="value"
+    [column]="column"
+  ></app-string-edit-column>
+</ng-template>
+<ng-template let-row="row" let-value="value" let-column="column" #editNumber>
+  <app-number-edit-column
+    [row]="row"
+    [column]="column"
+    [grid]="loadedData"
+  ></app-number-edit-column>
+</ng-template>
+<ng-template let-row="row" let-column="column" let-value="value" #editBoolean>
+  <app-boolean-edit-column
+    [row]="row"
+    [column]="column"
+    [value]="value"
+    [grid]="loadedData"
+  ></app-boolean-edit-column>
+</ng-template>
+<ng-template let-row="row" let-column="column" let-value="value" #buttonAction>
+  <app-button-action-column
+    [row]="row"
+    [column]="column"
+    [value]="value"
+    [grid]="loadedData"
+  ></app-button-action-column>
+</ng-template>
+<ng-template let-row="row" let-column="column" let-value="value" #deleteButton>
+  <app-delete-button-column
+    [row]="row"
+    [column]="column"
+    [value]="value"
+    [grid]="loadedData"
+  ></app-delete-button-column>
+</ng-template>
+
+<ng-template
+  let-row="row"
+  let-column="column"
+  let-value="value"
+  #headerFilterTemplate
+>
+  <div class="">
+    <span>{{ column.name }}</span>
+    <div class="form-group pl-4 pr-4">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Filtruj po kolumnie"
+        (keyup)="onInput($event, column.prop)"
+      />
+    </div>
+  </div>
+</ng-template>

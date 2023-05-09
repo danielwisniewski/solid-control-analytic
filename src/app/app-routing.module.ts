@@ -13,6 +13,8 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginPageComponent,
+    loadChildren: () =>
+      import('./core/modules/login.module').then((m) => m.LoginModule),
   },
   {
     path: 'tmmp-config',
@@ -38,6 +40,12 @@ const routes: Routes = [
     canActivate: [LoginActivateGuard],
     loadChildren: () =>
       import('./features/reports/reports.module').then((m) => m.ReportsModule),
+  },
+  {
+    path: 'creator',
+    canActivate: [LoginActivateGuard],
+    loadChildren: () =>
+      import('./features/creator/creator.module').then((m) => m.CreatorModule),
   },
 ];
 

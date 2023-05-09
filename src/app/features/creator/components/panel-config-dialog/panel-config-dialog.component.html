@@ -1,0 +1,707 @@
+<h2
+  mat-dialog-title
+  class="d-flex justify-content-between"
+  cdkDrag
+  cdkDragRootElement=".cdk-overlay-pane"
+>
+  <span>Panel: {{ data.tile.tile }} </span>
+  <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+    <path
+      d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"
+    ></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+  </svg>
+</h2>
+<mat-dialog-content style="height: calc(100% - 96px)">
+  <ng-container
+    *ngIf="!!data.tile && !!data.tile.meta && !!data.tile.columnsMeta"
+  >
+    <mat-accordion>
+      <!-- ----------- GŁÓWNE USTAWIENIA ----------- -->
+      <mat-expansion-panel class="bg-dark mt-2">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Główne ustawienia </mat-panel-title>
+          <mat-panel-description>
+            Podstawowe parametry konfiguracyjne
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="fill" class="mt-2 w-50 pr-2">
+          <mat-label>Typ wykresu</mat-label>
+          <mat-select [(ngModel)]="data.tile.type" (selectionChange)="change()">
+            <mat-option value="chart">Wykres</mat-option>
+            <mat-option value="table">Tabela</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="data.tile.cols"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Szerokość</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="data.tile.rows"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Wysokość</mat-hint>
+        </mat-form-field>
+      </mat-expansion-panel>
+
+      <!-- ----------- TYTUŁ ----------- -->
+      <mat-expansion-panel class="bg-dark mt-2">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Tytuł </mat-panel-title>
+          <mat-panel-description>
+            Ustawienia dotyczące tytułu panelu
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="fill" class="w-75 mt-3">
+          <input
+            matInput
+            [(ngModel)]="data.tile.meta.title"
+            (change)="change()"
+          />
+          <mat-hint>Wpisz tytuł panelu</mat-hint>
+        </mat-form-field>
+
+        <section class="mt-3 w-25 pl-3 d-inline">
+          <mat-checkbox
+            [(ngModel)]="data.tile.meta.showTitle"
+            (ngModelChange)="change()"
+            >Pokazuj</mat-checkbox
+          >
+        </section>
+        <mat-form-field appearance="fill" class="w-100 mt-2">
+          <input
+            matInput
+            [(ngModel)]="data.tile.meta.noDataTitle"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Wpisz tytuł panelu, gdy brak danych</mat-hint>
+        </mat-form-field>
+      </mat-expansion-panel>
+
+      <!-- ----------- PODTYTUŁ ----------- -->
+      <mat-expansion-panel class="bg-dark mt-2">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Podtytuł </mat-panel-title>
+          <mat-panel-description>
+            Ustawienia dotyczące podtytułu panelu
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="fill" class="w-75 mt-3">
+          <input
+            matInput
+            [(ngModel)]="data.tile.meta.subtitle"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Wpisz podtytuł panelu</mat-hint>
+        </mat-form-field>
+        <section class="mt-2 w-25 d-inline pl-3">
+          <mat-checkbox
+            [(ngModel)]="data.tile.meta.showSubtitle"
+            (ngModelChange)="change()"
+            >Pokazuj
+          </mat-checkbox>
+        </section>
+        <mat-form-field appearance="fill" class="w-100 mt-2">
+          <input
+            matInput
+            [(ngModel)]="data.tile.meta.noDataSubtitle"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Wpisz podtytuł panelu, gdy brak danych</mat-hint>
+        </mat-form-field>
+      </mat-expansion-panel>
+
+      <!-- ----------- GÓRNA BELKA ----------- -->
+      <mat-expansion-panel class="bg-dark mt-2">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Górna belka </mat-panel-title>
+          <mat-panel-description>
+            Ustawienia dotyczące górnej belki panelu
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <section class="mt-2">
+          <p>
+            <mat-checkbox
+              [(ngModel)]="data.tile.meta.showTileTypeSelector"
+              (ngModelChange)="change()"
+              >Pokazuj switch do zmiany wykresu na tabelę</mat-checkbox
+            >
+          </p>
+          <p *ngIf="data.tile.type == 'table'">
+            <mat-checkbox
+              [(ngModel)]="data.tile.meta.hasDownloadButton"
+              (ngModelChange)="change()"
+              >Pokazuj przycisk do pobrania raportu</mat-checkbox
+            >
+          </p>
+          <p *ngIf="data.tile.type == 'chart'">
+            <mat-checkbox
+              [(ngModel)]="data.tile.hasRollupSelector"
+              (ngModelChange)="change()"
+              >Pokazuj switch do opcji rollup</mat-checkbox
+            >
+          </p>
+        </section>
+      </mat-expansion-panel>
+
+      <!-- ----------- ROLLUP ----------- -->
+      <mat-expansion-panel
+        class="bg-dark mt-2"
+        *ngIf="!!data.tile.hasRollupSelector"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Rollup </mat-panel-title>
+          <mat-panel-description
+            >Ustawienia funkcji rollup</mat-panel-description
+          >
+        </mat-expansion-panel-header>
+        <mat-accordion
+          *ngFor="let rollup of data.tile.rollups; let rollupIndex = index"
+        >
+          <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="rollup.display"
+              (ngModelChange)="change()"
+            />
+            <mat-hint>Wyświetlana nazwa</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="rollup.value"
+              (ngModelChange)="change()"
+            />
+            <mat-hint>Przesyłana wartość</mat-hint>
+          </mat-form-field>
+          <button
+            class="w-25 mt-3 btn btn-danger btn-sm"
+            style="max-width: 45px"
+            (click)="data.tile.rollups?.splice(rollupIndex, 1)"
+          >
+            X
+          </button>
+        </mat-accordion>
+        <button
+          class="mt-3 btn btn-simple text-center w-100 btn-success"
+          (click)="data.tile.rollups?.push({ display: 'W', value: '1wo' })"
+        >
+          Dodaj
+        </button>
+      </mat-expansion-panel>
+
+      <!-- ----------- WYKRES ----------- -->
+      <mat-expansion-panel
+        class="bg-dark mt-2"
+        *ngIf="data.tile.type == 'chart'"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Wykres </mat-panel-title>
+          <mat-panel-description>
+            Ustawienia, gdy panel jest wykresem
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="fill" class="mt-2 pr-2 w-50">
+          <mat-label>Typ wykresu</mat-label>
+          <mat-select
+            [(ngModel)]="data.tile.meta.chartType"
+            (selectionChange)="change()"
+          >
+            <mat-option value="bar">Słupkowy</mat-option>
+            <mat-option value="line">Liniowy</mat-option>
+            <mat-option value="pie">Pie</mat-option>
+            <mat-option value="ranking">Ranking</mat-option>
+            <mat-option value="donut">Donut</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="mt-2 pl-2 w-50">
+          <mat-label>Położenie legendy</mat-label>
+          <mat-select
+            [(ngModel)]="data.tile.meta.legendPosition"
+            (selectionChange)="change()"
+          >
+            <mat-option value="top">Nad wykresem</mat-option>
+            <mat-option value="bottom">Pod wykresem</mat-option>
+            <mat-option value="right">Po prawej stronie</mat-option>
+            <mat-option value="left">Po lewej stronie</mat-option>
+            <mat-option value="chartArea">Na wykresie</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="mt-2 pr-2 w-50">
+          <mat-label>Typ tooltipu</mat-label>
+          <mat-select
+            [(ngModel)]="data.tile.meta.tooltipMode"
+            (selectionChange)="change()"
+          >
+            <mat-option value="point">Punkt</mat-option>
+            <mat-option
+              value="index"
+              *ngIf="
+                data.tile.meta.chartType == 'bar' ||
+                data.tile.meta.chartType == 'line'
+              "
+              >Pozycja z osi x</mat-option
+            >
+            <mat-option value="dataset">Wszystkie wartości</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <section class="mt-2">
+          <p>
+            <mat-checkbox
+              [(ngModel)]="data.tile.meta.showLegend"
+              (ngModelChange)="change()"
+              class="mr-2"
+              >Pokazuj legendę</mat-checkbox
+            >
+            <mat-checkbox
+              *ngIf="data.tile.meta.chartType == 'bar'"
+              [(ngModel)]="data.tile.meta.stacked"
+              (ngModelChange)="change()"
+              class="mr-2"
+              >Wykres typu Stack Bar</mat-checkbox
+            >
+            <mat-checkbox
+              *ngIf="data.tile.meta.showTileTypeSelector"
+              [(ngModel)]="data.tile.meta.pivotAllowed"
+              (ngModelChange)="change()"
+              class="mr-2"
+              >Możliwość zrobienia Pivotu tabeli przy zmianie
+              widoku</mat-checkbox
+            >
+          </p>
+        </section>
+        <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+          <input
+            matInput
+            min="0"
+            max="10"
+            step="0.1"
+            type="number"
+            [(ngModel)]="data.tile.meta.borderWidth"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Grubość lini</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+          <input
+            matInput
+            min="0"
+            max="30"
+            step="0.1"
+            type="number"
+            [(ngModel)]="data.tile.meta.borderRadius"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Zaokrąglenie rogów</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+          <input
+            matInput
+            min="0"
+            max="30"
+            step="0.1"
+            type="number"
+            [(ngModel)]="data.tile.meta.spacing"
+            (ngModelChange)="change()"
+          />
+          <mat-hint>Odstępy</mat-hint>
+        </mat-form-field>
+      </mat-expansion-panel>
+
+      <!-- ----------- TABELA ----------- -->
+      <mat-expansion-panel
+        class="bg-dark mt-2"
+        *ngIf="data.tile.type == 'table'"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>Tabela</mat-panel-title>
+          <mat-panel-description
+            >Ustawienia dotyczące tabeli</mat-panel-description
+          >
+        </mat-expansion-panel-header>
+        <section class="mt-2">
+          <p>
+            <mat-checkbox
+              [(ngModel)]="data.tile.meta.filterColumns"
+              (ngModelChange)="change()"
+              class="mr-2"
+              >Pokaż tylko wybrane kolumny</mat-checkbox
+            >
+            <mat-checkbox
+              [(ngModel)]="data.tile.meta.isDropdown"
+              (ngModelChange)="change()"
+              class="mr-2"
+              >Włącz menu rozwijane w tabeli</mat-checkbox
+            >
+            <mat-checkbox
+              *ngIf="data.tile.meta.showTileTypeSelector"
+              [(ngModel)]="data.tile.meta.pivotAllowed"
+              (ngModelChange)="change()"
+              class="mr-2"
+              >Możliwość zrobienia Pivotu tabeli przy zmianie
+              widoku</mat-checkbox
+            >
+          </p>
+        </section>
+        <mat-form-field
+          appearance="fill"
+          class="w-50 mt-3 pr-2"
+          *ngIf="!!data.tile.meta.isDropdown"
+        >
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="data.tile.meta.treeFromRelation"
+            (change)="change()"
+          />
+          <mat-hint>Nazwa Ref + .val</mat-hint>
+        </mat-form-field>
+        <mat-form-field
+          appearance="fill"
+          class="w-50 mt-3 pr-2"
+          *ngIf="!!data.tile.meta.isDropdown"
+        >
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="data.tile.meta.treeToRelation"
+            (change)="change()"
+          />
+          <mat-hint>Szukana wartość id.val</mat-hint>
+        </mat-form-field>
+      </mat-expansion-panel>
+
+      <!-- ----------- KOLUMNY ----------- -->
+      <mat-expansion-panel class="bg-dark mt-2">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Kolumny</mat-panel-title>
+          <mat-panel-description>Konfiguracja kolumn</mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-expansion-panel
+          *ngFor="let column of columns; let columnIndex = index"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ column.name }}</mat-panel-title>
+            <mat-panel-description>Nazwa kolumny</mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-form-field appearance="fill" class="w-100 mt-3">
+            <input
+              matInput
+              [value]="data.tile.columnsMeta[column.name]?.dis ?? ''"
+              (change)="changeMeta(column.name, 'dis', $event)"
+            />
+            <mat-hint>Wpisz tytuł kolumny</mat-hint>
+          </mat-form-field>
+          <section class="mt-2">
+            <p>
+              <mat-checkbox
+                [checked]="data.tile.columnsMeta[column.name]?.visible"
+                (change)="changeMeta(column.name, 'visible', $event.checked)"
+                class="mr-2"
+                *ngIf="!!data.tile.meta.filterColumns"
+                >Widoczonść kolumny</mat-checkbox
+              >
+              <mat-checkbox
+                [checked]="data.tile.columnsMeta[column.name]?.filterHeader"
+                (change)="
+                  changeMeta(column.name, 'filterHeader', $event.checked)
+                "
+                class="mr-2"
+                >Filtrowanie po treści</mat-checkbox
+              >
+            </p>
+          </section>
+          <mat-form-field appearance="fill" class="mt-2 pr-2 w-100">
+            <mat-label>Typ kolumny</mat-label>
+            <mat-select
+              [value]="data.tile.columnsMeta[column.name]?.columnType"
+              (selectionChange)="
+                changeMeta(column.name, 'columnType', $event.value)
+              "
+            >
+              <mat-option value="undefined">Wyświetl wartość</mat-option>
+              <mat-option value="editString">Edytuj tekst</mat-option>
+              <mat-option value="editNumber">Edytuj liczbę</mat-option>
+              <mat-option value="editBoolean"
+                >Edytuj wartość binarną</mat-option
+              >
+              <mat-option value="deleteButton"
+                >Przycisk - usuń element</mat-option
+              >
+              <mat-option value="buttonAction"
+                >Przycisk - wywołaj akcję</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="mt-2 pr-2 w-50"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.columnType ==
+                'deleteButton' ||
+              data.tile.columnsMeta[column.name]?.columnType == 'buttonAction'
+            "
+          >
+            <mat-label>Typ przycisku</mat-label>
+            <mat-select
+              [value]="data.tile.columnsMeta[column.name]?.buttonType"
+              (selectionChange)="
+                changeMeta(column.name, 'buttonType', $event.value)
+              "
+            >
+              <mat-option value="text">Tekst</mat-option>
+              <mat-option value="icon">Ikona</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="mt-2 pr-2 w-50"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.columnType ==
+                'deleteButton' ||
+              data.tile.columnsMeta[column.name]?.columnType == 'buttonAction'
+            "
+          >
+            <mat-label>Kolor przycisku</mat-label>
+            <mat-select
+              [value]="data.tile.columnsMeta[column.name]?.buttonColor"
+              (selectionChange)="
+                changeMeta(column.name, 'buttonColor', $event.value)
+              "
+            >
+              <mat-option value="primary" class="bg-primary">Różowy</mat-option>
+              <mat-option value="info" class="bg-info">Niebeiski</mat-option>
+              <mat-option value="success" class="bg-success"
+                >Zielony</mat-option
+              >
+              <mat-option value="warning" class="bg-warning"
+                >Pomarańczowy</mat-option
+              >
+              <mat-option value="danger" class="bg-danger">Czerwony</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="mt-2 pr-2 w-100"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.columnType ==
+                'deleteButton' ||
+              data.tile.columnsMeta[column.name]?.columnType == 'buttonAction'
+            "
+          >
+            <mat-label>Akcja wywoływana przez przycisk</mat-label>
+            <mat-select
+              [value]="data.tile.columnsMeta[column.name]?.actionType"
+              (selectionChange)="
+                changeMeta(column.name, 'actionType', $event.value)
+              "
+            >
+              <mat-option value="override"
+                >Nadpisz na wprowadzoną wartość</mat-option
+              >
+              <mat-option value="link">Link</mat-option>
+              <mat-option value="function">Wywołaj funckję</mat-option>
+              <mat-option
+                value="details"
+                *ngIf="
+                  data.tile.columnsMeta[column.name]?.columnType ==
+                  'buttonAction'
+                "
+                >Przejdź do strony szegółowej</mat-option
+              >
+              <mat-option
+                value="functionInput"
+                *ngIf="
+                  data.tile.columnsMeta[column.name]?.columnType ==
+                  'buttonAction'
+                "
+                >Wywołaj funckję z podaniem wartości</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="w-100 mt-3"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.columnType ==
+                'deleteButton' ||
+              (data.tile.columnsMeta[column.name]?.columnType ==
+                'buttonAction' &&
+                data.tile.columnsMeta[column.name]?.buttonType == 'text')
+            "
+          >
+            <input
+              matInput
+              [value]="data.tile.columnsMeta[column.name]?.buttonText"
+              (change)="changeMeta(column.name, 'buttonText', $event)"
+            />
+            <mat-hint>Tekst na przycisku</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="w-100 mt-3"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.columnType ==
+                'deleteButton' ||
+              (data.tile.columnsMeta[column.name]?.columnType ==
+                'buttonAction' &&
+                data.tile.columnsMeta[column.name]?.buttonType == 'icon')
+            "
+          >
+            <input
+              matInput
+              [value]="data.tile.columnsMeta[column.name]?.buttonIcon"
+              (change)="changeMeta(column.name, 'buttonIcon', $event)"
+            />
+            <mat-hint>Ikona na przycisku</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="w-100 mt-3"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.actionType == 'function' ||
+              data.tile.columnsMeta[column.name]?.actionType == 'functionInput'
+            "
+          >
+            <input
+              matInput
+              [(ngModel)]="data.tile.columnsMeta[column.name].funcName"
+              (change)="changeMeta(column.name, 'funcName', $event)"
+            />
+            <mat-hint>Nazwa wywoływanej funkcji</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            class="w-100 mt-3"
+            *ngIf="data.tile.columnsMeta[column.name]?.actionType == 'link'"
+          >
+            <input
+              matInput
+              [value]="data.tile.columnsMeta[column.name]?.link"
+              (change)="changeMeta(column.name, 'link', $event)"
+            />
+            <mat-hint>Ścieżka, do której przeniesie link</mat-hint>
+          </mat-form-field>
+          <mat-expansion-panel
+            class="mt-2 bg-dark"
+            *ngIf="
+              data.tile.columnsMeta[column.name]?.actionType == 'functionInput'
+            "
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>Parametry</mat-panel-title>
+              <mat-panel-description
+                >Parametry, o które zostanie spytany
+                użytkownik</mat-panel-description
+              >
+            </mat-expansion-panel-header>
+            <mat-expansion-panel
+              *ngFor="
+                let parameter of data.tile.columnsMeta[column.name]
+                  ?.functionInputParameters
+              "
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ parameter.id }}</mat-panel-title>
+                <mat-panel-description>Id parametru</mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-form-field appearance="fill" class="w-100 mt-3">
+                <input
+                  matInput
+                  [value]="parameter.id"
+                  (change)="
+                    changeMeta(
+                      column.name,
+                      'functionInputParameters',
+                      data.tile.columnsMeta[column.name]
+                        ?.functionInputParameters
+                    )
+                  "
+                />
+                <mat-hint>Id parametru</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="w-100 mt-3">
+                <input
+                  matInput
+                  [value]="parameter.text"
+                  (change)="
+                    changeMeta(
+                      column.name,
+                      'functionInputParameters',
+                      data.tile.columnsMeta[column.name]
+                        ?.functionInputParameters
+                    )
+                  "
+                />
+                <mat-hint>Tekst w wyświetlonym oknie</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="mt-2 pr-2 w-100">
+                <mat-label>Typ pola do wprowdzenia wartości</mat-label>
+                <mat-select
+                  [value]="parameter.type"
+                  (selectionChange)="
+                    changeMeta(
+                      column.name,
+                      'functionInputParameters',
+                      data.tile.columnsMeta[column.name]
+                        ?.functionInputParameters
+                    )
+                  "
+                >
+                  <mat-option value="text">Tekst</mat-option>
+                  <mat-option value="number">Liczba</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="w-100 mt-3">
+                <input
+                  matInput
+                  [value]="parameter.help"
+                  (change)="
+                    changeMeta(
+                      column.name,
+                      'functionInputParameters',
+                      data.tile.columnsMeta[column.name]
+                        ?.functionInputParameters
+                    )
+                  "
+                />
+                <mat-hint>Wskazówka dla użytkownika</mat-hint>
+              </mat-form-field>
+            </mat-expansion-panel>
+            <button
+              class="btn btn-simple btn-success mt-3 w-100"
+              (click)="
+                data.tile.columnsMeta[
+                  column.name
+                ]?.functionInputParameters?.push({
+                  id: 'newVar',
+                  text: '',
+                  type: 'text'
+                })
+              "
+            >
+              DODAJ
+            </button>
+          </mat-expansion-panel>
+        </mat-expansion-panel>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-around sticky-bottom">
+  <button class="btn btn-success" (click)="onSave()">Zapisz</button>
+  <button class="btn btn-danger">Usuń</button>
+  <button mat-dialog-close class="btn btn-info">Anuluj</button>
+  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+</mat-dialog-actions>

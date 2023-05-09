@@ -9,13 +9,35 @@ import { RollupSelectorComponent } from './components/rollup-selector/rollup-sel
 import { DashboardTopBarComponent } from './components/dashboard-top-bar/dashboard-top-bar.component';
 import { DashboardTileComponent } from './components/dashboard-tile/dashboard-tile.component';
 import { ChartTableToggleComponent } from './components/chart-table-toggle/chart-table-toggle.component';
+import { DashboardVariableDropdownComponent } from './components/dashboard-top-bar/dashboard-variable-dropdown/dashboard-variable-dropdown.component';
+import { ChartsModule } from '../charts/charts.module';
+import { CoreComponentsModule } from 'src/app/core/modules/core-components.module';
+import { TablesModule } from '../tables/tables.module';
+import { CreatorModule } from '../creator/creator.module';
+import { CreatorTileComponent } from '../creator/components/creator-tile/creator-tile.component';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 @NgModule({
-  declarations: [DashboardComponent, RollupSelectorComponent, DashboardTopBarComponent, DashboardTileComponent, ChartTableToggleComponent],
+  declarations: [
+    DashboardComponent,
+    RollupSelectorComponent,
+    DashboardTopBarComponent,
+    DashboardTileComponent,
+    ChartTableToggleComponent,
+    DashboardVariableDropdownComponent,
+    CreatorTileComponent,
+  ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     SharedModule,
+    ChartsModule,
+    CreatorModule,
+    CoreComponentsModule,
+    TablesModule,
     MatGridListModule,
+    BsDropdownModule,
   ],
+  entryComponents: [CreatorTileComponent],
 })
 export class DashboardModule {}

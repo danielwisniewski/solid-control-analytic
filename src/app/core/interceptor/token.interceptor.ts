@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthService } from '../auth/auth-service.service';
-import { ToastrPopupService } from 'src/app/features/tmmp-config/services/toastr-popup.service';
+import { ToastrPopupService } from 'src/app/core/services/toastr-popup.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {

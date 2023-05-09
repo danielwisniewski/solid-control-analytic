@@ -1,0 +1,22 @@
+<ng-container>
+  <div class="stepper-input p-0 m-0 text-center">
+    <!-- Minus button -->
+    <button class="stepper-input__button" (click)="onMinus()">-</button>
+
+    <!-- Input container -->
+    <div class="stepper-input__content">
+      <input
+        type="number"
+        class="stepper-input__input text-center"
+        min="0"
+        required
+        [(ngModel)]="val"
+        [placeholder]="unit"
+        (change)="onChange()"
+      />
+    </div>
+
+    <!-- Plus button -->
+    <button class="stepper-input__button" (click)="onPlus()">+</button>
+  </div>
+</ng-container>

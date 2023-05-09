@@ -5,6 +5,7 @@ import { Observable, map, of, take } from 'rxjs';
 import { HGrid, HaysonGrid } from 'haystack-core';
 import { SiteStore } from 'src/app/core/store/site.store';
 import { TimerangeStore } from 'src/app/core/store/timerange.store';
+import { DashboardStore } from '../store/dashboard.store';
 
 @Injectable({
   providedIn: 'root',
@@ -13,16 +14,26 @@ export class DashboardService {
   constructor(
     private req: RequestReadService,
     private SiteStore: SiteStore,
-    private TimerangeStore: TimerangeStore
+    private TimerangeStore: TimerangeStore,
+    private DashboardStore: DashboardStore
   ) {}
 
   getData(
     tile: number,
-    skysparkFunc: string,
     parameters: any = {},
     isExport: boolean = false
   ): Observable<HGrid | undefined> {
     const timerange = this.TimerangeStore.activeTimerange$.getValue();
+    let skysparkFunc =
+      this.DashboardStore.activeDashboard$.getValue()?.skysparkFunc;
+
+    if (!!this.DashboardStore.detailsPageId$.getValue()) {
+      parameters = {
+        ...parameters,
+        detailPageId: this.DashboardStore.detailsPageId$.getValue(),
+      };
+    }
+
     const jsonParameters =
       Object.keys(parameters).length > 0
         ? `, ${JSON.stringify(parameters)}`

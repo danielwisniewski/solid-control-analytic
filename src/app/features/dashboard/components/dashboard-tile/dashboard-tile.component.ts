@@ -4,21 +4,26 @@ import {
   ChangeDetectionStrategy,
   Input,
 } from '@angular/core';
-import { DashboardState, Tile } from '../../interfaces/dashboard.interface';
+import { PageTileMeta, Tile } from '../../interfaces/dashboard.interface';
 import { DashboardStore } from '../../store/dashboard.store';
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
   filter,
   map,
   merge,
   of,
-  shareReplay,
-  startWith,
   switchMap,
   take,
+  tap,
 } from 'rxjs';
 import { DashboardService } from '../../services/dashboard.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+
+import { PanelConfigDialogComponent } from 'src/app/features/creator/components/panel-config-dialog/panel-config-dialog.component';
+import { HDict, HGrid } from 'haystack-core';
 
 @Component({
   selector: 'app-dashboard-tile',
@@ -29,12 +34,17 @@ import { DashboardService } from '../../services/dashboard.service';
 export class DashboardTileComponent implements OnInit {
   constructor(
     private dashboardStore: DashboardStore,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private modal: MatDialog
   ) {}
 
   @Input() tile: Tile | undefined;
+  @Input() height: number = 30;
+  @Input() isCreatorMode: boolean = false;
 
-  private parameters$ = new BehaviorSubject<any>({});
+  private tileParameters$ = new BehaviorSubject<any>({});
+
+  private tileData: HGrid<HDict> | undefined;
 
   ngOnInit(): void {}
 
@@ -42,57 +52,113 @@ export class DashboardTileComponent implements OnInit {
     if (!!this.tile?.type) this.tile.type = type;
   }
 
-  dashboardData$ = combineLatest([
-    this.dashboardStore.dashboardState$,
-    this.parameters$,
+  dataUpdatedByPageChange$ = combineLatest([
+    this.dashboardStore.dashboardConfig$,
+    this.tileParameters$,
+    this.dashboardStore.pageVariables$,
   ]).pipe(
-    filter(() => !!this.tile),
-    map(([res, params]) => {
-      return { dashboardState: res, params: params };
-    }),
+    // Wait for rollup params
     filter(
-      (res) =>
-        (!!this.tile?.hasRollupSelector && !!res.params.rollup) ||
+      ([res, params]) =>
+        (!!this.tile?.hasRollupSelector && !!params.rollup) ||
         !this.tile?.hasRollupSelector
     ),
-    shareReplay(1)
-  );
-
-  tileData$ = this.dashboardData$.pipe(
-    switchMap((res: { dashboardState: DashboardState; params: any }) => {
+    filter(() => !!this.tile),
+    distinctUntilChanged(),
+    switchMap(() => {
       return merge(
         of(undefined),
-        this.dashboardService.getData(
-          this.tile!.tile,
-          res.dashboardState.skysparkFunc!,
-          { ...res.params }
-        )
+        this.dashboardService.getData(this.tile!.tile, {
+          ...this.tileParameters$.getValue(),
+          ...this.dashboardStore.pageVariables$.getValue(),
+        })
       );
     }),
-    filter((res) => !!res),
-    shareReplay(1)
+    map((res) => {
+      if (!!res && this.tile?.meta) {
+        const meta = this.tile?.meta as any;
+        res.meta.update(meta);
+
+        console.log(this.tile.columnsMeta);
+      }
+      if (!!res && this.tile?.columnsMeta) {
+        for (const key in this.tile?.columnsMeta) {
+          const object = this.tile?.columnsMeta[key];
+          for (const meta in object) {
+            res.getColumn(key)?.meta.set(meta, object[meta]);
+          }
+        }
+      }
+      this.tileData = res;
+      return this.tileData?.newCopy();
+    })
+  );
+
+  dataUpdatedByCreatorModule$ = combineLatest([
+    this.dashboardStore.activeDashboard$,
+    this.dashboardStore.activeTile$,
+  ]).pipe(
+    map(([res, tile]) => {
+      return res?.layout.tiles.find(
+        (r) => r.tile === tile && r.tile === this.tile?.tile
+      );
+    }),
+    filter((res) => !!res?.meta),
+    map((res) => res as Tile),
+    map((res) => {
+      if (!!res.meta && this.tileData)
+        this.tileData.meta.update(res.meta as any);
+      if (!!res.columnsMeta && this.tileData) {
+        for (const key in res.columnsMeta) {
+          const object = res.columnsMeta[key];
+          for (const meta in object) {
+            this.tileData.getColumn(key)?.meta.set(meta, object[meta]);
+          }
+        }
+      }
+      return this.tileData?.newCopy();
+    }),
+    distinctUntilChanged()
+  );
+
+  tileData$ = merge(
+    this.dataUpdatedByPageChange$,
+    this.dataUpdatedByCreatorModule$
+  ).pipe(
+    distinctUntilChanged()
+    //tap((res) => console.log(res))
   );
 
   onRollupChange(event: any) {
-    this.parameters$.next({
-      ...this.parameters$.getValue(),
+    this.tileParameters$.next({
+      ...this.tileParameters$.getValue(),
       rollup: event,
     });
   }
 
   onDownload() {
-    this.dashboardData$
-      .pipe(
-        take(1),
-        switchMap((res: { dashboardState: DashboardState; params: any }) => {
-          return this.dashboardService.getData(
-            this.tile!.tile,
-            res.dashboardState.skysparkFunc!,
-            { ...res.params },
-            true
-          );
-        })
-      )
+    this.dashboardService
+      .getData(this.tile!.tile, { ...this.tileParameters$.getValue() }, true)
+      .pipe(take(1))
       .subscribe();
+  }
+
+  openDialog(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.hasBackdrop = true;
+    dialogConfig.position = {
+      top: '5vh',
+      left: '40vw',
+    };
+    dialogConfig.width = '600px';
+    dialogConfig.height = '800px';
+    dialogConfig.data = {
+      tile: this.tile,
+      grid: this.tileData,
+    };
+    dialogConfig.panelClass = 'config-dialog';
+    const dialogRef = this.modal.open(PanelConfigDialogComponent, dialogConfig);
   }
 }

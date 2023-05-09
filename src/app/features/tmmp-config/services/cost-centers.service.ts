@@ -3,7 +3,7 @@ import { TableColumn } from '@swimlane/ngx-datatable';
 import { HDict, HRef, HStr, HaysonGrid } from 'haystack-core';
 import { catchError, finalize, startWith, take } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
-import { ToastrPopupService } from './toastr-popup.service';
+import { ToastrPopupService } from '../../../core/services/toastr-popup.service';
 import { queryToZinc } from '../utils/utils.functions';
 
 import { map } from 'rxjs';
@@ -31,7 +31,9 @@ export class CostCentersService {
           name: column.meta['dis']?.toString(),
           prop: column.name,
           isTreeColumn:
-            column.name === 'id' || column.name === 'costCenterMeterRef',
+            column.name === 'id' ||
+            column.name === 'costCenterMeterRef' ||
+            column.name === 'navName',
           headerClass: 'text-center',
           cellClass: 'text-start',
           sortable: false,

@@ -1,0 +1,33 @@
+::ng-deep .ngx-datatable ::-webkit-scrollbar {
+  width: 3px; /* Mostly for vertical scrollbars */
+  height: 10px; /* Mostly for horizontal scrollbars */
+}
+
+::ng-deep .ngx-datatable ::-webkit-scrollbar-thumb {
+  /* Foreground */
+  background: #999;
+  border-radius: 4px;
+}
+
+::ng-deep .ngx-datatable ::-webkit-scrollbar-track {
+  /* Background */
+  background: #333;
+}
+
+::ng-deep .ngx-datatable ::-webkit-scrollbar-corner {
+  background-color: #f5f5f5;
+}
+
+::ng-deep .datatable-body-cell-label {
+  display: flex;
+  justify-content: center;
+}
+
+::ng-deep .datatable-tree-button {
+  margin-top: 0;
+}
+
+.card-header > span {
+  font-size: 17px !important;
+  font-weight: bold;
+}

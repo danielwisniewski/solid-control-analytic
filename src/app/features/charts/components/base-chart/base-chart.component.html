@@ -1,0 +1,20 @@
+<div
+  class="chart-area"
+  [ngStyle]="{ height: 'calc(' + height + 'vh - 50px)' }"
+  class="p-1"
+>
+  <canvas
+    baseChart
+    [data]="chartConfig?.data"
+    [options]="chartConfig?.options"
+    [datasets]="chartConfig?.data?.datasets"
+    [labels]="chartConfig?.data?.labels"
+    [type]="chartConfig?.type ?? 'bar'"
+    [height]="'calc(' + height + 'vh - 50px)'"
+  >
+  </canvas>
+  <app-loading-spinner
+    [style]="{ height: 'calc(' + height + 'vh - 50px)' }"
+    *ngIf="!chartConfig"
+  ></app-loading-spinner>
+</div>

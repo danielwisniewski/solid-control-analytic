@@ -1,0 +1,10 @@
+<button
+  [class]="'btn btn-sm mt-0 btn-' + buttonColor"
+  *ngIf="!!value"
+  (click)="onClick()"
+>
+  <span *ngIf="buttonType === 'text'">{{ buttonText }}</span>
+  <span *ngIf="buttonType === 'icon'">
+    <i [class]="'tim-icons' + ' ' + buttonIcon"></i
+  ></span>
+</button>

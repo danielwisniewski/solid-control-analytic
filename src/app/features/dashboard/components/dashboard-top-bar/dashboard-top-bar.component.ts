@@ -4,6 +4,11 @@ import {
   ChangeDetectionStrategy,
   Input,
 } from '@angular/core';
+import { PageConfig } from '../../interfaces/dashboard.interface';
+import { DashboardStore } from '../../store/dashboard.store';
+import { Observable } from 'rxjs';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { PageConfigTopBarComponent } from 'src/app/features/creator/components/page-config-top-bar/page-config-top-bar.component';
 
 @Component({
   selector: 'app-dashboard-top-bar',
@@ -12,10 +17,27 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTopBarComponent implements OnInit {
-  @Input() hasSiteSelector: boolean = true;
-  @Input() hasTimerangeSelector: boolean = true;
-
-  constructor() {}
-
+  constructor(
+    private DashboardStore: DashboardStore,
+    private modal: MatDialog
+  ) {}
+  pageConfig: Observable<PageConfig | undefined> =
+    this.DashboardStore.activeDashboard$;
+  @Input() isCreatorMode: boolean = false;
   ngOnInit(): void {}
+
+  openDialog(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.hasBackdrop = true;
+    dialogConfig.position = {
+      top: '5vh',
+      left: '40vw',
+    };
+    dialogConfig.width = '600px';
+    dialogConfig.height = '800px';
+    dialogConfig.panelClass = 'config-dialog';
+    const dialogRef = this.modal.open(PageConfigTopBarComponent, dialogConfig);
+  }
 }

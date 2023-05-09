@@ -18,11 +18,11 @@
       class="bootstrap m-auto"
       columnMode="force"
       rowHeight="auto"
-      [treeFromRelation]="'costCenterMeterRef.val'"
-      [treeToRelation]="'id.val'"
       [columns]="tableColumns"
       [rows]="tableRows"
       [rowClass]="rowColors"
+      [treeFromRelation]="'costCenterMeterRef.val'"
+      [treeToRelation]="'id.val'"
       (treeAction)="onTreeAction($event)"
     >
     </ngx-datatable>
@@ -32,7 +32,7 @@
 <ng-template let-row="row" let-value="value" let-column="column" #display>
   <span *ngIf="column.prop != 'id'">{{ formatValue(value) }}</span>
   <span
-    *ngIf="column.prop == 'id'"
+    *ngIf="column.prop == 'navName'"
     [ngStyle]="templateLogic(row).rowIndentation"
   >
     {{ formatValue(value) }}

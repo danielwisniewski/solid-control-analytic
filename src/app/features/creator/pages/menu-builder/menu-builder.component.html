@@ -1,0 +1,411 @@
+<div class="content">
+  <div
+    class="sidebar m-auto"
+    data="primary"
+    style="position: relative; margin: auto; top: 2rem; width: 80vw"
+  >
+    <div class="sidebar-wrapper">
+      <ul class="nav" cdkDropList (cdkDropListDropped)="drop($event)">
+        <li *ngFor="let menuitem of menuItems | async; let i = index" cdkDrag>
+          <!--If is a single link-->
+          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+          <a *ngIf="menuitem.type === 'link'" class="link">
+            <i class="{{ menuitem.icontype }}"></i>
+            <div class="d-flex w-100">
+              <div class="input-addon mr-2">
+                <input
+                  type="text"
+                  [(ngModel)]="menuitem.title"
+                  class="input-addon__input"
+                />
+                <div class="input-addon__addon input-addon__addon--appended">
+                  Nazwa
+                </div>
+              </div>
+              <div class="input-addon mr-2">
+                <input
+                  type="text"
+                  [(ngModel)]="menuitem.icontype"
+                  class="input-addon__input"
+                  width="20wv"
+                />
+                <div class="input-addon__addon input-addon__addon--appended">
+                  Ikona
+                </div>
+              </div>
+              <div class="input-addon">
+                <input
+                  type="text"
+                  [(ngModel)]="menuitem.path"
+                  class="input-addon__input"
+                />
+                <div class="input-addon__addon input-addon__addon--appended">
+                  Link
+                </div>
+              </div>
+              <button
+                class="btn btn-sm btn-danger ml-2"
+                (click)="deleteElement(i, undefined, undefined)"
+              >
+                Usuń
+              </button>
+              <button
+                class="btn btn-sm ml-2"
+                [class]="
+                  hasDashboard(menuitem.path)! > 0
+                    ? 'btn-primary'
+                    : 'btn-warning'
+                "
+              >
+                {{ hasDashboard(menuitem.path) }}
+              </button>
+              <button
+                class="btn btn-sm ml-2 btn-success"
+                (click)="onAddDashboard(menuitem)"
+                *ngIf="!hasDashboard(menuitem.path)"
+              >
+                +
+              </button>
+              <div class="col-auto d-flex align-items-center flex-column">
+                <label class="" for="inlineFormInput">Widoczne</label>
+                <label class="switch switch--on">
+                  <input
+                    type="checkbox"
+                    class="switch__input"
+                    [(ngModel)]="menuitem.visible"
+                  />
+
+                  <!-- Circle -->
+                  <div class="switch__circle"></div>
+                </label>
+              </div>
+            </div>
+          </a>
+          <!--If it have a submenu-->
+          <a
+            data-toggle="collapse"
+            *ngIf="menuitem.type === 'sub'"
+            (click)="menuitem.isCollapsed = !menuitem.isCollapsed"
+            [attr.aria-expanded]="!menuitem.isCollapsed"
+            [attr.aria-controls]="menuitem.collapse"
+          >
+            <i class="{{ menuitem.icontype }}"></i>
+            <div class="d-flex w-100">
+              <div class="input-addon mr-2">
+                <input
+                  type="text"
+                  [(ngModel)]="menuitem.title"
+                  class="input-addon__input"
+                />
+                <div class="input-addon__addon input-addon__addon--appended">
+                  Nazwa
+                </div>
+              </div>
+              <div class="input-addon mr-2">
+                <input
+                  type="text"
+                  [(ngModel)]="menuitem.icontype"
+                  class="input-addon__input"
+                  width="20wv"
+                />
+                <div class="input-addon__addon input-addon__addon--appended">
+                  Ikona
+                </div>
+              </div>
+              <div class="input-addon">
+                <input
+                  type="text"
+                  [(ngModel)]="menuitem.path"
+                  class="input-addon__input"
+                />
+                <div class="input-addon__addon input-addon__addon--appended">
+                  Link
+                </div>
+              </div>
+              <button
+                class="btn btn-sm btn-danger ml-2"
+                (click)="deleteElement(i, undefined, undefined)"
+              >
+                Usuń
+              </button>
+              <div class="col-auto d-flex align-items-center flex-column">
+                <label class="" for="inlineFormInput">Widoczne</label>
+                <label class="switch switch--on">
+                  <input
+                    type="checkbox"
+                    class="switch__input"
+                    [(ngModel)]="menuitem.visible"
+                  />
+
+                  <!-- Circle -->
+                  <div class="switch__circle"></div>
+                </label>
+              </div>
+            </div>
+            <p><b class="caret"></b></p>
+          </a>
+          <!--Display the submenu items-->
+          <div
+            id="{{ menuitem.collapse }}"
+            class="collapse"
+            *ngIf="menuitem.type === 'sub'"
+            [collapse]="menuitem.isCollapsed!"
+            [isAnimated]="true"
+          >
+            <ul
+              class="nav"
+              cdkDropList
+              (cdkDropListDropped)="dropSubmenu($event, menuitem.children!)"
+            >
+              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+              <li
+                *ngFor="let childitems of menuitem.children; let j = index"
+                cdkDrag
+                style="margin-left: 5rem"
+              >
+                <!--If is a single link-->
+                <a *ngIf="childitems.type === 'link'">
+                  <div class="d-flex w-100">
+                    <div class="input-addon mr-2">
+                      <input
+                        type="text"
+                        [(ngModel)]="childitems.title"
+                        class="input-addon__input"
+                      />
+                      <div
+                        class="input-addon__addon input-addon__addon--appended"
+                      >
+                        Nazwa
+                      </div>
+                    </div>
+                    <div class="input-addon mr-2">
+                      <input
+                        type="text"
+                        [(ngModel)]="childitems.smallTitle"
+                        class="input-addon__input"
+                        width="20wv"
+                      />
+                      <div
+                        class="input-addon__addon input-addon__addon--appended"
+                      >
+                        Skrót
+                      </div>
+                    </div>
+                    <div class="input-addon">
+                      <input
+                        type="text"
+                        [(ngModel)]="childitems.path"
+                        class="input-addon__input"
+                      />
+                      <div
+                        class="input-addon__addon input-addon__addon--appended"
+                      >
+                        Link
+                      </div>
+                    </div>
+                    <button
+                      class="btn btn-sm btn-danger ml-2"
+                      (click)="deleteElement(i, j, undefined)"
+                    >
+                      Usuń
+                    </button>
+                    <button
+                      class="btn btn-sm ml-2"
+                      [class]="
+                        hasDashboard(childitems.path)! > 0
+                          ? 'btn-primary'
+                          : 'btn-warning'
+                      "
+                    >
+                      {{ hasDashboard(childitems.path) }}
+                    </button>
+                    <button
+                      class="btn btn-sm ml-2 btn-success"
+                      (click)="onAddDashboard(childitems)"
+                      *ngIf="!hasDashboard(childitems.path)"
+                    >
+                      +
+                    </button>
+                    <div class="col-auto d-flex align-items-center flex-column">
+                      <label class="" for="inlineFormInput">Widoczne</label>
+                      <label class="switch switch--on">
+                        <input
+                          type="checkbox"
+                          class="switch__input"
+                          [(ngModel)]="childitems.visible"
+                        />
+
+                        <!-- Circle -->
+                        <div class="switch__circle"></div>
+                      </label>
+                    </div>
+                  </div>
+                </a>
+
+                <!--If it have a submenu-->
+                <a
+                  data-toggle="collapse"
+                  (click)="childitems.isCollapsed = !childitems.isCollapsed"
+                  [attr.aria-expanded]="!childitems.isCollapsed"
+                  [attr.aria-controls]="childitems.collapse"
+                  *ngIf="childitems.type === 'sub'"
+                >
+                  <span class="sidebar-normal">
+                    <div class="d-flex w-100">
+                      <div class="input-addon mr-2">
+                        <input
+                          type="text"
+                          [(ngModel)]="childitems.title"
+                          class="input-addon__input"
+                        />
+                        <div
+                          class="input-addon__addon input-addon__addon--appended"
+                        >
+                          Nazwa
+                        </div>
+                      </div>
+                      <div class="input-addon mr-2">
+                        <input
+                          type="text"
+                          [(ngModel)]="childitems.smallTitle"
+                          class="input-addon__input"
+                          width="20wv"
+                        />
+                        <div
+                          class="input-addon__addon input-addon__addon--appended"
+                        >
+                          Skrót
+                        </div>
+                      </div>
+                      <div class="input-addon">
+                        <input
+                          type="text"
+                          [(ngModel)]="childitems.path"
+                          class="input-addon__input"
+                        />
+                        <div
+                          class="input-addon__addon input-addon__addon--appended"
+                        >
+                          Link
+                        </div>
+                      </div>
+                      <button
+                        class="btn btn-sm btn-danger ml-2"
+                        (click)="deleteElement(i, j, undefined)"
+                      >
+                        Usuń
+                      </button>
+                    </div>
+                    <b class="caret" style="right: -35px"></b
+                  ></span>
+                </a>
+                <!--Display the submenu items-->
+                <div
+                  id="{{ childitems.collapse }}"
+                  class="collapse"
+                  *ngIf="childitems.type === 'sub'"
+                  [collapse]="childitems.isCollapsed!"
+                  [isAnimated]="true"
+                >
+                  <ul class="nav">
+                    <li
+                      *ngFor="
+                        let childitem of childitems.children;
+                        let k = index
+                      "
+                      style="margin-left: 2rem"
+                    >
+                      <a>
+                        <div class="d-flex w-100">
+                          <div class="input-addon mr-2">
+                            <input
+                              type="text"
+                              [(ngModel)]="childitems.title"
+                              class="input-addon__input"
+                            />
+                            <div
+                              class="input-addon__addon input-addon__addon--appended"
+                            >
+                              Nazwa
+                            </div>
+                          </div>
+                          <div class="input-addon mr-2">
+                            <input
+                              type="text"
+                              [(ngModel)]="childitems.smallTitle"
+                              class="input-addon__input"
+                              width="20wv"
+                            />
+                            <div
+                              class="input-addon__addon input-addon__addon--appended"
+                            >
+                              Skrót
+                            </div>
+                          </div>
+                          <div class="input-addon">
+                            <input
+                              type="text"
+                              [(ngModel)]="childitems.path"
+                              class="input-addon__input"
+                            />
+                            <div
+                              class="input-addon__addon input-addon__addon--appended"
+                            >
+                              Link
+                            </div>
+                          </div>
+                          <button
+                            class="btn btn-sm btn-danger ml-2"
+                            (click)="deleteElement(i, j, k)"
+                          >
+                            Usuń
+                          </button>
+                        </div>
+                      </a>
+                    </li>
+                    <button
+                      class="btn btn-danger btn-sm"
+                      (click)="onAddChildChildLink(i, j)"
+                    >
+                      Dodaj link
+                    </button>
+                  </ul>
+                </div>
+              </li>
+
+              <div class="col-12 text-center">
+                <button
+                  class="btn btn-warning btn-sm"
+                  (click)="onAddChildLink(i)"
+                >
+                  Dodaj link
+                </button>
+                <button
+                  class="btn btn-warning btn-sm"
+                  (click)="onAddChildSubmenu(i)"
+                >
+                  Dodaj menu rozwijane
+                </button>
+              </div>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-12">
+      <div class="row">
+        <div class="col-6 text-center">
+          <button class="btn btn-primary" (click)="onSave()">Zapisz</button>
+        </div>
+        <div class="col-6 text-center">
+          <button class="btn btn-warning" (click)="onAddLink()">
+            Dodaj link
+          </button>
+          <button class="btn btn-warning" (click)="onAddSubmenu()">
+            Dodaj menu rozwijane
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
