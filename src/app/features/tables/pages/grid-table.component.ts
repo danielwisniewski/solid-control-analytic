@@ -26,17 +26,16 @@ export class GridTableComponent implements AfterViewInit, AfterContentChecked {
     this.isLoading = !value;
     if (!!value) this.loadedData = value;
 
-    this.treeFromRelation =
-      value?.meta.get('treeFromRelation')?.toString() ?? '';
-    this.treeToRelation = value?.meta.get('treeToRelation')?.toString() ?? '';
+    const isExpandable = !!value?.meta.get<HBool>('isDropdown')?.value;
+
+    this.treeFromRelation = isExpandable
+      ? value?.meta.get('treeFromRelation')?.toString() ?? ''
+      : '';
+    this.treeToRelation = isExpandable
+      ? value?.meta.get('treeToRelation')?.toString() ?? ''
+      : '';
 
     this.TableGenerator.updateConfig(value, this.templatesObj);
-
-    this.title = !!value?.meta.get<HBool>('showTitle')?.value
-      ? value?.meta.get('title')?.toString() ?? 'Raport'
-      : ' ';
-    if (value?.meta.get<HBool>('showDownloadButton')?.value === false)
-      this.showDownloadButton = false;
   }
   @Input() height: string = '40';
   @Output() onDownload = new EventEmitter();
@@ -58,8 +57,6 @@ export class GridTableComponent implements AfterViewInit, AfterContentChecked {
 
   loadedData: HGrid | undefined;
 
-  title: string = this.data?.meta.get('title')?.toString() ?? 'Raport';
-  showDownloadButton: boolean = true;
   isLoading: boolean = true;
 
   TableGenerator: GridTableGenerator = new GridTableGenerator(

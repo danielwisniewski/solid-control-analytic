@@ -114,7 +114,7 @@ export class GridTableGenerator {
         ?.meta.get('columnType')
         ?.toString();
 
-      const filterHeader = grid
+      const filterHeader = !!grid
         .getColumn(index)
         ?.meta.get<HBool>('filterHeader')?.value;
 

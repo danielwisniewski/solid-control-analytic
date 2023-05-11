@@ -45,7 +45,6 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
   }
 
   changeMeta(columnName: string, metaName: string, val: any) {
-    console.log(val);
     const value =
       typeof val === 'boolean' || typeof val === 'string'
         ? val
@@ -71,10 +70,8 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
         },
       };
 
-      //console.log(this.pageConfig?.layout.tiles[tileIndex].columnsMeta);
       this.store.activeTile$.next(this.data.tile.tile);
       this.store.activeDashboard$.next(this.pageConfig);
-      console.log(this.pageConfig.layout.tiles[tileIndex].columnsMeta);
     }
   }
 

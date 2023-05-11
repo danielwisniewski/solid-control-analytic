@@ -15,6 +15,7 @@ import {
   map,
   merge,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -57,12 +58,41 @@ export class DashboardTileComponent implements OnInit {
     this.tileParameters$,
     this.dashboardStore.pageVariables$,
   ]).pipe(
+    filter(([res, params, vars]) => {
+      const dashboardVariables = res?.variables;
+      for (const key in vars) {
+        const varName = key.replace('var-', '');
+        if (dashboardVariables?.some((r) => r.name == varName)) continue;
+        else return false;
+      }
+      return true;
+    }),
     // Wait for rollup params
-    filter(
-      ([res, params]) =>
-        (!!this.tile?.hasRollupSelector && !!params.rollup) ||
+    filter(([res, params, vars]) => {
+      if (
+        !!this.tile?.hasRollupSelector &&
+        !!params.rollup &&
+        !res?.variables?.length &&
+        !vars
+      )
+        return true;
+      else if (
+        !!this.tile?.hasRollupSelector &&
+        !!params.rollup &&
+        !!res?.variables?.length &&
+        !!vars
+      )
+        return true;
+      else if (
+        !!res?.variables?.length &&
+        !!vars &&
         !this.tile?.hasRollupSelector
-    ),
+      )
+        return true;
+      else if (!res?.variables?.length && !this.tile?.hasRollupSelector)
+        return true;
+      else return false;
+    }),
     filter(() => !!this.tile),
     distinctUntilChanged(),
     switchMap(() => {
@@ -78,8 +108,6 @@ export class DashboardTileComponent implements OnInit {
       if (!!res && this.tile?.meta) {
         const meta = this.tile?.meta as any;
         res.meta.update(meta);
-
-        console.log(this.tile.columnsMeta);
       }
       if (!!res && this.tile?.columnsMeta) {
         for (const key in this.tile?.columnsMeta) {
@@ -91,7 +119,8 @@ export class DashboardTileComponent implements OnInit {
       }
       this.tileData = res;
       return this.tileData?.newCopy();
-    })
+    }),
+    shareReplay(1)
   );
 
   dataUpdatedByCreatorModule$ = combineLatest([
@@ -124,10 +153,7 @@ export class DashboardTileComponent implements OnInit {
   tileData$ = merge(
     this.dataUpdatedByPageChange$,
     this.dataUpdatedByCreatorModule$
-  ).pipe(
-    distinctUntilChanged()
-    //tap((res) => console.log(res))
-  );
+  ).pipe(distinctUntilChanged());
 
   onRollupChange(event: any) {
     this.tileParameters$.next({

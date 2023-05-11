@@ -73,4 +73,8 @@ export class TimerangeStore {
     this.activeTimerange$.next(dates);
     localStorage.setItem('activeTimerange', dates);
   }
+
+  getActiveTimerange(): string {
+    return this.activeTimerange$.getValue();
+  }
 }

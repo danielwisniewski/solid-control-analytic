@@ -8,10 +8,9 @@ import {
   combineLatest,
   filter,
   map,
-  shareReplay,
   tap,
 } from 'rxjs';
-import { PageConfig, PageVariable } from '../interfaces/dashboard.interface';
+import { PageConfig } from '../interfaces/dashboard.interface';
 import { defaultRollups } from '../constants/dashboard.constants';
 
 @Injectable({

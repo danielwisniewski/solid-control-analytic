@@ -73,6 +73,7 @@ export class ChartGenerationService {
       plugins: {
         tooltip: generateTooltip(reqResponse).plugins?.tooltip,
         title: generateTitle(reqResponse).plugins?.title,
+        subtitle: generateTitle(reqResponse).plugins?.subtitle,
         legend: generateLegend(reqResponse).plugins?.legend,
         datalabels: generateDataLabels(reqResponse).plugins?.datalabels,
       },

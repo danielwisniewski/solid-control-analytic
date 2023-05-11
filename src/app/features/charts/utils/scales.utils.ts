@@ -8,7 +8,6 @@ export function generateScales(reqResponse: HGrid): ChartOptions {
   if (reqResponse.isEmpty()) return pieScales(reqResponse);
 
   const chartType = getChartType(reqResponse);
-
   if (chartType === 'bar' || chartType === 'line')
     return timeseriesScales(reqResponse);
   else if (chartType === 'ranking') return rankingScales(reqResponse);
@@ -63,10 +62,12 @@ function rankingScales(reqResponse: HGrid): ChartOptions {
           display: true,
         },
         ticks: {
-          padding: 10,
+          padding: 20,
+          align: 'center',
           display: true,
-          color: TEXT_COLOR,
+          autoSkip: true,
         },
+        position: 'left',
       },
       x: {
         type: 'linear',

@@ -1,6 +1,5 @@
 import { ChartOptions } from 'chart.js';
 import { HBool, HGrid, HStr } from 'haystack-core';
-import { TEXT_COLOR } from './chart-utils';
 
 export function generateTitle(reqResponse: HGrid): ChartOptions {
   if (reqResponse.isEmpty()) {
@@ -12,8 +11,18 @@ export function generateTitle(reqResponse: HGrid): ChartOptions {
             ? reqResponse.meta.get('noDataTitle')?.toString()
             : 'Nie znaleziono danych',
           font: {
-            size: 14,
+            size: 17,
           },
+        },
+        subtitle: {
+          display: true,
+          text: !!reqResponse.meta.get('noDataSubtitle')
+            ? reqResponse.meta.get('noDataSubtitle')?.toString().split('/n')
+            : 'Spróbuj wybrać inne urządzenie lub czasookres',
+          font: {
+            size: 15,
+          },
+          padding: 15,
         },
       },
     };

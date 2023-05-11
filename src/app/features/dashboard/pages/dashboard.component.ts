@@ -4,7 +4,13 @@ import {
   Component,
   OnDestroy,
 } from '@angular/core';
-import { Observable, Subscription, tap } from 'rxjs';
+import {
+  Observable,
+  Subscription,
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
+  tap,
+} from 'rxjs';
 import { PageConfig, Tile } from '../interfaces/dashboard.interface';
 import { DashboardStore } from '../store/dashboard.store';
 import { ActivatedRoute } from '@angular/router';
@@ -34,7 +40,7 @@ export class DashboardComponent implements OnDestroy {
   isCreatorMode: boolean = false;
 
   pageConfig$: Observable<PageConfig | undefined> =
-    this.DashboardStore.dashboardConfig$;
+    this.DashboardStore.dashboardConfig$.pipe(tap((res) => console.log(res)));
 
   trackBy(index: number, item: Tile) {
     return item.tile;

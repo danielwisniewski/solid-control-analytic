@@ -57,6 +57,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: false,
             },
+            columnsMeta: {},
           },
           {
             tile: 2,
@@ -83,6 +84,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: true,
             },
+            columnsMeta: {},
           },
           {
             tile: 3,
@@ -109,6 +111,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: false,
             },
+            columnsMeta: {},
           },
           {
             tile: 4,
@@ -135,6 +138,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: false,
             },
+            columnsMeta: {},
           },
         ],
       },
@@ -178,7 +182,7 @@ export class CreatePageService {
   }
 
   generateSkysparkFunction(pageConfig: PageConfig) {
-    const src = `(tile, date, site, params: {}) => do
+    const src = `(tile, date, site, parameters: {}) => do
 
     data: readAll(energy and equipRef->elec and siteRef->id == site->id)
       .hisRead(date)
@@ -188,11 +192,11 @@ export class CreatePageService {
     rollup = rollup.parseNumber;
 
     if (tile == 1) do
-      return data.hisRollup(sum, "*").hisMap(v => v).removeCol("ts").toGrid()
+      return data.hisRollup(sum, "*").hisMap(v => v).removeCol("ts")
     end
 
     if (tile == 2) do
-      return data.hisRollup(sum, rollup).hisInterpolate.toGrid()
+      return data.hisRollup(sum, rollup).hisInterpolate
     end
 
     if (tile == 3) do

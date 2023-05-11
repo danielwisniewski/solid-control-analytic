@@ -66,7 +66,7 @@ export class MenuBuilderComponent implements OnInit, OnDestroy {
 
   onAddLink() {
     const newRoute: RouteInfo = {
-      path: 'dashboard/new',
+      path: '/dashboard/new',
       icontype: 'tim-icons icon-chart-bar-32',
       title: 'Nazwa',
       type: 'link',
@@ -77,12 +77,12 @@ export class MenuBuilderComponent implements OnInit, OnDestroy {
 
   onAddSubmenu() {
     const newRoute: RouteInfo = {
-      path: 'dashboard',
+      path: '/dashboard',
       icontype: 'tim-icons icon-chart-bar-32',
       title: 'Nazwa',
       visible: true,
       type: 'sub',
-      isCollapsed: true,
+      isCollapsed: false,
       children: [
         {
           path: 'new',
@@ -119,7 +119,7 @@ export class MenuBuilderComponent implements OnInit, OnDestroy {
       visible: true,
       type: 'sub',
       smallTitle: 'N',
-      isCollapsed: true,
+      isCollapsed: false,
       children: [
         {
           path: 'new',

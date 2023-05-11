@@ -3,12 +3,20 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   Input,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { PageVariable } from '../../../interfaces/dashboard.interface';
-import { HDict, HGrid, HaysonGrid } from 'haystack-core';
+import { HDict } from 'haystack-core';
 import { DashboardStore } from '../../../store/dashboard.store';
 import { DashboardService } from '../../../services/dashboard.service';
-import { Subscription, map, tap } from 'rxjs';
+import {
+  Subscription,
+  distinctUntilKeyChanged,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { SiteStore } from 'src/app/core/store/site.store';
 
 @Component({
   selector: 'app-dashboard-variable-dropdown',
@@ -22,24 +30,44 @@ export class DashboardVariableDropdownComponent implements OnInit {
   activeOption: { dis: string; val: string } | undefined;
   constructor(
     private store: DashboardStore,
-    private pageService: DashboardService
+    private pageService: DashboardService,
+    private siteStore: SiteStore,
+    private cdr: ChangeDetectorRef
   ) {}
   sub: Subscription | undefined;
   options: { dis: string; val: any }[] | undefined;
   ngOnInit(): void {
     if (this.variable?.type === 'query') {
-      this.sub = this.pageService
-        .getData(0)
+      this.sub = this.siteStore.activeSite$
         .pipe(
+          map((res) => res?.toJSON()),
+          distinctUntilKeyChanged('dis' as never),
+          tap(() => {
+            this.store.pageVariables$.next(undefined);
+          }),
+          switchMap(() => {
+            return this.pageService.getData(0);
+          }),
           map((res) => res?.getRows().toHayson()),
           tap((res) => {
             this.options = res as any;
+            if (!!this.options) {
+              this.activeOption = this.options[0];
+              this.store.pageVariables$.next({
+                [`var-${this.variable?.name}`]: this.activeOption?.val,
+              });
+            }
+            this.cdr.detectChanges();
           })
         )
+
         .subscribe();
     } else if (this.variable?.type === 'values') {
       this.options = this.variable.options;
       this.activeOption = this.variable?.options[0];
+      this.store.pageVariables$.next({
+        [`var-${this.variable?.name}`]: this.activeOption?.val,
+      });
     }
   }
 
@@ -52,5 +80,6 @@ export class DashboardVariableDropdownComponent implements OnInit {
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.store.pageVariables$.next(undefined);
   }
 }

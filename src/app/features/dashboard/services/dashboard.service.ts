@@ -23,7 +23,7 @@ export class DashboardService {
     parameters: any = {},
     isExport: boolean = false
   ): Observable<HGrid | undefined> {
-    const timerange = this.TimerangeStore.activeTimerange$.getValue();
+    const timerange = this.TimerangeStore.getActiveTimerange();
     let skysparkFunc =
       this.DashboardStore.activeDashboard$.getValue()?.skysparkFunc;
 

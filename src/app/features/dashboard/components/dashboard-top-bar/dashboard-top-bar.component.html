@@ -16,15 +16,12 @@
     <app-dashboard-variable-dropdown [variable]="variable">
     </app-dashboard-variable-dropdown>
   </div>
-  <div style="flex-grow: 1" *ngIf="!!(pageConfig | async)?.showSiteSelector">
+  <div *ngIf="!!(pageConfig | async)?.showSiteSelector">
     <app-site-dropdown-button
       [showPortfolioOption]="false"
     ></app-site-dropdown-button>
   </div>
-  <div
-    style="flex-grow: 1"
-    *ngIf="!!(pageConfig | async)?.showTimerangeSelector"
-  >
+  <div *ngIf="!!(pageConfig | async)?.showTimerangeSelector">
     <app-timerange-dropdown
       [type]="(pageConfig | async)?.datepicker?.type ?? 'range'"
     ></app-timerange-dropdown>

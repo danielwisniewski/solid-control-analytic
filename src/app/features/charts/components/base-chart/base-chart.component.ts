@@ -29,13 +29,14 @@ export class BaseChartComponent implements OnChanges {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   ngOnChanges(change: SimpleChanges): void {
-    this.chartConfig = change['chartConfiguration'].currentValue;
-    if (!!change['chartConfiguration'].currentValue) {
+    this.chartConfig = change['chartConfiguration']?.currentValue;
+    if (!!change['chartConfiguration']?.currentValue) {
       if (this.chart) {
         this.chartConfig = this.chartGenService.generateChart(
           change['chartConfiguration'].currentValue
         );
         this.chart.update();
+        this.chart.render();
       } else {
         this.chartConfig = this.chartGenService.generateChart(
           change['chartConfiguration'].currentValue

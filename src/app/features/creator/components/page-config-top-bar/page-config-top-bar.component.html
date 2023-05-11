@@ -12,8 +12,23 @@
     <path d="M0 0h24v24H0z" fill="none"></path>
   </svg>
 </h2>
-
 <mat-dialog-content style="height: calc(100% - 96px)">
+  <mat-accordion>
+    <mat-expansion-panel class="bg-dark mt-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Skyspark</mat-panel-title>
+        <mat-panel-description>Konfiguracja Skyspark</mat-panel-description>
+      </mat-expansion-panel-header>
+      <mat-form-field appearance="fill" class="w-100 mt-3 mb-3">
+        <input
+          matInput
+          [(ngModel)]="pageConfig!.skysparkFunc"
+          (ngModelChange)="change()"
+        />
+        <mat-hint>Nazwa funkcji w Skyspark</mat-hint>
+      </mat-form-field>
+    </mat-expansion-panel>
+  </mat-accordion>
   <mat-accordion *ngIf="!!pageConfig">
     <!-- ----------- USTAWIENIA ROZMIARU STRONY ----------- -->
     <mat-expansion-panel class="bg-dark mt-2">
@@ -59,14 +74,6 @@
           (ngModelChange)="change()"
         />
         <mat-hint>Tytuł strony</mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="fill" class="w-100 mt-3 mb-3">
-        <input
-          matInput
-          [(ngModel)]="pageConfig.skysparkFunc"
-          (ngModelChange)="change()"
-        />
-        <mat-hint>Nazwa funkcji w Skyspark</mat-hint>
       </mat-form-field>
       <section class="mt-3 w-25 d-inline">
         <mat-checkbox
@@ -214,10 +221,7 @@
   </mat-accordion>
 </mat-dialog-content>
 <mat-dialog-actions class="sticky-bottom">
-  <div
-    class="form-row align-items-center justify-content-between w-100"
-    *ngIf="!!pageConfig && !!pageConfig.layout"
-  >
+  <div class="form-row align-items-center justify-content-between w-100">
     <button type="button" class="btn btn-primary" (click)="onSave()">
       Zapisz
     </button>

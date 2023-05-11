@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
 import { RouteInfo } from '../components/sidebar/sidebar.component';
 import { RequestReadService } from '../services/requests/read/request-read.service';
-import { BehaviorSubject, filter, retry, switchMap, take, tap } from 'rxjs';
-import { HGrid, HaysonGrid } from 'haystack-core';
+import {
+  BehaviorSubject,
+  filter,
+  iif,
+  map,
+  retry,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
+import { HGrid, HStr, HaysonGrid } from 'haystack-core';
 
 import { SiteStore } from './site.store';
 import { AppConfig } from '../interfaces/AppConfig.interface';
@@ -27,9 +36,8 @@ export class AppStore {
         filter((res) => !!res && !!res.rows),
         retry(3),
         take(1),
-        tap((res: HaysonGrid) => {
-          const GRID = HGrid.make(res);
-
+        map((res: HaysonGrid) => HGrid.make(res)),
+        tap((GRID: HGrid) => {
           if (!GRID.first) return;
 
           if (GRID.first.has('sites'))
@@ -57,4 +65,6 @@ export class AppStore {
   sidebarRoutes$ = new BehaviorSubject<RouteInfo[]>([]);
 
   $route = new BehaviorSubject<string>('');
+
+  bootstrapFunctions() {}
 }

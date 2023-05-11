@@ -54,6 +54,8 @@ export interface PageTileMeta extends ChartMeta, TableMeta {
   noDataSubtitle?: string;
   hasDownloadButton?: boolean;
   pivotAllowed?: boolean;
+  customLabelTextActive?: boolean;
+  customLabelText?: 'equipRef' | 'siteRef';
 }
 
 interface TableMeta {

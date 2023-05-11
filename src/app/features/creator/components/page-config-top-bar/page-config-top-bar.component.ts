@@ -81,6 +81,7 @@ export class PageConfigTopBarComponent implements OnInit, OnDestroy {
         pivotAllowed: true,
         stacked: false,
       },
+      columnsMeta: {},
     };
     this.pageConfig.layout.tiles.push(newPanel);
     this.change();

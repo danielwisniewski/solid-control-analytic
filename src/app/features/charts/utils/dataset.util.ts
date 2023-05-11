@@ -194,9 +194,14 @@ function generateColors(index: number, colors: string[]) {
 export function generateLabelName(reqResponse: HGrid, i: number): string {
   let label: string = '';
   const column = reqResponse.getColumn(i);
+
   label = column?.meta?.toDis() ?? label;
-  if (label.startsWith('v'))
-    label = column?.meta?.get<HRef>('equipRef')?.dis ?? label;
+
+  const customLabelTextActive = !!reqResponse.meta.get('customLabelTextActive');
+  const customLabelText = reqResponse.meta.get('customLabelText') ?? 'equipRef';
+
+  if (label.startsWith('v') || label == '' || customLabelTextActive)
+    label = column?.meta?.get<HRef>(customLabelText as any)?.dis ?? label;
 
   if (label.startsWith('ui::time')) label = 'Czas';
 
