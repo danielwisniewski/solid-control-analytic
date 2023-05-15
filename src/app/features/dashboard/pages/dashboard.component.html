@@ -17,6 +17,7 @@
     >
       <app-dashboard-tile
         [tile]="tile"
+        [tileId]="tile.tile"
         [height]="((pageConfig$ | async)?.layout?.rowHeight ?? 10) * tile.rows"
         [isCreatorMode]="isCreatorMode"
       >

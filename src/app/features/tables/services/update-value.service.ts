@@ -4,7 +4,6 @@ import { catchError, finalize, take, tap } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { ToastrPopupService } from 'src/app/core/services/toastr-popup.service';
 import swal from 'sweetalert2';
-import { SiteStore } from 'src/app/core/store/site.store';
 import { DashboardStore } from '../../dashboard/store/dashboard.store';
 import { queryToZinc } from 'src/app/core/functions/utils';
 
@@ -15,8 +14,7 @@ export class UpdateValueService {
   constructor(
     private req: RequestReadService,
     private message: ToastrPopupService,
-    private SiteStore: SiteStore,
-    private DashboardStore: DashboardStore
+    private dashboardStore: DashboardStore
   ) {}
 
   updateValue(id: string, prop: string, value: string, type = 'string') {
@@ -70,9 +68,7 @@ export class UpdateValueService {
       .pipe(
         take(1),
         finalize(() => {
-          this.SiteStore.activeSite$.next(
-            this.SiteStore.activeSite$.getValue()
-          );
+          this.dashboardStore.triggerDataUpdate$.next(true);
         })
       )
       .subscribe(() => {
@@ -96,10 +92,10 @@ export class UpdateValueService {
   ) {
     let parameters = {};
 
-    if (!!this.DashboardStore.detailsPageId$.getValue()) {
+    if (!!this.dashboardStore.detailsPageId$.getValue()) {
       parameters = {
         ...parameters,
-        detailPageId: this.DashboardStore.detailsPageId$.getValue(),
+        detailPageId: this.dashboardStore.detailsPageId$.getValue(),
       };
     }
 
@@ -132,9 +128,7 @@ export class UpdateValueService {
           return err;
         }),
         finalize(() => {
-          this.SiteStore.activeSite$.next(
-            this.SiteStore.activeSite$.getValue()
-          );
+          this.dashboardStore.triggerDataUpdate$.next(true);
         })
       )
       .subscribe((res: any) => {

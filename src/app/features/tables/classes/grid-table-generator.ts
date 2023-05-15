@@ -96,6 +96,7 @@ export class GridTableGenerator {
     const columns: TableColumn[] = [];
     this.filterColumnCounter = 0;
     for (let index = 0; index < this.gridColumns?.length; index++) {
+      //console.log(grid.getColumn(index));
       if (
         !!grid.meta.get<HBool>('filterColumns')?.value &&
         !grid.getColumn(index)?.meta.get<HBool>('visible')?.value
@@ -105,7 +106,7 @@ export class GridTableGenerator {
       const name = this.pivotRequired
         ? this.pivotColumnsNames[index].get('name')?.toString()
         : generateLabelName(grid, index);
-      const prop = this.pivotRequired
+      let prop = this.pivotRequired
         ? this.pivotColumnsNames[index].get('prop')?.toString()
         : grid.getColumnNames()[index];
 

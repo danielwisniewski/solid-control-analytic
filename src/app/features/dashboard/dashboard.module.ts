@@ -14,7 +14,6 @@ import { ChartsModule } from '../charts/charts.module';
 import { CoreComponentsModule } from 'src/app/core/modules/core-components.module';
 import { TablesModule } from '../tables/tables.module';
 import { CreatorModule } from '../creator/creator.module';
-import { CreatorTileComponent } from '../creator/components/creator-tile/creator-tile.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @NgModule({
@@ -25,7 +24,6 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     DashboardTileComponent,
     ChartTableToggleComponent,
     DashboardVariableDropdownComponent,
-    CreatorTileComponent,
   ],
   imports: [
     CommonModule,
@@ -38,6 +36,5 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     MatGridListModule,
     BsDropdownModule,
   ],
-  entryComponents: [CreatorTileComponent],
 })
 export class DashboardModule {}

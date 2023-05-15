@@ -13,9 +13,7 @@
   </svg>
 </h2>
 <mat-dialog-content style="height: calc(100% - 96px)">
-  <ng-container
-    *ngIf="!!data.tile && !!data.tile.meta && !!data.tile.columnsMeta"
-  >
+  <ng-container *ngIf="!!data.tile && !!data.tile.meta">
     <mat-accordion>
       <!-- ----------- GŁÓWNE USTAWIENIA ----------- -->
       <mat-expansion-panel class="bg-dark mt-2">
@@ -403,7 +401,7 @@
       </mat-expansion-panel>
 
       <!-- ----------- KOLUMNY ----------- -->
-      <mat-expansion-panel class="bg-dark mt-2">
+      <mat-expansion-panel class="bg-dark mt-2" *ngIf="!!data.tile.columnsMeta">
         <mat-expansion-panel-header>
           <mat-panel-title>Kolumny</mat-panel-title>
           <mat-panel-description>Konfiguracja kolumn</mat-panel-description>
@@ -418,7 +416,9 @@
           <mat-form-field appearance="fill" class="w-100 mt-3">
             <input
               matInput
-              [value]="data.tile.columnsMeta[column.name]?.dis ?? ''"
+              [value]="
+                data.tile.columnsMeta[getIndex('dis', column.name)]?.dis ?? ''
+              "
               (change)="changeMeta(column.name, 'dis', $event)"
             />
             <mat-hint>Wpisz tytuł kolumny</mat-hint>
@@ -426,14 +426,20 @@
           <section class="mt-2">
             <p>
               <mat-checkbox
-                [checked]="data.tile.columnsMeta[column.name]?.visible"
+                [checked]="
+                  data.tile.columnsMeta[getIndex('visible', column.name)]
+                    ?.visible
+                "
                 (change)="changeMeta(column.name, 'visible', $event.checked)"
                 class="mr-2"
                 *ngIf="!!data.tile.meta.filterColumns"
                 >Widoczonść kolumny</mat-checkbox
               >
               <mat-checkbox
-                [checked]="data.tile.columnsMeta[column.name]?.filterHeader"
+                [checked]="
+                  data.tile.columnsMeta[getIndex('filterHeader', column.name)]
+                    ?.filterHeader
+                "
                 (change)="
                   changeMeta(column.name, 'filterHeader', $event.checked)
                 "
@@ -445,7 +451,10 @@
           <mat-form-field appearance="fill" class="mt-2 pr-2 w-100">
             <mat-label>Typ kolumny</mat-label>
             <mat-select
-              [value]="data.tile.columnsMeta[column.name]?.columnType"
+              [value]="
+                data.tile.columnsMeta[getIndex('columnType', column.name)]
+                  ?.columnType
+              "
               (selectionChange)="
                 changeMeta(column.name, 'columnType', $event.value)
               "
@@ -468,14 +477,18 @@
             appearance="fill"
             class="mt-2 pr-2 w-50"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.columnType ==
-                'deleteButton' ||
-              data.tile.columnsMeta[column.name]?.columnType == 'buttonAction'
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'deleteButton' ||
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'buttonAction'
             "
           >
             <mat-label>Typ przycisku</mat-label>
             <mat-select
-              [value]="data.tile.columnsMeta[column.name]?.buttonType"
+              [value]="
+                data.tile.columnsMeta[getIndex('buttonType', column.name)]
+                  ?.buttonType
+              "
               (selectionChange)="
                 changeMeta(column.name, 'buttonType', $event.value)
               "
@@ -488,14 +501,18 @@
             appearance="fill"
             class="mt-2 pr-2 w-50"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.columnType ==
-                'deleteButton' ||
-              data.tile.columnsMeta[column.name]?.columnType == 'buttonAction'
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'deleteButton' ||
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'buttonAction'
             "
           >
             <mat-label>Kolor przycisku</mat-label>
             <mat-select
-              [value]="data.tile.columnsMeta[column.name]?.buttonColor"
+              [value]="
+                data.tile.columnsMeta[getIndex('buttonColor', column.name)]
+                  ?.buttonColor
+              "
               (selectionChange)="
                 changeMeta(column.name, 'buttonColor', $event.value)
               "
@@ -515,14 +532,18 @@
             appearance="fill"
             class="mt-2 pr-2 w-100"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.columnType ==
-                'deleteButton' ||
-              data.tile.columnsMeta[column.name]?.columnType == 'buttonAction'
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'deleteButton' ||
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'buttonAction'
             "
           >
             <mat-label>Akcja wywoływana przez przycisk</mat-label>
             <mat-select
-              [value]="data.tile.columnsMeta[column.name]?.actionType"
+              [value]="
+                data.tile.columnsMeta[getIndex('actionType', column.name)]
+                  ?.actionType
+              "
               (selectionChange)="
                 changeMeta(column.name, 'actionType', $event.value)
               "
@@ -535,16 +556,16 @@
               <mat-option
                 value="details"
                 *ngIf="
-                  data.tile.columnsMeta[column.name]?.columnType ==
-                  'buttonAction'
+                  data.tile.columnsMeta[getIndex('columnType', column.name)]
+                    ?.columnType == 'buttonAction'
                 "
                 >Przejdź do strony szegółowej</mat-option
               >
               <mat-option
                 value="functionInput"
                 *ngIf="
-                  data.tile.columnsMeta[column.name]?.columnType ==
-                  'buttonAction'
+                  data.tile.columnsMeta[getIndex('columnType', column.name)]
+                    ?.columnType == 'buttonAction'
                 "
                 >Wywołaj funckję z podaniem wartości</mat-option
               >
@@ -554,16 +575,20 @@
             appearance="fill"
             class="w-100 mt-3"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.columnType ==
-                'deleteButton' ||
-              (data.tile.columnsMeta[column.name]?.columnType ==
-                'buttonAction' &&
-                data.tile.columnsMeta[column.name]?.buttonType == 'text')
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'deleteButton' ||
+              (data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'buttonAction' &&
+                data.tile.columnsMeta[getIndex('buttonType', column.name)]
+                  ?.buttonType == 'text')
             "
           >
             <input
               matInput
-              [value]="data.tile.columnsMeta[column.name]?.buttonText"
+              [value]="
+                data.tile.columnsMeta[getIndex('buttonText', column.name)]
+                  ?.buttonText
+              "
               (change)="changeMeta(column.name, 'buttonText', $event)"
             />
             <mat-hint>Tekst na przycisku</mat-hint>
@@ -572,16 +597,20 @@
             appearance="fill"
             class="w-100 mt-3"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.columnType ==
-                'deleteButton' ||
-              (data.tile.columnsMeta[column.name]?.columnType ==
-                'buttonAction' &&
-                data.tile.columnsMeta[column.name]?.buttonType == 'icon')
+              data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'deleteButton' ||
+              (data.tile.columnsMeta[getIndex('columnType', column.name)]
+                ?.columnType == 'buttonAction' &&
+                data.tile.columnsMeta[getIndex('buttonType', column.name)]
+                  ?.buttonType == 'icon')
             "
           >
             <input
               matInput
-              [value]="data.tile.columnsMeta[column.name]?.buttonIcon"
+              [value]="
+                data.tile.columnsMeta[getIndex('buttonIcon', column.name)]
+                  ?.buttonIcon
+              "
               (change)="changeMeta(column.name, 'buttonIcon', $event)"
             />
             <mat-hint>Ikona na przycisku</mat-hint>
@@ -590,13 +619,18 @@
             appearance="fill"
             class="w-100 mt-3"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.actionType == 'function' ||
-              data.tile.columnsMeta[column.name]?.actionType == 'functionInput'
+              data.tile.columnsMeta[getIndex('actionType', column.name)]
+                ?.actionType == 'function' ||
+              data.tile.columnsMeta[getIndex('actionType', column.name)]
+                ?.actionType == 'functionInput'
             "
           >
             <input
               matInput
-              [(ngModel)]="data.tile.columnsMeta[column.name].funcName"
+              [value]="
+                data.tile.columnsMeta[getIndex('funcName', column.name)]
+                  ?.funcName
+              "
               (change)="changeMeta(column.name, 'funcName', $event)"
             />
             <mat-hint>Nazwa wywoływanej funkcji</mat-hint>
@@ -604,11 +638,16 @@
           <mat-form-field
             appearance="fill"
             class="w-100 mt-3"
-            *ngIf="data.tile.columnsMeta[column.name]?.actionType == 'link'"
+            *ngIf="
+              data.tile.columnsMeta[getIndex('actionType', column.name)]
+                ?.actionType == 'link'
+            "
           >
             <input
               matInput
-              [value]="data.tile.columnsMeta[column.name]?.link"
+              [value]="
+                data.tile.columnsMeta[getIndex('link', column.name)]?.link
+              "
               (change)="changeMeta(column.name, 'link', $event)"
             />
             <mat-hint>Ścieżka, do której przeniesie link</mat-hint>
@@ -616,7 +655,8 @@
           <mat-expansion-panel
             class="mt-2 bg-dark"
             *ngIf="
-              data.tile.columnsMeta[column.name]?.actionType == 'functionInput'
+              data.tile.columnsMeta[getIndex('actionType', column.name)]
+                ?.actionType == 'functionInput'
             "
           >
             <mat-expansion-panel-header>
@@ -628,24 +668,39 @@
             </mat-expansion-panel-header>
             <mat-expansion-panel
               *ngFor="
-                let parameter of data.tile.columnsMeta[column.name]
-                  ?.functionInputParameters
+                let parameter of data.tile.columnsMeta[
+                  getIndex('functionInputParameters', column.name)
+                ]?.functionInputParameters;
+                let funcIndex = index
               "
             >
               <mat-expansion-panel-header>
                 <mat-panel-title>{{ parameter.id }}</mat-panel-title>
-                <mat-panel-description>Id parametru</mat-panel-description>
+                <mat-panel-description
+                  >Id parametru
+                  <button
+                    class="btn btn-sm btn-danger btn-simple"
+                    (click)="
+                      data.tile.columnsMeta[
+                        getIndex('functionInputParameters', column.name)
+                      ]?.functionInputParameters?.splice(funcIndex, 1)
+                    "
+                  >
+                    Usuń
+                  </button>
+                </mat-panel-description>
               </mat-expansion-panel-header>
               <mat-form-field appearance="fill" class="w-100 mt-3">
                 <input
                   matInput
-                  [value]="parameter.id"
+                  [(ngModel)]="parameter.id"
                   (change)="
                     changeMeta(
                       column.name,
                       'functionInputParameters',
-                      data.tile.columnsMeta[column.name]
-                        ?.functionInputParameters
+                      data.tile.columnsMeta[
+                        getIndex('functionInputParameters', column.name)
+                      ]?.functionInputParameters
                     )
                   "
                 />
@@ -654,13 +709,14 @@
               <mat-form-field appearance="fill" class="w-100 mt-3">
                 <input
                   matInput
-                  [value]="parameter.text"
+                  [(ngModel)]="parameter.text"
                   (change)="
                     changeMeta(
                       column.name,
                       'functionInputParameters',
-                      data.tile.columnsMeta[column.name]
-                        ?.functionInputParameters
+                      data.tile.columnsMeta[
+                        getIndex('functionInputParameters', column.name)
+                      ]?.functionInputParameters
                     )
                   "
                 />
@@ -669,13 +725,14 @@
               <mat-form-field appearance="fill" class="mt-2 pr-2 w-100">
                 <mat-label>Typ pola do wprowdzenia wartości</mat-label>
                 <mat-select
-                  [value]="parameter.type"
+                  [(ngModel)]="parameter.type"
                   (selectionChange)="
                     changeMeta(
                       column.name,
                       'functionInputParameters',
-                      data.tile.columnsMeta[column.name]
-                        ?.functionInputParameters
+                      data.tile.columnsMeta[
+                        getIndex('functionInputParameters', column.name)
+                      ]?.functionInputParameters
                     )
                   "
                 >
@@ -686,13 +743,14 @@
               <mat-form-field appearance="fill" class="w-100 mt-3">
                 <input
                   matInput
-                  [value]="parameter.help"
+                  [(ngModel)]="parameter.help"
                   (change)="
                     changeMeta(
                       column.name,
                       'functionInputParameters',
-                      data.tile.columnsMeta[column.name]
-                        ?.functionInputParameters
+                      data.tile.columnsMeta[
+                        getIndex('functionInputParameters', column.name)
+                      ]?.functionInputParameters
                     )
                   "
                 />
@@ -703,7 +761,7 @@
               class="btn btn-simple btn-success mt-3 w-100"
               (click)="
                 data.tile.columnsMeta[
-                  column.name
+                  getIndex('functionInputParameters', column.name)
                 ]?.functionInputParameters?.push({
                   id: 'newVar',
                   text: '',

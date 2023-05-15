@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { PageConfig } from '../../interfaces/dashboard.interface';
 import { DashboardStore } from '../../store/dashboard.store';
-import { Observable } from 'rxjs';
+import { Observable, filter, merge } from 'rxjs';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PageConfigTopBarComponent } from 'src/app/features/creator/components/page-config-top-bar/page-config-top-bar.component';
 
@@ -18,11 +18,13 @@ import { PageConfigTopBarComponent } from 'src/app/features/creator/components/p
 })
 export class DashboardTopBarComponent implements OnInit {
   constructor(
-    private DashboardStore: DashboardStore,
+    private dashboardStore: DashboardStore,
     private modal: MatDialog
   ) {}
-  pageConfig: Observable<PageConfig | undefined> =
-    this.DashboardStore.activeDashboard$;
+  pageConfig: Observable<PageConfig | undefined> = merge(
+    this.dashboardStore.activePage$,
+    this.dashboardStore.activePageByCreatorModule$
+  ).pipe(filter((res) => !!res));
   @Input() isCreatorMode: boolean = false;
   ngOnInit(): void {}
 

@@ -15,6 +15,10 @@ const routes: Routes = [
     path: ':type/:id',
     component: DashboardComponent,
   },
+  {
+    path: ':type/:id/creator',
+    component: DashboardComponent,
+  },
 ];
 
 @NgModule({

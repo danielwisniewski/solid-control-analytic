@@ -25,9 +25,7 @@ export interface Tile {
   hasRollupSelector?: boolean;
   rollups?: Rollup[];
   meta?: PageTileMeta;
-  columnsMeta?: {
-    [key: string]: TableColumnMeta;
-  };
+  columnsMeta?: TableColumnMeta[];
 }
 
 export interface Rollup {
@@ -56,6 +54,9 @@ export interface PageTileMeta extends ChartMeta, TableMeta {
   pivotAllowed?: boolean;
   customLabelTextActive?: boolean;
   customLabelText?: 'equipRef' | 'siteRef';
+  skipUpdateOnVariableChange?: boolean;
+  skipUpdateOnSiteChange?: boolean;
+  skipUpdateOnTimerangeChange?: boolean;
 }
 
 interface TableMeta {
@@ -66,6 +67,7 @@ interface TableMeta {
 }
 
 export interface TableColumnMeta {
+  columnName: string;
   dis?: string;
   visible?: boolean;
   columnType?:

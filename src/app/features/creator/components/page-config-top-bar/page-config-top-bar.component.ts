@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { DashboardStore } from '../../../dashboard/store/dashboard.store';
-import { Subscription } from 'rxjs';
+import { Subscription, filter, merge } from 'rxjs';
 import {
   PageConfig,
   Tile,
@@ -22,7 +22,7 @@ import { CreatePageService } from '../../services/create-page.service';
 })
 export class PageConfigTopBarComponent implements OnInit, OnDestroy {
   constructor(
-    private DashboardStore: DashboardStore,
+    private dashboardStore: DashboardStore,
     private cdr: ChangeDetectorRef,
     private createPageService: CreatePageService
   ) {}
@@ -30,16 +30,21 @@ export class PageConfigTopBarComponent implements OnInit, OnDestroy {
   sub: Subscription | undefined;
 
   ngOnInit(): void {
-    this.sub = this.DashboardStore.activeDashboard$.subscribe((res) => {
-      this.pageConfig = res;
-      this.cdr.detectChanges();
-    });
+    this.sub = merge(
+      this.dashboardStore.activePage$,
+      this.dashboardStore.activePageByCreatorModule$
+    )
+      .pipe(filter((res) => !!res))
+      .subscribe((res) => {
+        this.pageConfig = res;
+        this.cdr.detectChanges();
+      });
   }
 
   pageConfig: PageConfig | undefined;
 
   change() {
-    this.DashboardStore.activeDashboard$.next(this.pageConfig);
+    this.dashboardStore.activePageByCreatorModule$.next(this.pageConfig);
   }
 
   onSave() {
@@ -81,7 +86,7 @@ export class PageConfigTopBarComponent implements OnInit, OnDestroy {
         pivotAllowed: true,
         stacked: false,
       },
-      columnsMeta: {},
+      columnsMeta: [],
     };
     this.pageConfig.layout.tiles.push(newPanel);
     this.change();

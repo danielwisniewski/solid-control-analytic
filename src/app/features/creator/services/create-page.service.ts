@@ -57,7 +57,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: false,
             },
-            columnsMeta: {},
+            columnsMeta: [],
           },
           {
             tile: 2,
@@ -84,7 +84,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: true,
             },
-            columnsMeta: {},
+            columnsMeta: [],
           },
           {
             tile: 3,
@@ -111,7 +111,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: false,
             },
-            columnsMeta: {},
+            columnsMeta: [],
           },
           {
             tile: 4,
@@ -138,7 +138,7 @@ export class CreatePageService {
               pivotAllowed: true,
               stacked: false,
             },
-            columnsMeta: {},
+            columnsMeta: [],
           },
         ],
       },

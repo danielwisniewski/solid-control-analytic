@@ -13,24 +13,20 @@ import { queryToZinc } from 'src/app/core/functions/utils';
 export class DashboardService {
   constructor(
     private req: RequestReadService,
-    private SiteStore: SiteStore,
-    private TimerangeStore: TimerangeStore,
-    private DashboardStore: DashboardStore
+    private siteStore: SiteStore,
+    private timerangeStore: TimerangeStore,
+    private dashboardStore: DashboardStore
   ) {}
 
-  getData(
-    tile: number,
-    parameters: any = {},
-    isExport: boolean = false
-  ): Observable<HGrid | undefined> {
-    const timerange = this.TimerangeStore.getActiveTimerange();
-    let skysparkFunc =
-      this.DashboardStore.activeDashboard$.getValue()?.skysparkFunc;
+  generateQuery(tile: number, parameters: any = {}): string {
+    const timerange = this.timerangeStore.getActiveTimerange();
+    const skysparkFunc =
+      this.dashboardStore.activePage$.getValue()?.skysparkFunc;
 
-    if (!!this.DashboardStore.detailsPageId$.getValue()) {
+    if (!!this.dashboardStore.detailsPageId$.getValue()) {
       parameters = {
         ...parameters,
-        detailPageId: this.DashboardStore.detailsPageId$.getValue(),
+        detailPageId: this.dashboardStore.detailsPageId$.getValue(),
       };
     }
 
@@ -39,7 +35,15 @@ export class DashboardService {
         ? `, ${JSON.stringify(parameters)}`
         : '';
 
-    const query = `${skysparkFunc}(${tile},${timerange},${this.SiteStore.getActiveSiteId()}${jsonParameters})`;
+    return `${skysparkFunc}(${tile},${timerange},${this.siteStore.getActiveSiteId()}${jsonParameters})`;
+  }
+
+  getData(
+    tile: number,
+    parameters: any = {},
+    isExport: boolean = false
+  ): Observable<HGrid | undefined> {
+    const query = this.generateQuery(tile, parameters);
 
     if (isExport) {
       const VIEW_NAME = 'tableReport';

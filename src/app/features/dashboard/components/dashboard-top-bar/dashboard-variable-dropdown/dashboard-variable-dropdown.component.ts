@@ -11,8 +11,12 @@ import { DashboardStore } from '../../../store/dashboard.store';
 import { DashboardService } from '../../../services/dashboard.service';
 import {
   Subscription,
+  auditTime,
+  combineLatest,
   distinctUntilKeyChanged,
   map,
+  merge,
+  shareReplay,
   switchMap,
   tap,
 } from 'rxjs';
@@ -38,13 +42,9 @@ export class DashboardVariableDropdownComponent implements OnInit {
   options: { dis: string; val: any }[] | undefined;
   ngOnInit(): void {
     if (this.variable?.type === 'query') {
-      this.sub = this.siteStore.activeSite$
+      this.sub = merge(this.siteStore.activeSite$)
         .pipe(
-          map((res) => res?.toJSON()),
-          distinctUntilKeyChanged('dis' as never),
-          tap(() => {
-            this.store.pageVariables$.next(undefined);
-          }),
+          auditTime(150),
           switchMap(() => {
             return this.pageService.getData(0);
           }),
@@ -53,19 +53,20 @@ export class DashboardVariableDropdownComponent implements OnInit {
             this.options = res as any;
             if (!!this.options) {
               this.activeOption = this.options[0];
-              this.store.pageVariables$.next({
+              this.store.updatePageVariables({
                 [`var-${this.variable?.name}`]: this.activeOption?.val,
               });
             }
             this.cdr.detectChanges();
-          })
+          }),
+          shareReplay(1)
         )
-
         .subscribe();
     } else if (this.variable?.type === 'values') {
       this.options = this.variable.options;
       this.activeOption = this.variable?.options[0];
-      this.store.pageVariables$.next({
+
+      this.store.updatePageVariables({
         [`var-${this.variable?.name}`]: this.activeOption?.val,
       });
     }
@@ -73,13 +74,12 @@ export class DashboardVariableDropdownComponent implements OnInit {
 
   changeActiveOption(option: any) {
     this.activeOption = option;
-    this.store.pageVariables$.next({
+    this.store.updatePageVariables({
       [`var-${this.variable?.name}`]: this.activeOption?.val,
     });
   }
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
-    this.store.pageVariables$.next(undefined);
   }
 }

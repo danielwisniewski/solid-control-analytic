@@ -14,27 +14,30 @@
     <h3
       style="flex-grow: 10; flex-shrink: 1"
       class="text-start ml-3"
-      *ngIf="!!tile?.meta?.showTitle"
+      *ngIf="!!(panelConfig$ | async)?.meta?.showTitle"
     >
-      {{ tile?.meta?.title }}
+      {{ (tileData$ | async)?.meta?.get("title") }}
     </h3>
     <app-chart-table-toggle
-      [tileType]="tile?.type ?? 'chart'"
+      [tileType]="(panelConfig$ | async)?.type ?? 'chart'"
       (tileTypeToggled)="onTypeChange($event)"
-      *ngIf="!!tile?.meta?.showTileTypeSelector"
+      *ngIf="!!(panelConfig$ | async)?.meta?.showTileTypeSelector"
       class="text-start"
     >
     </app-chart-table-toggle>
     <app-rollup-selector
-      *ngIf="tile?.hasRollupSelector && tile?.type === 'chart'"
-      [tile]="tile"
+      *ngIf="
+        (panelConfig$ | async)?.hasRollupSelector &&
+        (panelConfig$ | async)?.type === 'chart'
+      "
+      [tile]="(panelConfig$ | async) ?? undefined"
       (onRollupChange)="onRollupChange($event)"
     ></app-rollup-selector>
     <span
       style="font-size: 18px"
       class="ml-4"
       (click)="onDownload()"
-      *ngIf="!!tile?.meta?.hasDownloadButton"
+      *ngIf="!!(panelConfig$ | async)?.meta?.hasDownloadButton"
     >
       <i
         class="tim-icons icon-cloud-download-93 ml-2"
@@ -43,14 +46,14 @@
     </span>
   </div>
   <div class="card-body p-1">
-    <ng-container *ngIf="tile?.type === 'chart'">
+    <ng-container *ngIf="(panelConfig$ | async)?.type === 'chart'">
       <app-base-chart
         [chartConfiguration]="tileData$ | async"
         [height]="height.toString()"
       >
       </app-base-chart>
     </ng-container>
-    <ng-container *ngIf="tile?.type === 'table'">
+    <ng-container *ngIf="(panelConfig$ | async)?.type === 'table'">
       <app-grid-table
         [data]="tileData$ | async"
         style="width: -webkit-fill-available"

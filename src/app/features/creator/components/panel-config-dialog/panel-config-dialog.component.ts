@@ -7,7 +7,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Subscription, tap } from 'rxjs';
+import { Subscription, filter, merge, tap } from 'rxjs';
 import {
   PageConfig,
   TableColumnMeta,
@@ -39,39 +39,65 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
   columns = this.data.grid.getColumns();
 
   ngOnInit(): void {
-    this.sub = this.store.activeDashboard$.subscribe((res) => {
-      this.pageConfig = res;
-    });
+    this.sub = merge(
+      this.store.activePage$,
+      this.store.activePageByCreatorModule$
+    )
+      .pipe(filter((res) => !!res))
+      .subscribe((res) => {
+        res?.layout.tiles.map((r) => {
+          if (!r.columnsMeta) r.columnsMeta = [];
+        });
+        this.pageConfig = res;
+
+        this.cdr.detectChanges();
+      });
   }
 
-  changeMeta(columnName: string, metaName: string, val: any) {
-    const value =
-      typeof val === 'boolean' || typeof val === 'string'
-        ? val
-        : val.target.value;
+  getIndex(metaName: string, columnName: string): number {
+    return (
+      this.data.tile.columnsMeta?.findIndex(
+        (r) => r.columnName === columnName
+      ) ?? -1
+    );
+  }
+
+  changeMeta(columnName: string, metaName: string, valueFromTemplate: any) {
+    let valueToProcess = valueFromTemplate;
+
+    if (typeof valueToProcess === 'object' && !!valueToProcess.target)
+      valueToProcess = valueToProcess.target.value;
 
     if (!!this.pageConfig && !!this.data.tile) {
       const tileIndex = this.pageConfig?.layout.tiles.findIndex(
         (r) => r.tile == this.data.tile?.tile
       );
-      let columnMeta = this.pageConfig.layout.tiles[tileIndex].columnsMeta;
-      let columnMetaName: TableColumnMeta = {};
-      if (!!columnMeta) {
-        columnMetaName = columnMeta[columnName];
-        if (!columnMetaName?.functionInputParameters)
-          columnMetaName = { ...columnMetaName, functionInputParameters: [] };
+
+      if (!this.pageConfig.layout.tiles[tileIndex].columnsMeta)
+        this.pageConfig.layout.tiles[tileIndex].columnsMeta = [];
+
+      let columnMetaIndex =
+        this.pageConfig.layout.tiles[tileIndex].columnsMeta?.findIndex(
+          (r) => r.columnName === columnName
+        ) ?? -1;
+
+      if (columnMetaIndex > -1)
+        this.pageConfig.layout.tiles[tileIndex].columnsMeta![columnMetaIndex] =
+          {
+            ...this.pageConfig.layout.tiles[tileIndex].columnsMeta![
+              columnMetaIndex
+            ],
+            [metaName]: valueToProcess,
+          };
+      else {
+        this.pageConfig.layout.tiles[tileIndex].columnsMeta?.push({
+          columnName: columnName,
+          [metaName]: valueToProcess,
+        });
       }
 
-      this.pageConfig.layout.tiles[tileIndex].columnsMeta = {
-        ...columnMeta,
-        [columnName]: {
-          ...columnMetaName,
-          [metaName]: value,
-        },
-      };
-
       this.store.activeTile$.next(this.data.tile.tile);
-      this.store.activeDashboard$.next(this.pageConfig);
+      this.store.activePageByCreatorModule$.next(this.pageConfig);
     }
   }
 
@@ -82,7 +108,7 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
       );
       (this.pageConfig.layout.tiles[tileIndex] = this.data.tile),
         this.store.activeTile$.next(this.data.tile.tile);
-      this.store.activeDashboard$.next(this.pageConfig);
+      this.store.activePageByCreatorModule$.next(this.pageConfig);
     }
   }
 
@@ -92,7 +118,7 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
         (r) => r.tile == this.data.tile?.tile
       );
       this.pageConfig.layout.tiles.splice(tileIndex, 1);
-      this.store.activeDashboard$.next(this.pageConfig);
+      this.store.activePageByCreatorModule$.next(this.pageConfig);
     }
   }
 

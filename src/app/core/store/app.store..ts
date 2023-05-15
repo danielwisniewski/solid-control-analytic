@@ -3,6 +3,7 @@ import { RouteInfo } from '../components/sidebar/sidebar.component';
 import { RequestReadService } from '../services/requests/read/request-read.service';
 import {
   BehaviorSubject,
+  ReplaySubject,
   filter,
   iif,
   map,
@@ -60,11 +61,9 @@ export class AppStore {
       .subscribe();
   }
 
-  appConfig$ = new BehaviorSubject<AppConfig | undefined>(undefined);
+  appConfig$ = new ReplaySubject<AppConfig | undefined>(1);
 
   sidebarRoutes$ = new BehaviorSubject<RouteInfo[]>([]);
 
   $route = new BehaviorSubject<string>('');
-
-  bootstrapFunctions() {}
 }

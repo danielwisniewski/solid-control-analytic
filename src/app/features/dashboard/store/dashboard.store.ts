@@ -1,58 +1,54 @@
 import { Injectable } from '@angular/core';
 import { AppStore } from 'src/app/core/store/app.store.';
-import { SiteStore } from 'src/app/core/store/site.store';
-import { TimerangeStore } from 'src/app/core/store/timerange.store';
 import {
   BehaviorSubject,
   Observable,
+  ReplaySubject,
+  Subject,
   combineLatest,
   filter,
   map,
   tap,
 } from 'rxjs';
 import { PageConfig } from '../interfaces/dashboard.interface';
-import { defaultRollups } from '../constants/dashboard.constants';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardStore {
-  constructor(
-    private AppStore: AppStore,
-    private SiteStore: SiteStore,
-    private TimerangeStore: TimerangeStore
-  ) {}
+  constructor() {}
 
-  routerParam$ = new BehaviorSubject<string | undefined>(undefined);
-  detailsPageId$ = new BehaviorSubject<string | undefined>(undefined);
-  activeDashboard$ = new BehaviorSubject<PageConfig | undefined>(undefined);
+  triggerFetchingDataForPanels(configuration: PageConfig | undefined) {
+    if (!!configuration) {
+      this.activePage$.next(configuration);
+    } else this.activePage$.next(this.activePage$.getValue());
+  }
 
-  pageVariables$ = new BehaviorSubject<any>(undefined);
-  activeTile$ = new BehaviorSubject<number>(0);
-
-  dashboardConfig$: Observable<PageConfig | undefined> = combineLatest([
-    this.routerParam$,
-    this.TimerangeStore.activeTimerange$,
-    this.AppStore.appConfig$,
-    this.SiteStore.activeSite$,
-  ]).pipe(
-    filter((res) => res.every((r) => !!r)),
-    map(([activeDashboardRoute, activeTimerange, appConfig, activeSite]) => {
-      // Find configuration of the dashboard based on route path
-      const routeToCompare = !!this.detailsPageId$.getValue()
-        ? `${activeDashboardRoute}/details`
-        : activeDashboardRoute;
-      const dashboardConfig = appConfig?.dashboards?.find(
-        (dashboard) => dashboard.path === routeToCompare
-      );
-
-      // Assign default rollup when no set
-      dashboardConfig?.layout.tiles.map((tile) => {
-        if (tile.hasRollupSelector && typeof tile.rollups === 'undefined')
-          tile.rollups = defaultRollups;
-      });
-      return dashboardConfig;
-    }),
-    tap((res) => this.activeDashboard$.next(res))
+  /**
+   * * activePageConfig$ is changed by creator module. Another value is used to not send
+   * * http request to backend each time we want to change only visualization.
+   */
+  activePageByCreatorModule$ = new BehaviorSubject<PageConfig | undefined>(
+    undefined
   );
+
+  /**
+   * * activePage$ is changed by router. It means that all panels show fetch data from backend.
+   */
+  activePage$ = new BehaviorSubject<PageConfig | undefined>(undefined);
+
+  updatePageVariables(variables: any) {
+    this.pageVariables = { ...variables };
+    this.pageVariables$.next({ ...variables });
+  }
+
+  pageVariables$ = new ReplaySubject<any>(1);
+
+  detailsPageId$ = new BehaviorSubject<string | undefined>(undefined);
+
+  triggerDataUpdate$ = new BehaviorSubject<boolean | undefined>(undefined);
+
+  pageVariables: any = {};
+
+  activeTile$ = new BehaviorSubject<number>(0);
 }
