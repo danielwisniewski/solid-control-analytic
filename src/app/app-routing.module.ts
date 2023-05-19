@@ -3,11 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginPageComponent } from './core/auth/login-page/login-page.component';
 import { MainLayoutComponent } from './core/components/main-layout/main-layout.component';
 import { LoginActivateGuard } from './core/guards/login-activate.guard';
+import { environment } from 'src/environments/environment';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard/halls',
+    redirectTo: `dashboard/${environment.startupPage}`,
     pathMatch: 'full',
   },
   {

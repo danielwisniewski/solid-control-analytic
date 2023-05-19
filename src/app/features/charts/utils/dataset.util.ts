@@ -166,7 +166,7 @@ function sortValuesDescOrder(reqResponse: HGrid): string[] {
   return sortedColumns;
 }
 
-function calculatePrecision(val: HNum): number {
+export function calculatePrecision(val: HNum): number {
   if (val.value < 1) return +Number(val.value).toFixed(3);
   else if (val.value < 10) return +Number(val.value).toFixed(2);
   else return +Number(val.value).toFixed(1);

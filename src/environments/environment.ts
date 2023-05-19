@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   skysparkServer: 'http://localhost:3000/skyspark',
+  skysparkUrl: 'http://localhost:3000',
   skysparkProject: 'demo',
+  startupPage: 'portfolio',
 };
 
 /*

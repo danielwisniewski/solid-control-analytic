@@ -10,6 +10,7 @@ import {
   HaysonRef,
   Kind,
 } from 'haystack-core';
+import { calculatePrecision } from '../../charts/utils/dataset.util';
 
 @Pipe({
   name: 'gridTable',
@@ -29,7 +30,8 @@ export class GridTablePipe implements PipeTransform {
     else if (value.isKind(Kind.Number)) {
       let unit = (value as HNum).unit?.toString();
       if (unit?.startsWith('_')) unit = unit.substring(1);
-      return `${(value as HNum).value.toFixed(2)} ${unit}`;
+      const formattedValue = calculatePrecision(value as HNum);
+      return `${formattedValue} ${unit}`;
     } else if (value.isKind(Kind.DateTime))
       return (value as HDateTime).date.toLocaleString();
     else return value.toString();

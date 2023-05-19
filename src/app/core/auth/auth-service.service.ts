@@ -38,7 +38,7 @@ export class AuthService {
     );
     return this.http
       .get<any>(
-        `http://localhost:3000/auth/generateToken?username=${loginData}`
+        `${environment.skysparkUrl}/auth/generateToken?username=${loginData}`
       )
       .pipe(
         take(1),
@@ -56,8 +56,9 @@ export class AuthService {
 
   logout() {
     return this.http
-      .get(`${environment.skysparkServer}/close`)
+      .get(`${environment.skysparkServer}/user/logout`)
       .pipe(
+        take(1),
         map(() => {
           this.userLoggedIn$.next(false);
         })

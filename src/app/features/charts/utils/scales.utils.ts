@@ -188,7 +188,7 @@ function generateYAxis(reqResponse: HGrid): ChartOptions {
               return `${tickValue} ${unit}`;
             },
           },
-          min: 0,
+          suggestedMin: 0,
           stacked: !!reqResponse.meta.get<HBool>('stacked')?.value,
           position: index % 2 ? 'right' : 'left',
         },
