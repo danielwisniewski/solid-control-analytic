@@ -77,7 +77,6 @@ function generatePieDataset(
   colors: string[]
 ): ChartDataset[] {
   const CHART_DATASET: ChartDataset = {
-    label: generateTitle(reqResponse).plugins?.title?.text?.toString() || '',
     data: [],
     pointRadius: 1,
     borderWidth: reqResponse.meta.get<HNum>('borderWidth')?.value ?? 0.7,
@@ -101,8 +100,9 @@ function generatePieDataset(
     hoverBackgroundColor: [] as string[],
     hoverBorderColor: [] as string[],
   };
-
+  console.log(reqResponse.getColumnNames());
   reqResponse.reorderColumns(sortValuesDescOrder(reqResponse));
+  console.log(reqResponse.getColumnNames());
 
   for (let i = 0; i < reqResponse.getColumnsLength(); i++) {
     const columnName = reqResponse.getColumnNames()[i];

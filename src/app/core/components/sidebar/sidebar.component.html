@@ -13,87 +13,99 @@
     </a> -->
   </div>
   <ul class="nav">
-    <li *ngFor="let menuitem of menuItems | async" routerLinkActive="active">
-      <!--If is a single link-->
-      <a
-        [routerLink]="[menuitem.path]"
-        *ngIf="menuitem.type === 'link' && !!menuitem?.visible"
-      >
-        <i class="{{ menuitem.icontype }}"></i>
-        <p>{{ menuitem.title }}</p>
-      </a>
-      <!--If it have a submenu-->
-      <a
-        data-toggle="collapse"
-        routerLinkActive="active"
-        *ngIf="menuitem.type === 'sub' && !!menuitem.visible"
-        (click)="menuitem.isCollapsed = !menuitem.isCollapsed"
-        [attr.aria-expanded]="!menuitem.isCollapsed"
-        [attr.aria-controls]="menuitem.collapse"
-      >
-        <i class="{{ menuitem.icontype }}"></i>
-        <p>{{ menuitem.title }}<b class="caret"></b></p>
-      </a>
-
-      <!--Display the submenu items-->
-      <div
-        id="{{ menuitem.collapse }}"
-        class="collapse"
-        *ngIf="menuitem.type === 'sub' && !!menuitem.visible"
-        [collapse]="menuitem.isCollapsed!"
-        [isAnimated]="true"
-      >
-        <ul class="nav">
-          <li
-            *ngFor="let childitems of menuitem.children"
-            routerLinkActive="active"
-          >
-            <!--If is a single link-->
-            <a
-              [routerLink]="[menuitem.path, childitems.path]"
-              *ngIf="childitems.type === 'link' && !!childitems.visible"
-            >
-              <span class="sidebar-mini-icon">{{ childitems.smallTitle }}</span>
-              <span class="sidebar-normal">{{ childitems.title }}</span>
+    <ng-container *ngFor="let menuitem of menuItems | async">
+      <ng-container [ngSwitch]="menuitem.type">
+        <!-- If it is a single link -->
+        <ng-container *ngSwitchCase="'link'">
+          <li *ngIf="menuitem.visible && menuitem.type === 'link'">
+            <a [routerLink]="[menuitem.path]">
+              <i class="{{ menuitem.icontype }}"></i>
+              <p>{{ menuitem.title }}</p>
             </a>
-            <!--If it have a submenu-->
+          </li>
+        </ng-container>
+
+        <!-- If it has a submenu -->
+        <ng-container *ngSwitchCase="'sub'">
+          <li *ngIf="menuitem.visible && menuitem.type === 'sub'">
             <a
               data-toggle="collapse"
-              (click)="childitems.isCollapsed = !childitems.isCollapsed"
-              [attr.aria-expanded]="!childitems.isCollapsed"
-              [attr.aria-controls]="childitems.collapse"
-              *ngIf="childitems.type === 'sub' && !!childitems.visible"
+              (click)="toggleCollapse(menuitem)"
+              [attr.aria-expanded]="!menuitem.isCollapsed"
+              [attr.aria-controls]="menuitem.collapse"
             >
-              <span class="sidebar-mini-icon">{{ childitems.smallTitle }}</span>
-              <span class="sidebar-normal"
-                >{{ childitems.title }}<b class="caret"></b
-              ></span>
+              <i class="{{ menuitem.icontype }}"></i>
+              <p>{{ menuitem.title }}<b class="caret"></b></p>
             </a>
-            <!--Display the submenu items-->
+
+            <!-- Display the submenu items -->
             <div
-              id="{{ childitems.collapse }}"
-              class="collapse"
-              *ngIf="childitems.type === 'sub' && !!childitems.visible"
-              [collapse]="childitems.isCollapsed!"
+              id="{{ menuitem.collapse }}"
+              [collapse]="menuitem.isCollapsed ?? false"
               [isAnimated]="true"
             >
               <ul class="nav">
-                <li
-                  *ngFor="let childitem of childitems.children"
-                  routerLinkActive="active"
-                >
-                  <a [routerLink]="[menuitem.path, childitem.path]">
-                    <span class="sidebar-mini-icon">{{
-                      childitem.smallTitle
-                    }}</span>
-                    <span class="sidebar-normal">{{ childitem.title }}</span>
-                  </a>
+                <li *ngFor="let childitems of menuitem.children">
+                  <ng-container [ngSwitch]="childitems.type">
+                    <!-- If it is a single link -->
+                    <ng-container *ngSwitchCase="'link'">
+                      <a
+                        [routerLink]="[menuitem.path, childitems.path]"
+                        *ngIf="childitems.visible"
+                      >
+                        <span class="sidebar-mini-icon">{{
+                          childitems.smallTitle
+                        }}</span>
+                        <span class="sidebar-normal">{{
+                          childitems.title
+                        }}</span>
+                      </a>
+                    </ng-container>
+
+                    <!-- If it has a submenu -->
+                    <ng-container *ngSwitchCase="'sub'">
+                      <a
+                        data-toggle="collapse"
+                        (click)="toggleCollapse(menuitem, childitems)"
+                        [attr.aria-expanded]="!childitems.isCollapsed"
+                        [attr.aria-controls]="childitems.collapse"
+                        *ngIf="childitems.visible"
+                      >
+                        <span class="sidebar-mini-icon">{{
+                          childitems.smallTitle
+                        }}</span>
+                        <span class="sidebar-normal"
+                          >{{ childitems.title }}<b class="caret"></b
+                        ></span>
+                      </a>
+
+                      <!-- Display the submenu items -->
+                      <div
+                        id="{{ childitems.collapse }}"
+                        [collapse]="childitems.isCollapsed ?? false"
+                        [isAnimated]="true"
+                      >
+                        <ul class="nav">
+                          <li *ngFor="let childitem of childitems.children">
+                            <a [routerLink]="[menuitem.path, childitem.path]">
+                              <span class="sidebar-mini-icon">{{
+                                childitem.smallTitle
+                              }}</span>
+                              <span class="sidebar-normal">{{
+                                childitem.title
+                              }}</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </ng-container>
+                  </ng-container>
                 </li>
               </ul>
             </div>
           </li>
-        </ul>
-      </div>
-    </li>
+        </ng-container>
+      </ng-container>
+    </ng-container>
   </ul>
 </div>

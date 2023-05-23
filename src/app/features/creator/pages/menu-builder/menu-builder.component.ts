@@ -8,8 +8,11 @@ import {
 } from 'src/app/core/components/sidebar/sidebar.component';
 import { AppStore } from 'src/app/core/store/app.store.';
 import { MenuBuilderService } from '../../services/menu-builder.service';
-import { PageConfig } from 'src/app/features/dashboard/interfaces/dashboard.interface';
+import { PageState } from 'src/app/features/dashboard/interfaces/page-config.interface';
 import { CreatePageService } from '../../services/create-page.service';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/state';
+import { selectRoutes } from 'src/app/core/store/menu/route.selectors';
 
 @Component({
   selector: 'app-menu-builder',
@@ -21,7 +24,8 @@ export class MenuBuilderComponent implements OnInit, OnDestroy {
     private dashbardServ: AppStore,
     private menuService: MenuBuilderService,
     private pageCreator: CreatePageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit(): void {}
@@ -31,12 +35,12 @@ export class MenuBuilderComponent implements OnInit, OnDestroy {
   }
 
   routes: RouteInfo[] = [];
-  menuItems: Observable<RouteInfo[]> = this.dashbardServ.sidebarRoutes$.pipe(
+  menuItems: Observable<RouteInfo[]> = this.store.select(selectRoutes).pipe(
     filter((res: RouteInfo[]) => res?.length > 0),
     tap((res) => (this.routes = res))
   );
 
-  dashboards: PageConfig[] | undefined;
+  dashboards: PageState[] | undefined;
 
   dashboardsSub: Subscription = this.dashbardServ.appConfig$.subscribe(
     (res) => {

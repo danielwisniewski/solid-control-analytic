@@ -8,7 +8,7 @@ import {
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { AppStore } from 'src/app/core/store/app.store.';
 import { defaultRollups } from '../../dashboard/constants/dashboard.constants';
-import { PageConfig } from '../../dashboard/interfaces/dashboard.interface';
+import { PageState } from '../../dashboard/interfaces/page-config.interface';
 import { queryToZinc } from 'src/app/core/functions/utils';
 
 @Injectable({
@@ -21,7 +21,7 @@ export class CreatePageService {
   ) {}
 
   addNewPage(page: RouteInfo | ChildrenItems) {
-    const newPage: PageConfig = {
+    const newPage: PageState = {
       scId: Math.random().toString(36).slice(2),
       path: page.path.replace('/dashboard/', ''),
       title: page.title,
@@ -38,7 +38,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            rollups: defaultRollups,
+            availableRollupOptions: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -65,7 +65,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            rollups: defaultRollups,
+            availableRollupOptions: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -92,7 +92,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            rollups: defaultRollups,
+            availableRollupOptions: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -119,7 +119,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            rollups: defaultRollups,
+            availableRollupOptions: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -158,20 +158,10 @@ export class CreatePageService {
 
     const query = `(${data}).recNew`;
     const zincQuery = HStr.make(query).toZinc();
-    return this.readReq
-      .readExprAll(zincQuery)
-      .pipe(
-        take(1),
-        finalize(() =>
-          this.appStore.sidebarRoutes$.next(
-            this.appStore.sidebarRoutes$.getValue()
-          )
-        )
-      )
-      .subscribe();
+    return this.readReq.readExprAll(zincQuery).pipe(take(1)).subscribe();
   }
 
-  updateConfiguration(config: PageConfig) {
+  updateConfiguration(config: PageState) {
     const query = `read(appConfig and dashboard and config->scId == "${
       config.scId
     }").set("config", ${JSON.stringify(config)}).recEdit`;
@@ -181,7 +171,7 @@ export class CreatePageService {
     return this.readReq.readExprAll(zincQuery).pipe(take(1)).subscribe();
   }
 
-  generateSkysparkFunction(pageConfig: PageConfig) {
+  generateSkysparkFunction(pageConfig: PageState) {
     const src = `(tile, date, site, parameters: {}) => do
 
     data: readAll(energy and equipRef->elec and siteRef->id == site->id)

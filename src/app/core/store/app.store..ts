@@ -12,16 +12,25 @@ import {
   take,
   tap,
 } from 'rxjs';
-import { HGrid, HStr, HaysonGrid } from 'haystack-core';
+import { HDict, HGrid, HStr, HaysonGrid } from 'haystack-core';
 
 import { SiteStore } from './site.store';
 import { AppConfig } from '../interfaces/AppConfig.interface';
+import { Store } from '@ngrx/store';
+import { changeActiveSite, updateSites } from './sites/site.actions';
+import { AppState } from 'src/app/state';
+import { generateRoutes } from './menu/route.actions';
+import { loadPages } from './pages/pages.actions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppStore {
-  constructor(private siteStore: SiteStore, private req: RequestReadService) {}
+  constructor(
+    private siteStore: SiteStore,
+    private req: RequestReadService,
+    private store: Store<AppState>
+  ) {}
 
   fetchAppConfig(): void {
     this.req
@@ -35,14 +44,17 @@ export class AppStore {
           return this.req.readExpr('scAppConfig()');
         }),
         filter((res) => !!res && !!res.rows),
-        retry(3),
         take(1),
         map((res: HaysonGrid) => HGrid.make(res)),
         tap((GRID: HGrid) => {
           if (!GRID.first) return;
 
-          if (GRID.first.has('sites'))
+          if (!!GRID.first.has('sites')) {
             this.siteStore.sites$.next(GRID.first.get('sites'));
+            this.store.dispatch(
+              updateSites({ sites: GRID.first.get<HGrid<HDict>>('sites') })
+            );
+          }
 
           if (GRID.first.has('dashboards')) {
             GRID.first.set(
@@ -55,15 +67,14 @@ export class AppStore {
 
           const dashConfig = config as AppConfig;
           this.appConfig$.next(dashConfig);
-          this.sidebarRoutes$.next([...dashConfig?.menu]);
+          this.store.dispatch(loadPages({ pages: dashConfig.dashboards! }));
+          this.store.dispatch(generateRoutes({ routeInfos: dashConfig.menu }));
         })
       )
       .subscribe();
   }
 
   appConfig$ = new ReplaySubject<AppConfig | undefined>(1);
-
-  sidebarRoutes$ = new BehaviorSubject<RouteInfo[]>([]);
 
   $route = new BehaviorSubject<string>('');
 }

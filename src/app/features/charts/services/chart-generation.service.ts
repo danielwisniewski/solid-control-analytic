@@ -3,7 +3,7 @@ import { ChartConfiguration, ChartOptions, Chart } from 'chart.js';
 
 import 'chartjs-adapter-luxon';
 
-import { HGrid } from 'haystack-core';
+import { HGrid, HNum, HaysonNum, HaysonVal } from 'haystack-core';
 
 import { CHART_COLOR, TEXT_COLOR, onResize } from '../utils/chart-utils';
 import { generateScales } from '../utils/scales.utils';

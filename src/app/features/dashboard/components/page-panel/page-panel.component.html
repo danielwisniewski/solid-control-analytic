@@ -16,7 +16,7 @@
       class="text-start ml-3"
       *ngIf="!!(panelConfig$ | async)?.meta?.showTitle"
     >
-      {{ (tileData$ | async)?.meta?.get("title") }}
+      {{ (panelConfig$ | async)?.panelData?.meta?.get("title") }}
     </h3>
     <app-chart-table-toggle
       [tileType]="(panelConfig$ | async)?.type ?? 'chart'"
@@ -46,16 +46,16 @@
     </span>
   </div>
   <div class="card-body p-1">
-    <ng-container *ngIf="(panelConfig$ | async)?.type === 'chart'">
+    <ng-container *ngIf="panel?.type === 'chart'">
       <app-base-chart
-        [chartConfiguration]="tileData$ | async"
+        [chartConfiguration]="(panelConfig$ | async)?.panelData"
         [height]="height.toString()"
       >
       </app-base-chart>
     </ng-container>
-    <ng-container *ngIf="(panelConfig$ | async)?.type === 'table'">
+    <ng-container *ngIf="panel?.type === 'table'">
       <app-grid-table
-        [data]="tileData$ | async"
+        [data]="(panelConfig$ | async)?.panelData"
         style="width: -webkit-fill-available"
         (onDownload)="onDownload()"
         [height]="height.toString()"

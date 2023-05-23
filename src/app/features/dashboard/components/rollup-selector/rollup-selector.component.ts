@@ -6,8 +6,9 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import { Rollup, Tile } from '../../interfaces/dashboard.interface';
+
 import { DashboardService } from '../../services/dashboard.service';
+import { Panel, RollupOption } from '../../interfaces/panel.interface';
 
 @Component({
   selector: 'app-rollup-selector',
@@ -18,10 +19,10 @@ import { DashboardService } from '../../services/dashboard.service';
 export class RollupSelectorComponent implements OnInit {
   constructor(private dashboardService: DashboardService) {}
 
-  @Input() tile: Tile | undefined;
+  @Input() tile: Panel | undefined;
   @Output() onRollupChange = new EventEmitter<any>();
 
-  activeRollup: Rollup = {
+  activeRollup: RollupOption = {
     display: 'D',
     value: '1day',
   };
@@ -30,14 +31,14 @@ export class RollupSelectorComponent implements OnInit {
     this.onRollupChange.emit(this.activeRollup);
   }
 
-  onRollupChangeFunc(rollup: Rollup | undefined) {
+  onRollupChangeFunc(rollup: RollupOption | undefined) {
     if (!!rollup) {
       this.activeRollup = rollup;
       this.onRollupChange.emit(this.activeRollup);
     }
   }
 
-  trackBy(index: number, item: Rollup) {
+  trackBy(index: number, item: RollupOption) {
     return item.display;
   }
 }

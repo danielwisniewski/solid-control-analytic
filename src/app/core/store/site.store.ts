@@ -11,7 +11,6 @@ export class SiteStore {
       .pipe(
         filter((val) => !!val),
         filter((val) => !val?.isEmpty()),
-        retry(3),
         take(1),
         tap((sites: HGrid<HDict> | undefined) => {
           if (!!localStorage.getItem('site'))

@@ -10,6 +10,14 @@ import { TokenInterceptor } from './core/interceptor/token.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+
+import { appReducer } from './state';
+import { TimerangeEffects } from './core/store/timerange/timerange.effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { RouterEffects } from './core/store/router/router.effects';
+import { PagesEffects } from './core/store/pages/pages.effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +28,9 @@ import { ToastrModule } from 'ngx-toastr';
     AppRoutingModule,
     HttpClientModule,
     ToastrModule.forRoot(),
+    StoreModule.forRoot(appReducer),
+    EffectsModule.forRoot([TimerangeEffects, RouterEffects, PagesEffects]),
+    StoreRouterConnectingModule.forRoot(),
   ],
   providers: [
     {

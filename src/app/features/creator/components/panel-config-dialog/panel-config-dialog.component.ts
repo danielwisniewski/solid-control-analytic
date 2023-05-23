@@ -8,14 +8,11 @@ import {
 } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription, filter, merge, tap } from 'rxjs';
-import {
-  PageConfig,
-  TableColumnMeta,
-  Tile,
-} from 'src/app/features/dashboard/interfaces/dashboard.interface';
+import { PageState } from 'src/app/features/dashboard/interfaces/page-config.interface';
 import { DashboardStore } from 'src/app/features/dashboard/store/dashboard.store';
 import { CreatePageService } from '../../services/create-page.service';
 import { HGrid, HaysonDict } from 'haystack-core';
+import { Panel } from 'src/app/features/dashboard/interfaces/panel.interface';
 
 @Component({
   selector: 'app-panel-config-dialog',
@@ -27,7 +24,7 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      tile: Tile;
+      tile: Panel;
       grid: HGrid;
     },
     private store: DashboardStore,
@@ -122,7 +119,7 @@ export class PanelConfigDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  pageConfig: PageConfig | undefined;
+  pageConfig: PageState | undefined;
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();

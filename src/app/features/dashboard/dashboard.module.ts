@@ -7,7 +7,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { RollupSelectorComponent } from './components/rollup-selector/rollup-selector.component';
 import { DashboardTopBarComponent } from './components/dashboard-top-bar/dashboard-top-bar.component';
-import { DashboardTileComponent } from './components/dashboard-tile/dashboard-tile.component';
+import { PagePanelComponent } from './components/page-panel/page-panel.component';
 import { ChartTableToggleComponent } from './components/chart-table-toggle/chart-table-toggle.component';
 import { DashboardVariableDropdownComponent } from './components/dashboard-top-bar/dashboard-variable-dropdown/dashboard-variable-dropdown.component';
 import { ChartsModule } from '../charts/charts.module';
@@ -21,7 +21,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     DashboardComponent,
     RollupSelectorComponent,
     DashboardTopBarComponent,
-    DashboardTileComponent,
+    PagePanelComponent,
     ChartTableToggleComponent,
     DashboardVariableDropdownComponent,
   ],

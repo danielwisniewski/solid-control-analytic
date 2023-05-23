@@ -1,16 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AppStore } from 'src/app/core/store/app.store.';
-import {
-  BehaviorSubject,
-  Observable,
-  ReplaySubject,
-  Subject,
-  combineLatest,
-  filter,
-  map,
-  tap,
-} from 'rxjs';
-import { PageConfig } from '../interfaces/dashboard.interface';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { PageState } from '../interfaces/page-config.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +8,7 @@ import { PageConfig } from '../interfaces/dashboard.interface';
 export class DashboardStore {
   constructor() {}
 
-  triggerFetchingDataForPanels(configuration: PageConfig | undefined) {
+  triggerFetchingDataForPanels(configuration: PageState | undefined) {
     if (!!configuration) {
       this.activePage$.next(configuration);
     } else this.activePage$.next(this.activePage$.getValue());
@@ -28,14 +18,14 @@ export class DashboardStore {
    * * activePageConfig$ is changed by creator module. Another value is used to not send
    * * http request to backend each time we want to change only visualization.
    */
-  activePageByCreatorModule$ = new BehaviorSubject<PageConfig | undefined>(
+  activePageByCreatorModule$ = new BehaviorSubject<PageState | undefined>(
     undefined
   );
 
   /**
    * * activePage$ is changed by router. It means that all panels show fetch data from backend.
    */
-  activePage$ = new BehaviorSubject<PageConfig | undefined>(undefined);
+  activePage$ = new BehaviorSubject<PageState | undefined>(undefined);
 
   updatePageVariables(variables: any) {
     this.pageVariables = { ...variables };

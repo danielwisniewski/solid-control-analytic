@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest, map } from 'rxjs';
 import { AppStore } from 'src/app/core/store/app.store.';
-import { PageConfig } from '../interfaces/dashboard.interface';
+import { PageState } from '../interfaces/page-config.interface';
 import { DashboardStore } from './dashboard.store';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class PageStoreService {
     private dashboardStore: DashboardStore
   ) {}
 
-  activePage$: Observable<PageConfig | undefined> = combineLatest(
+  activePage$: Observable<PageState | undefined> = combineLatest(
     this.route.params,
     this.appStore.appConfig$
   ).pipe(
@@ -40,7 +40,7 @@ export class PageStoreService {
       const pageRouteToFind = isDetailPage ? `${pagePath}/details` : pagePath;
 
       const pageConfig = appConfig?.dashboards?.find(
-        (dashboard: PageConfig) => dashboard.path == pageRouteToFind
+        (dashboard: PageState) => dashboard.path == pageRouteToFind
       );
 
       this.dashboardStore.triggerFetchingDataForPanels(pageConfig);

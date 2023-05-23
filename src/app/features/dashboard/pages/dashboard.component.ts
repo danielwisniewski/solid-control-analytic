@@ -1,35 +1,31 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { filter, merge, tap } from 'rxjs';
-import { Tile } from '../interfaces/dashboard.interface';
-import { DashboardStore } from '../store/dashboard.store';
-import { ActivatedRoute } from '@angular/router';
-import { PageStoreService } from '../store/page.store.service';
+import { Observable, distinctUntilChanged, filter, first, tap } from 'rxjs';
+import { PageState } from '../interfaces/page-config.interface';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import {
+  isCreatorMode,
+  selectActivePage,
+} from 'src/app/core/store/pages/pages.selectors';
+import { Panel } from '../interfaces/panel.interface';
+import { fetchPanelsData } from 'src/app/core/store/pages/pages.actions';
 
 @Component({
   selector: 'app-ventilation',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [PageStoreService],
 })
 export class DashboardComponent {
-  constructor(
-    private route: ActivatedRoute,
-    private pageStore: PageStoreService,
-    private dashboardStore: DashboardStore
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
-  isCreatorMode: boolean = this.route.snapshot.url
-    .toString()
-    .includes('creator');
+  isCreatorMode$: Observable<boolean> = this.store.select(isCreatorMode);
 
-  pageConfig$ = merge(
-    this.pageStore.activePage$,
-    this.dashboardStore.activePage$,
-    this.dashboardStore.activePageByCreatorModule$
-  ).pipe(filter((res) => !!res));
+  pageConfig$: Observable<PageState | undefined> = this.store
+    .select(selectActivePage)
+    .pipe(filter((res) => !!res));
 
-  trackBy(index: number, item: Tile) {
+  trackBy(index: number, item: Panel) {
     return item.tile;
   }
 }

@@ -4,62 +4,83 @@ import {
   ChangeDetectionStrategy,
   Input,
 } from '@angular/core';
-import { Tile } from '../../interfaces/dashboard.interface';
-import { take, tap } from 'rxjs';
+
+import {
+  distinctUntilChanged,
+  filter,
+  first,
+  map,
+  startWith,
+  take,
+  tap,
+} from 'rxjs';
 import { DashboardService } from '../../services/dashboard.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { PanelConfigDialogComponent } from 'src/app/features/creator/components/panel-config-dialog/panel-config-dialog.component';
 import { HDict, HGrid } from 'haystack-core';
 import { PanelStoreService } from '../../store/panel.store.service';
+import { Panel } from '../../interfaces/panel.interface';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import { selectActivePage } from 'src/app/core/store/pages/pages.selectors';
+import {
+  changeActivePanelIndex,
+  changePanelParameters,
+  changePanelType,
+} from 'src/app/core/store/pages/pages.actions';
 
 @Component({
-  selector: 'app-dashboard-tile',
-  templateUrl: './dashboard-tile.component.html',
-  styleUrls: ['./dashboard-tile.component.scss'],
+  selector: 'app-page-panel',
+  templateUrl: './page-panel.component.html',
+  styleUrls: ['./page-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PanelStoreService],
 })
-export class DashboardTileComponent implements OnInit {
+export class PagePanelComponent implements OnInit {
   constructor(
     private dashboardService: DashboardService,
     private modal: MatDialog,
-    private panelStore: PanelStoreService
+    private panelStore: PanelStoreService,
+    private store: Store<AppState>
   ) {}
 
-  @Input() tileId: number | undefined = undefined;
-  @Input() tile: Tile | undefined;
+  @Input() panel: Panel | undefined;
   @Input() height: number = 30;
   @Input() isCreatorMode: boolean = false;
 
+  panelConfig$ = this.store.select(selectActivePage).pipe(
+    filter(() => !!this.panel && !!this.panel.tile),
+    map((res) =>
+      res?.layout.tiles.find((tile) => tile.tile === this.panel?.tile)
+    ),
+    filter((res) => !!res?.panelData),
+    distinctUntilChanged()
+  );
   private tileData: HGrid<HDict> | undefined;
 
-  ngOnInit(): void {
-    if (!!this.tileId) this.panelStore.setTileNumber(this.tileId);
-  }
+  ngOnInit(): void {}
 
   onTypeChange(type: 'chart' | 'table') {
-    if (!!this.tile?.type) this.tile.type = type;
+    if (!!this.panel) {
+      this.store.dispatch(changeActivePanelIndex({ id: this.panel.tile }));
+      this.store.dispatch(changePanelType({ panelType: type }));
+    }
   }
 
-  panelConfig$ = this.panelStore.onPageChange$;
-
-  tileData$ = this.panelStore.tileData$.pipe(
-    tap((res) => (this.tileData = res))
-  );
-
   onRollupChange(event: any) {
-    this.panelStore.updateParameters({
-      ...this.panelStore.rollupParameter$.getValue(),
-      rollup: event,
-    });
+    if (!!this.panel)
+      this.store.dispatch(changeActivePanelIndex({ id: this.panel.tile }));
+    this.store.dispatch(
+      changePanelParameters({ parameter: 'rollup', value: event })
+    );
   }
 
   onDownload() {
-    if (!!this.tileId)
+    if (!!this.panel?.tile)
       this.dashboardService
         .getData(
-          this.tileId,
+          this.panel.tile,
           { ...this.panelStore.rollupParameter$.getValue() },
           true
         )
@@ -68,6 +89,8 @@ export class DashboardTileComponent implements OnInit {
   }
 
   openDialog(): void {
+    if (!this.panel) return;
+    this.store.dispatch(changeActivePanelIndex({ id: this.panel.tile }));
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -79,7 +102,7 @@ export class DashboardTileComponent implements OnInit {
     dialogConfig.width = '600px';
     dialogConfig.height = '800px';
     dialogConfig.data = {
-      tile: this.tile,
+      tile: this.panel,
       grid: this.tileData,
     };
     dialogConfig.panelClass = 'config-dialog';

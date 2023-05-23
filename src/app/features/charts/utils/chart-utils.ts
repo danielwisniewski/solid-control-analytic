@@ -1,7 +1,3 @@
-import {
-  BarOptions,
-  LineOptions,
-} from '../../../shared/interfaces/bar-options';
 import { Chart } from 'chart.js';
 import { HGrid, HNum } from 'haystack-core';
 
@@ -52,14 +48,6 @@ export function getUnit(grid: HGrid): string {
   if (unit?.startsWith('_')) unit = unit.slice(1);
 
   return typeof unit !== 'undefined' ? unit : '';
-}
-
-export function selectMainColor(
-  index: number,
-  barOptions: BarOptions | LineOptions
-): string {
-  if (index === 0 && barOptions.mainColor) return barOptions.mainColor;
-  else return CHART_COLOR[index];
 }
 
 export function onResize(

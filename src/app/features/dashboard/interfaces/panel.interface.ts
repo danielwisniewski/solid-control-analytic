@@ -1,48 +1,27 @@
-export interface PageConfig {
-  scId: string;
-  path: string;
-  title: string;
-  skysparkFunc: string;
-  layout: {
-    colNumber: number;
-    rowHeight: number;
-    tiles: Tile[];
-  };
-  showSiteSelector: boolean;
-  showTimerangeSelector: boolean;
-  datepicker?: {
-    type: 'range' | 'single';
-    parameters: any;
-  };
-  variables?: PageVariable[];
-}
+import { HGrid } from 'haystack-core';
 
-export interface Tile {
+export interface Panel {
+  tile: number;
   cols: number;
   rows: number;
-  tile: number;
   type: 'chart' | 'table';
+  panelData?: HGrid | undefined;
+  meta?: PanelConfiguration;
+  columnsMeta?: ColumnConfiguration[];
   hasRollupSelector?: boolean;
-  rollups?: Rollup[];
-  meta?: PageTileMeta;
-  columnsMeta?: TableColumnMeta[];
+  availableRollupOptions?: RollupOption[];
+  parameters?: {
+    rollup?: RollupOption;
+    [key: string]: any;
+  };
 }
 
-export interface Rollup {
+export interface RollupOption {
   display: string;
   value: string;
 }
 
-export interface PageVariable {
-  name: string;
-  title?: string;
-  type?: 'values' | 'query';
-  selection?: 'single' | 'multi';
-  icon?: string;
-  options?: any;
-}
-
-export interface PageTileMeta extends ChartMeta, TableMeta {
+export interface PanelConfiguration extends ChartMeta, TableMeta {
   title?: string;
   showTitle?: boolean;
   subtitle?: string;
@@ -66,7 +45,7 @@ interface TableMeta {
   isDropdown?: boolean;
 }
 
-export interface TableColumnMeta {
+export interface ColumnConfiguration {
   columnName: string;
   dis?: string;
   visible?: boolean;

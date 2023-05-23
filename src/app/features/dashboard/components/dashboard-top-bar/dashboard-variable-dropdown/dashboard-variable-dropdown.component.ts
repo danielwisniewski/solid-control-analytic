@@ -5,7 +5,7 @@ import {
   Input,
   ChangeDetectorRef,
 } from '@angular/core';
-import { PageVariable } from '../../../interfaces/dashboard.interface';
+import { PageVariable } from '../../../interfaces/page-config.interface';
 import { HDict } from 'haystack-core';
 import { DashboardStore } from '../../../store/dashboard.store';
 import { DashboardService } from '../../../services/dashboard.service';
@@ -21,6 +21,8 @@ import {
   tap,
 } from 'rxjs';
 import { SiteStore } from 'src/app/core/store/site.store';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/state';
 
 @Component({
   selector: 'app-dashboard-variable-dropdown',
@@ -33,10 +35,11 @@ export class DashboardVariableDropdownComponent implements OnInit {
   data: HDict[] | undefined;
   activeOption: { dis: string; val: string } | undefined;
   constructor(
-    private store: DashboardStore,
+    private storeOld: DashboardStore,
     private pageService: DashboardService,
     private siteStore: SiteStore,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private store: Store<AppState>
   ) {}
   sub: Subscription | undefined;
   options: { dis: string; val: any }[] | undefined;
@@ -53,7 +56,7 @@ export class DashboardVariableDropdownComponent implements OnInit {
             this.options = res as any;
             if (!!this.options) {
               this.activeOption = this.options[0];
-              this.store.updatePageVariables({
+              this.storeOld.updatePageVariables({
                 [`var-${this.variable?.name}`]: this.activeOption?.val,
               });
             }
@@ -66,7 +69,7 @@ export class DashboardVariableDropdownComponent implements OnInit {
       this.options = this.variable.options;
       this.activeOption = this.variable?.options[0];
 
-      this.store.updatePageVariables({
+      this.storeOld.updatePageVariables({
         [`var-${this.variable?.name}`]: this.activeOption?.val,
       });
     }
@@ -74,7 +77,7 @@ export class DashboardVariableDropdownComponent implements OnInit {
 
   changeActiveOption(option: any) {
     this.activeOption = option;
-    this.store.updatePageVariables({
+    this.storeOld.updatePageVariables({
       [`var-${this.variable?.name}`]: this.activeOption?.val,
     });
   }

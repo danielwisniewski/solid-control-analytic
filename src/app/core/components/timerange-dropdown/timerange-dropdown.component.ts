@@ -17,7 +17,22 @@ import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { plLocale } from 'ngx-bootstrap/locale';
 import { TimerangeStore } from 'src/app/core/store/timerange.store';
-import { Observable, filter, map } from 'rxjs';
+import {
+  Observable,
+  combineLatest,
+  filter,
+  map,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import {
+  selectActiveTimerange,
+  selectTimerangeConfiguration,
+} from '../../store/timerange/timerange.selectors';
+import { setActiveTimerange } from '../../store/timerange/timerange.actions';
+import { fetchPanelsData } from '../../store/pages/pages.actions';
 
 @Component({
   selector: 'app-timerange-dropdown',
@@ -25,50 +40,59 @@ import { Observable, filter, map } from 'rxjs';
   styleUrls: ['./timerange-dropdown.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimerangeDropdownComponent implements OnInit, OnChanges {
+export class TimerangeDropdownComponent implements OnInit {
   constructor(
     private localeService: BsLocaleService,
-    private TimerangeStore: TimerangeStore
+    private TimerangeStore: TimerangeStore,
+    private store: Store<AppState>
   ) {}
 
   @Input() parameters: any = {};
-  @Input() type: 'range' | 'single' = 'range';
+  type$ = combineLatest(
+    this.store.select(selectTimerangeConfiguration),
+    this.store.select(selectActiveTimerange)
+  )
+    .pipe(filter(([config, timerange]) => !!config && !!timerange))
+    .subscribe(([config, timerange]) => {
+      this.type = config?.type ?? 'range';
+      this.parameters = config?.parameters;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['type']) {
-      if (
-        changes['type'].currentValue === 'single' &&
-        this.TimerangeStore.activeTimerange$.getValue().startsWith('toDateSpan')
-      ) {
-        this.TimerangeStore.onActiveTimerangeChange(
-          this.generateSpan(new Date())
+      if (config?.type === 'single' && timerange.startsWith('toDateSpan')) {
+        const generatedDates = this.generateSpan(new Date());
+
+        this.store.dispatch(
+          setActiveTimerange({
+            dates: generatedDates,
+          })
         );
-      } else if (
-        changes['type'].currentValue === 'range' &&
-        this.TimerangeStore.activeTimerange$.getValue().startsWith('toSpan')
-      ) {
-        const date = [DateTime.local().startOf('week').toJSDate(), new Date()];
-        this.TimerangeStore.onActiveTimerangeChange(
-          this.generateDateSpan(date)
-        );
+      } else if (config?.type === 'range' && timerange.startsWith('toSpan')) {
+        const generatedDates = this.generateDateSpan([
+          DateTime.local().startOf('week').toJSDate(),
+          new Date(),
+        ]);
+
+        this.store.dispatch(setActiveTimerange({ dates: generatedDates }));
       }
-    }
-  }
+    });
 
-  bsRangeValue: Observable<Date[]> = this.TimerangeStore.activeTimerange$.pipe(
-    map((res) => {
-      if (this.type === 'range') {
-        const date = res
-          .replace('toDateSpan(', '')
-          .replace(')', '')
-          .split('..');
+  type: string = 'range';
 
-        return [new Date(date[0]), new Date(date[1])];
-      } else return [new Date()];
-    })
-  );
+  bsRangeValue: Observable<Date[]> = this.store
+    .select(selectActiveTimerange)
+    .pipe(
+      map((res) => {
+        if (this.type === 'range') {
+          const date = res
+            .replace('toDateSpan(', '')
+            .replace(')', '')
+            .split('..');
 
-  bsValue: Observable<Date[]> = this.TimerangeStore.activeTimerange$.pipe(
+          return [new Date(date[0]), new Date(date[1])];
+        } else return [new Date()];
+      })
+    );
+
+  bsValue: Observable<Date[]> = this.store.select(selectActiveTimerange).pipe(
     map((res) => {
       if (this.type === 'single') {
         const date = res.replace('toSpan(', '').replace(')', '');
@@ -82,6 +106,9 @@ export class TimerangeDropdownComponent implements OnInit, OnChanges {
   bsDateConfig: BsDatepickerConfig = new BsDatepickerConfig();
 
   ngOnInit(): void {
+    this.store.dispatch(setActiveTimerange({ dates: '' }));
+    this.store.dispatch(fetchPanelsData());
+
     this.localeService.use('pl');
     defineLocale('pl', plLocale);
 
@@ -118,35 +145,37 @@ export class TimerangeDropdownComponent implements OnInit, OnChanges {
 
     if (!result) return;
 
-    this.TimerangeStore.onActiveTimerangeChange(result);
+    this.store.dispatch(setActiveTimerange({ dates: result }));
   }
 
-  displayText$: Observable<string> = this.TimerangeStore.activeTimerange$.pipe(
-    filter((val) => typeof val !== 'undefined'),
-    map((values) => {
-      const format: DateTimeFormatOptions = { month: 'long', day: 'numeric' };
-      if (this.type === 'range') {
-        const dates: string[] = values
-          .replace('toDateSpan(', '')
-          .replace(')', '')
-          .split('..');
-        const start = DateTime.fromJSDate(new Date(dates[0])).toLocaleString(
-          format
-        );
-        const end = DateTime.fromJSDate(new Date(dates[1])).toLocaleString(
-          format
-        );
+  displayText$: Observable<string> = this.store
+    .select(selectActiveTimerange)
+    .pipe(
+      filter((val) => typeof val !== 'undefined'),
+      map((values) => {
+        const format: DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+        if (this.type === 'range') {
+          const dates: string[] = values
+            .replace('toDateSpan(', '')
+            .replace(')', '')
+            .split('..');
+          const start = DateTime.fromJSDate(new Date(dates[0])).toLocaleString(
+            format
+          );
+          const end = DateTime.fromJSDate(new Date(dates[1])).toLocaleString(
+            format
+          );
 
-        return `${start} - ${end}`;
-      } else {
-        const date = values.replace('toSpan(', '').replace(')', '');
-        const start = DateTime.fromJSDate(new Date(date)).toLocaleString(
-          format
-        );
-        return `${start}`;
-      }
-    })
-  );
+          return `${start} - ${end}`;
+        } else {
+          const date = values.replace('toSpan(', '').replace(')', '');
+          const start = DateTime.fromJSDate(new Date(date)).toLocaleString(
+            format
+          );
+          return `${start}`;
+        }
+      })
+    );
 
   private generateDateSpan(dates: Date[]): string {
     const start: string = DateTime.fromJSDate(dates[0])

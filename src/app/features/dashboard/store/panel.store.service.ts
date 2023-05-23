@@ -18,9 +18,10 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { PageConfig, Tile } from '../interfaces/dashboard.interface';
+import { PageState } from '../interfaces/page-config.interface';
 import { DashboardService } from '../services/dashboard.service';
 import { HGrid } from 'haystack-core';
+import { Panel } from '../interfaces/panel.interface';
 
 @Injectable()
 export class PanelStoreService {
@@ -36,8 +37,8 @@ export class PanelStoreService {
   }
 
   private tileId: number | undefined;
-  private panelConfig: Tile | undefined;
-  private pageConfig: PageConfig | undefined;
+  private panelConfig: Panel | undefined;
+  private pageConfig: PageState | undefined;
 
   rollupParameter$ = new BehaviorSubject<any>({});
   private rollupParameter: any = {};
@@ -86,10 +87,10 @@ export class PanelStoreService {
    * ? page configuration and data related to each panel.
    * ? PageConfig returns configuration of the entire page. Based on TileId only active panel is selected.
    */
-  onPageChange$: Observable<Tile | undefined> = this.onPageConfigChange$.pipe(
+  onPageChange$: Observable<Panel | undefined> = this.onPageConfigChange$.pipe(
     filter(() => !!this.tileId),
-    tap((pageConfig: PageConfig | undefined) => (this.pageConfig = pageConfig)),
-    map((pageConfig: PageConfig | undefined) =>
+    tap((pageConfig: PageState | undefined) => (this.pageConfig = pageConfig)),
+    map((pageConfig: PageState | undefined) =>
       pageConfig?.layout.tiles.find((tile) => tile.tile === this.tileId)
     ),
     filter((res) => !!res),
@@ -181,7 +182,6 @@ export class PanelStoreService {
     this.dashboardStore.triggerDataUpdate$
   ).pipe(
     filter((res) => !!res),
-    tap((res) => console.log(res)),
     switchMap(() => {
       const params = {
         ...this.rollupParameter,
@@ -220,7 +220,7 @@ export class PanelStoreService {
   updateTileDataByCreator$ =
     this.dashboardStore.activePageByCreatorModule$.pipe(
       filter(() => this.dashboardStore.activeTile$.getValue() === this.tileId),
-      map((pageConfig: PageConfig | undefined) =>
+      map((pageConfig: PageState | undefined) =>
         pageConfig?.layout.tiles.find((tile) => tile.tile === this.tileId)
       ),
       map((panelConfig) => {

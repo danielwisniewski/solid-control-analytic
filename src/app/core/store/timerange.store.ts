@@ -11,6 +11,7 @@ interface IRange {
   providedIn: 'root',
 })
 export class TimerangeStore {
+  [x: string]: any;
   constructor() {
     if (!!localStorage.getItem('activeTimerange')) {
       const timerange: string = localStorage.getItem('activeTimerange')!;

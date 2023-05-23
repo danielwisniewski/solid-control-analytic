@@ -1,7 +1,7 @@
-import { PageConfig } from 'src/app/features/dashboard/interfaces/dashboard.interface';
+import { PageState } from 'src/app/features/dashboard/interfaces/page-config.interface';
 import { RouteInfo } from '../components/sidebar/sidebar.component';
 
 export interface AppConfig {
   menu: RouteInfo[];
-  dashboards?: PageConfig[];
+  dashboards?: PageState[];
 }

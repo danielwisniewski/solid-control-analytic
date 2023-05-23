@@ -18,7 +18,6 @@ export function chartjsType(grid: HGrid): ChartType {
     pie: 'pie',
   };
   let type = 'bar';
-
   if (grid.meta.has('chartType'))
     return chartTypes[grid.meta.get('chartType')!.toString()];
 

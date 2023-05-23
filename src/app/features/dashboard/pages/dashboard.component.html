@@ -1,27 +1,24 @@
 <div class="content">
-  <app-dashboard-top-bar
-    [isCreatorMode]="isCreatorMode"
-  ></app-dashboard-top-bar>
+  <app-dashboard-top-bar></app-dashboard-top-bar>
   <mat-grid-list
     [cols]="(pageConfig$ | async)?.layout?.colNumber ?? 12"
     [rowHeight]="((pageConfig$ | async)?.layout?.rowHeight ?? 30) + 'vh'"
   >
     <mat-grid-tile
       *ngFor="
-        let tile of (pageConfig$ | async)?.layout?.tiles;
+        let panel of (pageConfig$ | async)?.layout?.tiles;
         let index = index;
         trackBy: trackBy
       "
-      [colspan]="tile.cols"
-      [rowspan]="tile.rows"
+      [colspan]="panel.cols"
+      [rowspan]="panel.rows"
     >
-      <app-dashboard-tile
-        [tile]="tile"
-        [tileId]="tile.tile"
-        [height]="((pageConfig$ | async)?.layout?.rowHeight ?? 10) * tile.rows"
-        [isCreatorMode]="isCreatorMode"
+      <app-page-panel
+        [panel]="panel"
+        [height]="((pageConfig$ | async)?.layout?.rowHeight ?? 10) * panel.rows"
+        [isCreatorMode]="!!(isCreatorMode$ | async)"
       >
-      </app-dashboard-tile>
+      </app-page-panel>
     </mat-grid-tile>
   </mat-grid-list>
 </div>

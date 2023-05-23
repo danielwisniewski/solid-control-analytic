@@ -7,13 +7,11 @@ import {
 } from '@angular/core';
 import { DashboardStore } from '../../../dashboard/store/dashboard.store';
 import { Subscription, filter, merge } from 'rxjs';
-import {
-  PageConfig,
-  Tile,
-} from '../../../dashboard/interfaces/dashboard.interface';
+import { PageState } from '../../../dashboard/interfaces/page-config.interface';
 
 import { defaultRollups } from '../../../dashboard/constants/dashboard.constants';
 import { CreatePageService } from '../../services/create-page.service';
+import { Panel } from 'src/app/features/dashboard/interfaces/panel.interface';
 @Component({
   selector: 'app-page-config-top-bar',
   templateUrl: './page-config-top-bar.component.html',
@@ -41,7 +39,7 @@ export class PageConfigTopBarComponent implements OnInit, OnDestroy {
       });
   }
 
-  pageConfig: PageConfig | undefined;
+  pageConfig: PageState | undefined;
 
   change() {
     this.dashboardStore.activePageByCreatorModule$.next(this.pageConfig);
@@ -61,13 +59,13 @@ export class PageConfigTopBarComponent implements OnInit, OnDestroy {
     const lastPanelId: number = Math.max(
       ...this.pageConfig.layout.tiles.map((r) => r.tile)
     );
-    const newPanel: Tile = {
+    const newPanel: Panel = {
       tile: lastPanelId + 1,
       cols: 6,
       rows: 3,
       type: 'chart',
       hasRollupSelector: false,
-      rollups: defaultRollups,
+      availableRollupOptions: defaultRollups,
       meta: {
         title: '',
         showTitle: false,

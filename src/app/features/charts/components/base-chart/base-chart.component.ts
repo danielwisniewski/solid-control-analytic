@@ -21,7 +21,6 @@ export class BaseChartComponent implements OnChanges {
   constructor(private chartGenService: ChartGenerationService) {}
 
   @Input() chartConfiguration: HGrid | undefined | null;
-  @Input() chartTitle: string | undefined;
 
   @Input() height: string = '30vh';
   chartConfig: ChartConfiguration | undefined;
