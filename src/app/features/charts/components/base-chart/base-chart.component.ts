@@ -10,6 +10,8 @@ import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { HGrid } from 'haystack-core';
 import { ChartGenerationService } from '../../services/chart-generation.service';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-base-chart',
@@ -18,9 +20,14 @@ import { ChartGenerationService } from '../../services/chart-generation.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BaseChartComponent implements OnChanges {
-  constructor(private chartGenService: ChartGenerationService) {}
+  constructor(
+    private chartGenService: ChartGenerationService,
+    private store: Store<AppState>
+  ) {}
 
   @Input() chartConfiguration: HGrid | undefined | null;
+
+  @Input() panelId: number | undefined;
 
   @Input() height: string = '30vh';
   chartConfig: ChartConfiguration | undefined;
@@ -30,12 +37,12 @@ export class BaseChartComponent implements OnChanges {
   ngOnChanges(change: SimpleChanges): void {
     this.chartConfig = change['chartConfiguration']?.currentValue;
     if (!!change['chartConfiguration']?.currentValue) {
-      if (this.chart) {
+      if (!!this.chart) {
         this.chartConfig = this.chartGenService.generateChart(
           change['chartConfiguration'].currentValue
         );
         this.chart.update();
-        this.chart.render();
+        // this.chart.render();
       } else {
         this.chartConfig = this.chartGenService.generateChart(
           change['chartConfiguration'].currentValue

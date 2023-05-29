@@ -21,7 +21,7 @@ export function modifyPanelData(state: PagesState, data: any) {
       if (!!panelData) {
         panelData.meta.update(meta);
 
-        columnsMeta.forEach((columnMeta) => {
+        columnsMeta?.forEach((columnMeta) => {
           for (const meta in columnMeta) {
             panelData
               .getColumn(columnMeta.columnName)
@@ -83,13 +83,11 @@ export function modifyPanelConfiguration(
     return {
       ...state,
       pagesConfig: updatedPagesConfig,
-      activePanelIndex: -1,
     };
   }
 
   return {
     ...state,
-    activePanelIndex: -1,
   };
 }
 

@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 import { setActiveTimerange } from './timerange.actions';
-import { DateTime } from 'luxon';
 import { Store } from '@ngrx/store';
-import { fetchPanelsData } from '../pages/pages.actions';
+import { selectPagesState } from '../pages/pages.selectors';
+import { fetchPanelData } from '../pages/panels.actions';
 
 @Injectable()
 export class TimerangeEffects {
@@ -17,8 +22,16 @@ export class TimerangeEffects {
         tap((action) => {
           const localStorageKey = 'activeTimerange';
           localStorage.setItem(localStorageKey, action.dates);
-
-          this.store.dispatch(fetchPanelsData());
+        }),
+        withLatestFrom(this.store.select(selectPagesState)),
+        tap(([action, page]) => {
+          if (!!page && !!page.pagesConfig)
+            page?.pagesConfig[page.activePageIndex].layout.tiles.forEach(
+              (tile) => {
+                if (!!tile.meta?.skipUpdateOnTimerangeChange) return;
+                this.store.dispatch(fetchPanelData({ id: tile.tile }));
+              }
+            );
         })
       ),
     { dispatch: false }

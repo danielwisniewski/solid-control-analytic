@@ -28,6 +28,11 @@ export const selectActivePanel = createSelector(
     page?.layout.tiles.find((tile) => tile.tile === state.activePanelIndex)
 );
 
+export const selectPanelById = (id: number) =>
+  createSelector(selectActivePage, (page) =>
+    page?.layout.tiles.find((tile) => tile.tile === id)
+  );
+
 export const isCreatorMode = createSelector(
   selectPagesState,
   (state) => state.isCreatorMode

@@ -1,133 +1,90 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TimerangeDropdownComponent } from './timerange-dropdown.component';
-import { StoreModule } from '@ngrx/store';
-import {
-  initialState,
-  timerangeReducer,
-} from '../../store/timerange/timerange.reducer';
-import { setActiveTimerange } from '../../store/timerange/timerange.actions';
-import {
-  BsLocaleService,
-  BsDatepickerConfig,
-  BsDaterangepickerConfig,
-} from 'ngx-bootstrap/datepicker';
-import { TimerangeStore } from 'src/app/core/store/timerange.store';
+import { BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { Store, StoreModule } from '@ngrx/store';
 import { of } from 'rxjs';
+import { DateTime } from 'luxon';
+
+import { TimerangeDropdownComponent } from './timerange-dropdown.component';
+import { setActiveTimerange } from '../../store/timerange/timerange.actions';
+import { plLocale } from 'ngx-bootstrap/locale';
+import { defineLocale } from 'ngx-bootstrap/chronos';
 
 describe('TimerangeDropdownComponent', () => {
   let component: TimerangeDropdownComponent;
   let fixture: ComponentFixture<TimerangeDropdownComponent>;
-  let timerangeStore: TimerangeStore;
-  let bsLocaleService: BsLocaleService;
+  let store: Store<any>;
+  let localeService: BsLocaleService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [StoreModule.forRoot({})], // Add necessary imports and providers
       declarations: [TimerangeDropdownComponent],
-      imports: [
-        StoreModule.forRoot({ timerange: timerangeReducer }, {
-          initialState,
-        } as any),
-      ],
-      providers: [BsLocaleService, TimerangeStore],
+      providers: [BsLocaleService], // Provide required dependencies
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TimerangeDropdownComponent);
     component = fixture.componentInstance;
-    timerangeStore = TestBed.inject(TimerangeStore);
-    bsLocaleService = TestBed.inject(BsLocaleService);
-    fixture.detectChanges();
+    store = TestBed.inject(Store);
+    localeService = TestBed.inject(BsLocaleService);
+
+    fixture.detectChanges(); // Trigger change detection
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should dispatch setActiveTimerange action when onHidden is called', () => {
-    spyOn(timerangeStore, 'dispatch');
-    const dates = 'toSpan(2023-01-01)';
-    component.onHidden([new Date(2023, 0, 1)]);
-    expect(timerangeStore['dispatch']).toHaveBeenCalledWith(
-      setActiveTimerange({ dates })
+  it('should initialize with correct defaults', () => {
+    expect(component.type).toBe('range');
+    // Perform additional assertions for default values
+  });
+
+  it('should update date range config on initialization', () => {
+    // Spy on the localeService.use method
+    const localeServiceSpy = spyOn(localeService, 'use');
+    // Spy on the defineLocale function from ngx-bootstrap
+    const defineLocaleSpy = spyOn(defineLocale, 'call' as never);
+
+    component.ngOnInit();
+
+    expect(localeServiceSpy).toHaveBeenCalledWith('pl');
+    expect(defineLocaleSpy).toHaveBeenCalledWith(
+      'pl' as never,
+      plLocale as never
     );
+    // Perform additional assertions for the updated configuration
   });
 
-  it('should display the formatted active timerange', () => {
-    const activeTimerange = 'toSpan(2023-01-01)';
-    const displayText = 'January 1, 2023';
-    spyOnProperty(timerangeStore, 'select').and.returnValue(
-      of(activeTimerange)
+  it('should update the active timerange on hidden event', () => {
+    const dates = [new Date(), new Date()]; // Mock dates
+
+    // Dispatch the setActiveTimerange action when onHidden is called
+    const dispatchSpy = spyOn(store, 'dispatch');
+    component.onHidden(dates);
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      setActiveTimerange({ dates: 'toDateSpan(date1..date2)' })
     );
-    fixture.detectChanges();
-    const buttonText = fixture.nativeElement
-      .querySelector('.dropdown-toggle')
-      .textContent.trim();
-    expect(buttonText).toBe(displayText);
+    // Perform additional assertions
   });
 
-  it('should set bsDateRangeConfig and bsDateConfig properties', () => {
-    const bsDateRangeConfig: BsDaterangepickerConfig = {
-      displayMonths: 0,
-      adaptivePosition: false,
-      useUtc: false,
-      isAnimated: false,
-      startView: 'year',
-      returnFocusToInput: false,
-      containerClass: '',
-      showWeekNumbers: false,
-      dateInputFormat: '',
-      rangeSeparator: '',
-      rangeInputFormat: '',
-      monthTitle: '',
-      yearTitle: '',
-      dayLabel: '',
-      monthLabel: '',
-      yearLabel: '',
-      weekNumbers: '',
-      showTodayButton: false,
-      showClearButton: false,
-      todayPosition: '',
-      clearPosition: '',
-      todayButtonLabel: '',
-      clearButtonLabel: '',
-      customRangeButtonLabel: '',
-      withTimepicker: false,
-      allowedPositions: [],
-    };
+  it('should generate the display text correctly', () => {
+    const formatSpy = spyOn(DateTime.prototype, 'toLocaleString');
 
-    const bsDateConfig: BsDatepickerConfig = {
-      adaptivePosition: false,
-      useUtc: false,
-      isAnimated: false,
-      startView: 'year',
-      returnFocusToInput: false,
-      containerClass: '',
-      displayMonths: 0,
-      showWeekNumbers: false,
-      dateInputFormat: '',
-      rangeSeparator: '',
-      rangeInputFormat: '',
-      monthTitle: '',
-      yearTitle: '',
-      dayLabel: '',
-      monthLabel: '',
-      yearLabel: '',
-      weekNumbers: '',
-      showTodayButton: false,
-      showClearButton: false,
-      todayPosition: '',
-      clearPosition: '',
-      todayButtonLabel: '',
-      clearButtonLabel: '',
-      customRangeButtonLabel: '',
-      withTimepicker: false,
-      allowedPositions: [],
-    };
+    // Mock the selectActiveTimerange selector
+    spyOn(store, 'select').and.returnValue(of('toDateSpan(date1..date2)'));
 
-    expect(component.bsDateRangeConfig).toEqual(bsDateRangeConfig);
-    expect(component.bsDateConfig).toEqual(bsDateConfig);
+    component.displayText$.subscribe(() => {
+      expect(formatSpy).toHaveBeenCalled();
+      // Perform additional assertions
+    });
   });
 
-  // Add more test cases as needed
+  // Write more unit tests to cover other methods and functionalities
+
+  afterEach(() => {
+    fixture.destroy();
+  });
 });

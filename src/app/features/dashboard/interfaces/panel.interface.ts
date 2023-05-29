@@ -1,3 +1,4 @@
+import { ChartConfiguration } from 'chart.js';
 import { HGrid } from 'haystack-core';
 
 export interface Panel {
@@ -9,7 +10,7 @@ export interface Panel {
   meta?: PanelConfiguration;
   columnsMeta?: ColumnConfiguration[];
   hasRollupSelector?: boolean;
-  availableRollupOptions?: RollupOption[];
+  rollups?: RollupOption[];
   parameters?: {
     rollup?: RollupOption;
     [key: string]: any;

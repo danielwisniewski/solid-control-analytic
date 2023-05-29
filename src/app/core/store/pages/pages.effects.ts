@@ -2,18 +2,13 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
-import {
-  changeActivePageIndex,
-  fetchPanelData,
-  fetchPanelsData,
-  loadPages,
-  setPanelData,
-} from './pages.actions';
+import { changeActivePageIndex, loadPages } from './pages.actions';
 import {
   distinctUntilChanged,
   filter,
   map,
   mergeMap,
+  startWith,
   tap,
   withLatestFrom,
 } from 'rxjs';
@@ -29,6 +24,13 @@ import { selectActiveTimerange } from '../timerange/timerange.selectors';
 import { RequestReadService } from '../../services/requests/read/request-read.service';
 import { queryToZinc } from '../../functions/utils';
 import { HGrid } from 'haystack-core';
+import {
+  fetchPanelData,
+  setPanelData,
+  changePanelParameters,
+  changeActivePanelIndex,
+} from './panels.actions';
+import { setActiveTimerange } from '../timerange/timerange.actions';
 
 @Injectable()
 export class PagesEffects {
@@ -41,22 +43,15 @@ export class PagesEffects {
           this.store.select(selectActivePage)
         ),
         distinctUntilChanged(),
-        map(([pages, route]) => {
+        tap(([pages, route]) => {
+          this.store.dispatch(setActiveTimerange({ dates: '' }));
+
           const activePageIndex = pages.pages.findIndex(
             (page) => page.path === route
           );
           this.store.dispatch(
             changeActivePageIndex({ index: activePageIndex })
           );
-          return pages.pages[activePageIndex].layout;
-        }),
-        tap((res) => {
-          if (!res) return;
-          res.tiles.forEach((tile) => {
-            if (!tile.hasRollupSelector) {
-              this.store.dispatch(fetchPanelData({ id: tile.tile }));
-            }
-          });
         })
       ),
     { dispatch: false }
@@ -73,6 +68,17 @@ export class PagesEffects {
           this.store.select(selectActivePage),
           this.store.select(selectPagesState)
         ),
+        tap(([action, activeSite, skysparkFunc, timerange, page, state]) => {
+          this.store.dispatch(
+            setPanelData({
+              data: {
+                pageIndex: state.activePageIndex,
+                panelId: action.id,
+                panelData: undefined,
+              },
+            })
+          );
+        }),
         filter(
           ([action, activeSite, skysparkFunc, timerange, page, state]) =>
             !!activeSite && !!skysparkFunc && !!timerange && action.id > -1
@@ -118,14 +124,36 @@ export class PagesEffects {
   onPageChange$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(fetchPanelsData),
+        ofType(changeActivePageIndex),
         withLatestFrom(this.store.select(selectActivePage)),
-        filter(([action, page]) => !!page),
+        filter(([action, page]) => !!page && !!action),
         map(([action, page]) => page!),
-        tap((page: PageState) => {
+        distinctUntilChanged(),
+        map((page: PageState) => {
+          const hasQueryVariable = page.variables?.some(
+            (variable) => variable.type === 'query'
+          );
           page.layout.tiles.forEach((tile) => {
+            if (!!tile.hasRollupSelector) return;
+            if (!!hasQueryVariable && !tile.meta?.skipUpdateOnVariableChange)
+              return;
             this.store.dispatch(fetchPanelData({ id: tile.tile }));
           });
+        })
+      ),
+    { dispatch: false }
+  );
+
+  onParameterChange$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(changePanelParameters),
+        withLatestFrom(this.store.select(selectPagesState)),
+        tap(([res, state]) =>
+          this.store.dispatch(fetchPanelData({ id: state.activePanelId }))
+        ),
+        tap(([res, state]) => {
+          this.store.dispatch(changeActivePanelIndex({ id: -1 }));
         })
       ),
     { dispatch: false }

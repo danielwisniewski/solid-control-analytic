@@ -27,6 +27,7 @@ export interface PageVariable {
   name: string;
   title?: string;
   type?: 'values' | 'query';
+  skipUpdateOnSiteChange?: boolean;
   selection?: 'single' | 'multi';
   icon?: string;
   options?: any;

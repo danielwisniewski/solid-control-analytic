@@ -21,6 +21,7 @@ export function generateTitle(reqResponse: HGrid): ChartOptions {
             : 'Spróbuj wybrać inne urządzenie lub czasookres',
           font: {
             size: 15,
+            lineHeight: '1rem',
           },
           padding: 15,
         },

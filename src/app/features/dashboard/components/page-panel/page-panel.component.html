@@ -19,20 +19,19 @@
       {{ (panelConfig$ | async)?.panelData?.meta?.get("title") }}
     </h3>
     <app-chart-table-toggle
-      [tileType]="(panelConfig$ | async)?.type ?? 'chart'"
-      (tileTypeToggled)="onTypeChange($event)"
+      [tileId]="(panelConfig$ | async)?.tile ?? -1"
       *ngIf="!!(panelConfig$ | async)?.meta?.showTileTypeSelector"
       class="text-start"
     >
     </app-chart-table-toggle>
     <app-rollup-selector
       *ngIf="
-        (panelConfig$ | async)?.hasRollupSelector &&
+        !!(panelConfig$ | async)?.hasRollupSelector &&
         (panelConfig$ | async)?.type === 'chart'
       "
       [tile]="(panelConfig$ | async) ?? undefined"
-      (onRollupChange)="onRollupChange($event)"
-    ></app-rollup-selector>
+      >{{ !!(panelConfig$ | async)?.hasRollupSelector }}</app-rollup-selector
+    >
     <span
       style="font-size: 18px"
       class="ml-4"
@@ -48,14 +47,15 @@
   <div class="card-body p-1">
     <ng-container *ngIf="panel?.type === 'chart'">
       <app-base-chart
-        [chartConfiguration]="(panelConfig$ | async)?.panelData"
+        [chartConfiguration]="panel?.panelData"
+        [panelId]="panel?.tile"
         [height]="height.toString()"
       >
       </app-base-chart>
     </ng-container>
     <ng-container *ngIf="panel?.type === 'table'">
       <app-grid-table
-        [data]="(panelConfig$ | async)?.panelData"
+        [data]="panel?.panelData"
         style="width: -webkit-fill-available"
         (onDownload)="onDownload()"
         [height]="height.toString()"

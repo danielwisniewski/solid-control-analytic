@@ -29,8 +29,10 @@ function generateTimeseriesDataset(
 
   for (let i = 0; i < reqResponse.getColumnsLength(); i++) {
     if (reqResponse.getColumn(i)?.name === 'ts') continue;
+    const columnName = reqResponse.getColumn(i)?.name;
+    if (!columnName) continue;
 
-    const label: string = generateLabelName(reqResponse, i);
+    const label: string = generateLabelName(reqResponse, columnName);
 
     const generatedColors = generateColors(colorCounter, colors);
 
@@ -43,14 +45,17 @@ function generateTimeseriesDataset(
 
     colorCounter++;
 
-    const unit = reqResponse.getColumn(i)?.meta.get('unit')?.toString();
+    const unit = reqResponse
+      .getColumn(columnName)
+      ?.meta.get('unit')
+      ?.toString();
 
     const unitObject = generateUnitsObject(reqResponse);
 
     const yAxisID = unitObject.find((r) => r.unit === unit)?.axisName ?? 'y0';
 
     const CHART_DATASET: ChartDataset = {
-      data: generateDataByColumnIndex(reqResponse, i),
+      data: generateDataByColumnIndex(reqResponse, columnName),
       label: label,
       type: TYPE ?? 'bar',
       pointRadius: 0,
@@ -100,9 +105,6 @@ function generatePieDataset(
     hoverBackgroundColor: [] as string[],
     hoverBorderColor: [] as string[],
   };
-  console.log(reqResponse.getColumnNames());
-  reqResponse.reorderColumns(sortValuesDescOrder(reqResponse));
-  console.log(reqResponse.getColumnNames());
 
   for (let i = 0; i < reqResponse.getColumnsLength(); i++) {
     const columnName = reqResponse.getColumnNames()[i];
@@ -114,7 +116,9 @@ function generatePieDataset(
 
     const generatedColors = generateColors(i, colors);
 
-    CHART_DATASET.data.push(generateDataByColumnIndex(reqResponse, i)[0]);
+    CHART_DATASET.data.push(
+      generateDataByColumnIndex(reqResponse, columnName)[0]
+    );
     colorsArray.pointBackgroundColor.push(generatedColors.solidColor);
     colorsArray.backgroundColor.push(generatedColors.transparentColor);
     colorsArray.borderColor.push(generatedColors.solidColor);
@@ -137,7 +141,10 @@ function generatePieDataset(
   ];
 }
 
-function generateDataByColumnIndex(grid: HGrid, index: number): number[] {
+function generateDataByColumnIndex(
+  grid: HGrid,
+  index: number | string
+): number[] {
   const COLUMN_NAME = grid.getColumn(index)?.name;
   const COLUMN_TYPE = grid.getColumn(index)?.meta.get('kind')?.toString();
   if (COLUMN_TYPE === 'Number' && COLUMN_NAME) {
@@ -145,25 +152,6 @@ function generateDataByColumnIndex(grid: HGrid, index: number): number[] {
       .listBy<HNum>(COLUMN_NAME)
       .map((value) => calculatePrecision(value));
   } else return [0];
-}
-
-function sortValuesDescOrder(reqResponse: HGrid): string[] {
-  const columnNames = reqResponse.getColumnNames();
-  const columnValues = reqResponse.getRows()[0].values;
-
-  let valuesObject = columnNames.map(function (value: string, index: number) {
-    const formattedValue = columnValues[index] as HNum;
-    return {
-      name: value,
-      value: formattedValue?.value || 0,
-    };
-  });
-  const sortedColumns: string[] = [];
-  valuesObject
-    .sort((a, b) => b.value - a.value)
-    .forEach((el) => sortedColumns.push(el.name));
-
-  return sortedColumns;
 }
 
 export function calculatePrecision(val: HNum): number {
@@ -191,7 +179,10 @@ function generateColors(index: number, colors: string[]) {
   };
 }
 
-export function generateLabelName(reqResponse: HGrid, i: number): string {
+export function generateLabelName(
+  reqResponse: HGrid,
+  i: number | string
+): string {
   let label: string = '';
   const column = reqResponse.getColumn(i);
 

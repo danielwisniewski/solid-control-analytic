@@ -65,7 +65,7 @@ export class PageConfigTopBarComponent implements OnInit, OnDestroy {
       rows: 3,
       type: 'chart',
       hasRollupSelector: false,
-      availableRollupOptions: defaultRollups,
+      rollups: defaultRollups,
       meta: {
         title: '',
         showTitle: false,

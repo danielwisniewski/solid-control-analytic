@@ -38,7 +38,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            availableRollupOptions: defaultRollups,
+            rollups: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -65,7 +65,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            availableRollupOptions: defaultRollups,
+            rollups: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -92,7 +92,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            availableRollupOptions: defaultRollups,
+            rollups: defaultRollups,
             meta: {
               title: '',
               showTitle: false,
@@ -119,7 +119,7 @@ export class CreatePageService {
             rows: 3,
             type: 'chart',
             hasRollupSelector: false,
-            availableRollupOptions: defaultRollups,
+            rollups: defaultRollups,
             meta: {
               title: '',
               showTitle: false,

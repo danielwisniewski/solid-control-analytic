@@ -38,7 +38,6 @@ export const siteReducer = createReducer(
     };
   }),
   on(SiteActions.changeActiveSite, (state, { site }) => {
-    localStorage.setItem('site', JSON.stringify(site.toJSON()));
     return { ...state, activeSite: site };
   })
 );

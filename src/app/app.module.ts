@@ -18,6 +18,7 @@ import { TimerangeEffects } from './core/store/timerange/timerange.effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { RouterEffects } from './core/store/router/router.effects';
 import { PagesEffects } from './core/store/pages/pages.effects';
+import { SitesEffects } from './core/store/sites/sites.effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,7 +30,12 @@ import { PagesEffects } from './core/store/pages/pages.effects';
     HttpClientModule,
     ToastrModule.forRoot(),
     StoreModule.forRoot(appReducer),
-    EffectsModule.forRoot([TimerangeEffects, RouterEffects, PagesEffects]),
+    EffectsModule.forRoot([
+      TimerangeEffects,
+      RouterEffects,
+      PagesEffects,
+      SitesEffects,
+    ]),
     StoreRouterConnectingModule.forRoot(),
   ],
   providers: [

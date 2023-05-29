@@ -50,7 +50,6 @@ export class AppStore {
           if (!GRID.first) return;
 
           if (!!GRID.first.has('sites')) {
-            this.siteStore.sites$.next(GRID.first.get('sites'));
             this.store.dispatch(
               updateSites({ sites: GRID.first.get<HGrid<HDict>>('sites') })
             );
@@ -66,7 +65,7 @@ export class AppStore {
           const config: unknown = GRID.first.toJSON() as unknown;
 
           const dashConfig = config as AppConfig;
-          this.appConfig$.next(dashConfig);
+
           this.store.dispatch(loadPages({ pages: dashConfig.dashboards! }));
           this.store.dispatch(generateRoutes({ routeInfos: dashConfig.menu }));
         })

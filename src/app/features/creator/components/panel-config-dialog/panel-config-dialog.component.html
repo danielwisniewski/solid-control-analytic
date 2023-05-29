@@ -163,10 +163,7 @@
           >
         </mat-expansion-panel-header>
         <mat-accordion
-          *ngFor="
-            let rollup of data.tile.availableRollupOptions;
-            let rollupIndex = index
-          "
+          *ngFor="let rollup of data.tile.rollups; let rollupIndex = index"
         >
           <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
             <input
@@ -189,7 +186,7 @@
           <button
             class="w-25 mt-3 btn btn-danger btn-sm"
             style="max-width: 45px"
-            (click)="data.tile.availableRollupOptions?.splice(rollupIndex, 1)"
+            (click)="data.tile.rollups?.splice(rollupIndex, 1)"
           >
             X
           </button>
@@ -197,7 +194,7 @@
         <button
           class="mt-3 btn btn-simple text-center w-100 btn-success"
           (click)="
-            data.tile.availableRollupOptions?.push({
+            data.tile.rollups?.push({
               display: 'W',
               value: '1wo'
             })

@@ -8,7 +8,6 @@ import {
   selectActivePage,
 } from 'src/app/core/store/pages/pages.selectors';
 import { Panel } from '../interfaces/panel.interface';
-import { fetchPanelsData } from 'src/app/core/store/pages/pages.actions';
 
 @Component({
   selector: 'app-ventilation',

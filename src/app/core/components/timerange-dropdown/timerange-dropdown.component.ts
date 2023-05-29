@@ -3,8 +3,6 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   Input,
-  OnChanges,
-  SimpleChanges,
 } from '@angular/core';
 import {
   BsDatepickerConfig,
@@ -17,14 +15,7 @@ import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { plLocale } from 'ngx-bootstrap/locale';
 import { TimerangeStore } from 'src/app/core/store/timerange.store';
-import {
-  Observable,
-  combineLatest,
-  filter,
-  map,
-  tap,
-  withLatestFrom,
-} from 'rxjs';
+import { Observable, combineLatest, filter, map } from 'rxjs';
 import { AppState } from 'src/app/state';
 import { Store } from '@ngrx/store';
 import {
@@ -32,7 +23,6 @@ import {
   selectTimerangeConfiguration,
 } from '../../store/timerange/timerange.selectors';
 import { setActiveTimerange } from '../../store/timerange/timerange.actions';
-import { fetchPanelsData } from '../../store/pages/pages.actions';
 
 @Component({
   selector: 'app-timerange-dropdown',
@@ -106,9 +96,6 @@ export class TimerangeDropdownComponent implements OnInit {
   bsDateConfig: BsDatepickerConfig = new BsDatepickerConfig();
 
   ngOnInit(): void {
-    this.store.dispatch(setActiveTimerange({ dates: '' }));
-    this.store.dispatch(fetchPanelsData());
-
     this.localeService.use('pl');
     defineLocale('pl', plLocale);
 

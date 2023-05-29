@@ -2,7 +2,9 @@
   <!-- Radio container -->
   <label
     class="radio-switch__label"
-    [class]="tileType === 'chart' ? 'radio-switch__label--selected' : ''"
+    [class]="
+      (tileType$ | async) === 'chart' ? 'radio-switch__label--selected' : ''
+    "
     (click)="onTypeChange('chart')"
   >
     <input type="radio" class="radio-switch__input" />
@@ -11,7 +13,9 @@
   </label>
   <label
     class="radio-switch__label"
-    [class]="tileType === 'table' ? 'radio-switch__label--selected' : ''"
+    [class]="
+      (tileType$ | async) === 'table' ? 'radio-switch__label--selected' : ''
+    "
     (click)="onTypeChange('table')"
   >
     <input type="radio" class="radio-switch__input" />
