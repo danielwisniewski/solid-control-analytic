@@ -41,6 +41,7 @@ export class RollupSelectorComponent implements OnInit {
   }
 
   private updateData() {
+    console.log(this.tile);
     if (!this.tile?.tile) return;
     this.store.dispatch(changeActivePanelIndex({ id: this.tile?.tile ?? -1 }));
     this.store.dispatch(

@@ -20,7 +20,11 @@ export interface PageState {
   parameters?: {
     [key: string]: any;
   };
-  activeVariable?: PageVariable | undefined;
+  activeVariables?: {
+    name: string;
+    dis: string;
+    val: any;
+  }[];
 }
 
 export interface PageVariable {

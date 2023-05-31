@@ -14,29 +14,26 @@
     <h3
       style="flex-grow: 10; flex-shrink: 1"
       class="text-start ml-3"
-      *ngIf="!!(panelConfig$ | async)?.meta?.showTitle"
+      *ngIf="!!panel?.meta?.showTitle"
     >
-      {{ (panelConfig$ | async)?.panelData?.meta?.get("title") }}
+      {{ panel?.panelData?.meta?.get("title") }}
     </h3>
     <app-chart-table-toggle
-      [tileId]="(panelConfig$ | async)?.tile ?? -1"
-      *ngIf="!!(panelConfig$ | async)?.meta?.showTileTypeSelector"
+      [tileId]="panel?.tile ?? -1"
+      *ngIf="!!panel?.meta?.showTileTypeSelector"
       class="text-start"
     >
     </app-chart-table-toggle>
     <app-rollup-selector
-      *ngIf="
-        !!(panelConfig$ | async)?.hasRollupSelector &&
-        (panelConfig$ | async)?.type === 'chart'
-      "
-      [tile]="(panelConfig$ | async) ?? undefined"
-      >{{ !!(panelConfig$ | async)?.hasRollupSelector }}</app-rollup-selector
+      *ngIf="!!panel?.hasRollupSelector && panel?.type === 'chart'"
+      [tile]="panel ?? undefined"
+      >{{ !!panel?.hasRollupSelector }}</app-rollup-selector
     >
     <span
       style="font-size: 18px"
       class="ml-4"
       (click)="onDownload()"
-      *ngIf="!!(panelConfig$ | async)?.meta?.hasDownloadButton"
+      *ngIf="!!panel?.meta?.hasDownloadButton"
     >
       <i
         class="tim-icons icon-cloud-download-93 ml-2"

@@ -42,7 +42,7 @@ export class BaseChartComponent implements OnChanges {
           change['chartConfiguration'].currentValue
         );
         this.chart.update();
-        // this.chart.render();
+        this.chart.render();
       } else {
         this.chartConfig = this.chartGenService.generateChart(
           change['chartConfiguration'].currentValue

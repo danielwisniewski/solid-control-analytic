@@ -77,5 +77,46 @@ export const pagesReducer = createReducer(
   }),
   on(changePanelParameters, (state, { parameter, value }) => {
     return modifyPanelParameters(state, parameter, value);
+  }),
+  on(PagesActions.changePageVariable, (state, { name, val, dis }) => {
+    if (!!state.pagesConfig) {
+      const updatedPagesConfig = [...state.pagesConfig];
+      const pageIndex = state.activePageIndex;
+
+      const variableIndex = updatedPagesConfig[
+        pageIndex
+      ].activeVariables?.findIndex((variable) => variable.name === name);
+
+      let activePage = updatedPagesConfig[pageIndex];
+
+      if (!!variableIndex && variableIndex > -1) {
+        activePage.activeVariables?.map((variable) => {
+          if (variable.name === name) {
+            variable.val = val;
+            variable.dis = dis;
+          }
+        });
+      } else {
+      }
+      activePage = {
+        ...activePage,
+        activeVariables: [],
+      };
+      activePage.activeVariables?.push({
+        name: name,
+        dis: dis,
+        val: val,
+      });
+      updatedPagesConfig[pageIndex] = activePage;
+      console.log(updatedPagesConfig);
+      return {
+        ...state,
+        pagesConfig: updatedPagesConfig,
+      };
+    }
+
+    return {
+      ...state,
+    };
   })
 );

@@ -5,7 +5,6 @@ import { PageState } from 'src/app/features/dashboard/interfaces/page-config.int
 export function modifyPanelData(state: PagesState, data: any) {
   const { pageIndex, panelId, panelData } = data;
   const { pagesConfig } = state;
-
   if (pageIndex > -1 && pagesConfig && pagesConfig.length > pageIndex) {
     const updatedPagesConfig = [...pagesConfig];
     const page = { ...updatedPagesConfig[pageIndex] };
@@ -13,7 +12,7 @@ export function modifyPanelData(state: PagesState, data: any) {
       (tile) => tile.tile === panelId
     );
 
-    if (page.layout.tiles.length > panelId) {
+    if (page.layout.tiles.length >= panelId) {
       const meta = page.layout.tiles[tileIndex].meta as any;
       const columnsMeta = page.layout.tiles[tileIndex]
         .columnsMeta as ColumnConfiguration[];

@@ -1,24 +1,12 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
-import {
-  auditTime,
-  distinctUntilChanged,
-  map,
-  take,
-  withLatestFrom,
-} from 'rxjs';
 import { DashboardService } from '../../services/dashboard.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { PanelConfigDialogComponent } from 'src/app/features/creator/components/panel-config-dialog/panel-config-dialog.component';
-import { PanelStoreService } from '../../store/panel.store.service';
 import { Panel } from '../../interfaces/panel.interface';
 import { AppState } from 'src/app/state';
 import { Store } from '@ngrx/store';
-import {
-  selectActivePage,
-  selectActivePanel,
-} from 'src/app/core/store/pages/pages.selectors';
 import { changeActivePanelIndex } from 'src/app/core/store/pages/panels.actions';
 
 @Component({
@@ -39,13 +27,6 @@ export class PagePanelComponent {
   @Input() panel: Panel | undefined;
   @Input() height: number = 30;
   @Input() isCreatorMode: boolean = false;
-
-  panelConfig$ = this.store.select(selectActivePage).pipe(
-    map((res) =>
-      res?.layout.tiles.find((tile) => tile.tile === this.panel?.tile)
-    ),
-    distinctUntilChanged()
-  );
 
   onDownload() {}
   // onDownload() {

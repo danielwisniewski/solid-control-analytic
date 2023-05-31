@@ -13,10 +13,13 @@ import { HDict } from 'haystack-core';
 import { DashboardStore } from '../../../store/dashboard.store';
 import { DashboardService } from '../../../services/dashboard.service';
 import {
+  Observable,
   Subscription,
   auditTime,
   combineLatest,
+  distinctUntilChanged,
   distinctUntilKeyChanged,
+  filter,
   map,
   merge,
   shareReplay,
@@ -33,6 +36,7 @@ import {
   changeActivePanelIndex,
   changePanelParameters,
 } from 'src/app/core/store/pages/panels.actions';
+import { changePageVariable } from 'src/app/core/store/pages/pages.actions';
 
 @Component({
   selector: 'app-dashboard-variable-dropdown',
@@ -43,7 +47,6 @@ import {
 export class DashboardVariableDropdownComponent implements OnInit {
   @Input() variable: PageVariable | undefined;
   data: HDict[] | undefined;
-  activeOption: { dis: string; val: string } | undefined;
   constructor(
     private storeOld: DashboardStore,
     private pageService: DashboardService,
@@ -51,6 +54,34 @@ export class DashboardVariableDropdownComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private store: Store<AppState>
   ) {}
+  activeOption$: Observable<
+    { dis: string; val: string; name: string } | undefined
+  > = this.store.select(selectActivePage).pipe(
+    tap((page) => {
+      this.activePage = page;
+      this.tilesToUpdate = this.activePage?.layout.tiles.filter(
+        (tile) => !tile.meta?.skipUpdateOnVariableChange
+      );
+    }),
+    filter((page) => !!page?.activeVariables && !!this.variable),
+    // tap((res) => console.log(res)),
+    map((page) =>
+      page?.activeVariables?.find(
+        (variable) => variable.name === this.variable?.name
+      )
+    ),
+    map((variable) => {
+      if (!!variable) return variable;
+      else if (this.variable?.type === 'values') {
+        this.options = this.variable.options;
+        const defaultParameter = this.variable.options[0];
+        return defaultParameter;
+      }
+    }),
+    distinctUntilChanged(),
+    tap((res) => this.updateData(res))
+  );
+
   sub: Subscription | undefined;
   options: { dis: string; val: any }[] | undefined;
   ngOnInit(): void {
@@ -79,7 +110,6 @@ export class DashboardVariableDropdownComponent implements OnInit {
     // } else if (this.variable?.type === 'values') {
     //   this.options = this.variable.options;
     //   this.activeOption = this.variable?.options[0];
-
     //   this.storeOld.updatePageVariables({
     //     [`var-${this.variable?.name}`]: this.activeOption?.val,
     //   });
@@ -88,49 +118,68 @@ export class DashboardVariableDropdownComponent implements OnInit {
 
   private activePage: PageState | undefined;
   private tilesToUpdate: Panel[] | undefined = [];
-  private pageSub = this.store
-    .select(selectActivePage)
-    .pipe(
-      tap((page) => {
-        this.activePage = page;
-        this.tilesToUpdate = this.activePage?.layout.tiles.filter(
-          (tile) => !tile.meta?.skipUpdateOnVariableChange
-        );
-        this.updateData();
-      })
-    )
-    .subscribe();
+  // private pageSub = this.store
+  //   .select(selectActivePage)
+  //   .pipe(
+  //     tap((page) => {
+  //       this.activePage = page;
+  //       this.tilesToUpdate = this.activePage?.layout.tiles.filter(
+  //         (tile) => !tile.meta?.skipUpdateOnVariableChange
+  //       );  //       // if (this.variable?.type === 'values') this.valueTypeVariable();
+  //     })
+  //   )
+  //   .subscribe();
 
-  private updateData() {}
+  private updateData(option: any) {
+    this.tilesToUpdate?.forEach((tile) => {
+      this.store.dispatch(changeActivePanelIndex({ id: tile.tile ?? -1 }));
+      this.store.dispatch(
+        changePanelParameters({
+          parameter: `var-${this.variable!.name}`,
+          value: option.val,
+        })
+      );
+    });
+  }
 
   private valueTypeVariable() {
     if (!!this.variable && !!this.tilesToUpdate) {
       this.options = this.variable.options;
       const defaultParameter = this.variable.options[0];
-      this.tilesToUpdate.forEach((tile) => {
-        const panelVariable = tile.parameters?.[`var-${this.variable!.name}`];
-        const varToSend = !!panelVariable ? panelVariable : defaultParameter;
-        this.activeOption = varToSend;
-        this.store.dispatch(changeActivePanelIndex({ id: tile.tile ?? -1 }));
-        this.store.dispatch(
-          changePanelParameters({
-            parameter: `var-${this.variable!.name}`,
-            value: varToSend.val,
-          })
-        );
-      });
+      this.changeActiveOption(defaultParameter);
+      // this.tilesToUpdate.forEach((tile) => {
+      //   const panelVariable = tile.parameters?.[`var-${this.variable!.name}`];
+      //   const varToSend = !!panelVariable ? panelVariable : defaultParameter;
+      //   this.store.dispatch(changeActivePanelIndex({ id: tile.tile ?? -1 }));
+      //   this.store.dispatch(
+      //     changePanelParameters({
+      //       parameter: `var-${this.variable!.name}`,
+      //       value: varToSend.val,
+      //     })
+      //   );
+      //   this.store.dispatch(
+      //     changePageVariable({
+      //       name: this.variable!.name,
+      //       dis: varToSend.dis,
+      //       val: varToSend.val,
+      //     })
+      //   );
+      // });
     }
   }
 
   changeActiveOption(option: any) {
-    this.activeOption = option;
-    this.storeOld.updatePageVariables({
-      [`var-${this.variable?.name}`]: this.activeOption?.val,
-    });
+    this.store.dispatch(
+      changePageVariable({
+        name: this.variable!.name,
+        dis: option.dis,
+        val: option.val,
+      })
+    );
   }
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
-    this.pageSub.unsubscribe();
+    //this.pageSub.unsubscribe();
   }
 }

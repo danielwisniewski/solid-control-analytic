@@ -84,12 +84,26 @@ export class PagesEffects {
             !!activeSite && !!skysparkFunc && !!timerange && action.id > -1
         ),
         map(([action, activeSite, skysparkFunc, timerange, page, state]) => {
-          let parameters =
-            page?.layout.tiles.find((tile) => tile.tile === action.id)
-              ?.parameters ?? {};
+          const activePanel = page?.layout.tiles.find(
+            (tile) => tile.tile === action.id
+          );
+          let parameters = activePanel?.parameters ?? {};
 
           if (!!state.detailsPageId)
             parameters = { ...parameters, detailsPageId: state.detailsPageId };
+
+          let reqParameters = page?.variables?.map(
+            (vars) => `var-${vars.name}`
+          );
+          if (!!activePanel?.meta?.skipUpdateOnVariableChange)
+            reqParameters = [];
+          if (!!activePanel?.hasRollupSelector) reqParameters?.push('rollup');
+
+          const isQueryValid = reqParameters?.every((param) =>
+            Object.keys(parameters).includes(param)
+          );
+
+          if (!isQueryValid) return;
 
           const jsonParameters =
             Object.keys(parameters).length > 0
@@ -100,16 +114,17 @@ export class PagesEffects {
             panelId: action.id,
           };
         }),
+        filter((res) => !!res),
         distinctUntilChanged(),
         mergeMap((query) => {
-          return this.req.readExprAll(queryToZinc(query.query)).pipe(
+          return this.req.readExprAll(queryToZinc(query!.query)).pipe(
             withLatestFrom(this.store.select(selectPagesState)),
             tap(([res, state]) => {
               this.store.dispatch(
                 setPanelData({
                   data: {
                     pageIndex: state.activePageIndex,
-                    panelId: query.panelId,
+                    panelId: query!.panelId,
                     panelData: HGrid.make(res),
                   },
                 })
@@ -130,9 +145,8 @@ export class PagesEffects {
         map(([action, page]) => page!),
         distinctUntilChanged(),
         map((page: PageState) => {
-          const hasQueryVariable = page.variables?.some(
-            (variable) => variable.type === 'query'
-          );
+          const hasQueryVariable =
+            !!page.variables && page.variables.length > 0;
           page.layout.tiles.forEach((tile) => {
             if (!!tile.hasRollupSelector) return;
             if (!!hasQueryVariable && !tile.meta?.skipUpdateOnVariableChange)

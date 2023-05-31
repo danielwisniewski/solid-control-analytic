@@ -20,3 +20,8 @@ export const changeActivePageIndex = createAction(
   '[Pages] Change active page',
   props<{ index: number }>()
 );
+
+export const changePageVariable = createAction(
+  '[Pages] Change active page variable',
+  props<{ name: string; val: string; dis: string }>()
+);
