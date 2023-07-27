@@ -26,7 +26,9 @@
           <span class="navbar-toggler-bar bar3"> </span>
         </button>
       </div>
-      <a class="navbar-brand" href="javascript:void(0)"> </a>
+      <a class="navbar-brand" href="javascript:void(0)"
+        >{{ currentPathTitle$ | async }}
+      </a>
     </div>
     <button
       aria-label="Toggle navigation"
@@ -40,7 +42,12 @@
       <span class="navbar-toggler-bar navbar-kebab"> </span>
       <span class="navbar-toggler-bar navbar-kebab"> </span>
     </button>
-    <div class="navbar-collapse" [collapse]="isCollapsed" id="navigation">
+    <div
+      class="navbar-collapse"
+      [collapse]="isCollapsed"
+      id="navigation"
+      *ngIf="!isAutologin"
+    >
       <ul class="navbar-nav ml-auto">
         <li class="dropdown nav-item" dropdown placement="bottom left">
           <a

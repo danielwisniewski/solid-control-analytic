@@ -9,7 +9,7 @@
     type="button"
   >
     <i class="tim-icons mr-2" [class]="variable?.icon"></i>
-    {{ (activeOption$ | async)?.dis ?? variable?.title ?? "Opcje" }}
+    {{ activeOption?.dis ?? variable?.title ?? "Opcje" }}
   </button>
   <div aria-labelledby="dropdownMenuButton" class="dropdown-menu" *dropdownMenu>
     <h6 class="dropdown-header">

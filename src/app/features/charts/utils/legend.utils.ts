@@ -1,5 +1,5 @@
 import { ChartOptions } from 'chart.js';
-import { HBool, HGrid } from 'haystack-core';
+import { HBool, HGrid, HStr } from 'haystack-core';
 import { getChartType } from './type.utils';
 
 export function generateLegend(reqResponse: HGrid): ChartOptions {
@@ -15,7 +15,8 @@ function generateTimeseriesLegend(reqResponse: HGrid): ChartOptions {
   return {
     plugins: {
       legend: {
-        display: !!reqResponse.meta.get<HBool>('showLegend')?.value ?? true,
+        display: !!reqResponse.meta.get<HBool>('showLegend')?.value,
+
         position: !!reqResponse.meta.get('legendPosition')
           ? (reqResponse.meta.get('legendPosition')?.toString() as any)
           : 'right',
@@ -37,19 +38,19 @@ function generatePieLegend(reqResponse: HGrid): ChartOptions {
   return {
     plugins: {
       legend: {
-        display: !!reqResponse.meta.get<HBool>('showLegend')?.value ?? false,
+        display: !!reqResponse.meta.get<HBool>('showLegend')?.value,
         maxWidth: !!reqResponse.meta.get<HBool>('showLegend')?.value ? 300 : 1,
         position: !!reqResponse.meta.get('legendPosition')
           ? (reqResponse.meta.get('legendPosition')?.toString() as any)
-          : 'right',
-        title: {
-          position: 'center',
-          text: 'LEGENDA',
-          display: true,
-        },
+          : 'bottom',
         labels: {
-          font: {
-            size: 12,
+          filter(item, data) {
+            if (
+              reqResponse.meta.get<HStr>('chartType')?.value.toString() ===
+              'ranking'
+            )
+              return false;
+            return true;
           },
           usePointStyle: true,
         },

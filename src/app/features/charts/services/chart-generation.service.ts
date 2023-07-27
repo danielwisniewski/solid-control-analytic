@@ -5,7 +5,12 @@ import 'chartjs-adapter-luxon';
 
 import { HGrid, HNum, HaysonNum, HaysonVal } from 'haystack-core';
 
-import { CHART_COLOR, TEXT_COLOR, onResize } from '../utils/chart-utils';
+import {
+  CHART_COLOR,
+  TEXT_COLOR,
+  generateGradientStroke,
+  onResize,
+} from '../utils/chart-utils';
 import { generateScales } from '../utils/scales.utils';
 import { generateTooltip } from '../utils/tooltip.utils';
 import { generateLegend } from '../utils/legend.utils';
@@ -65,11 +70,13 @@ export class ChartGenerationService {
         },
       },
       animation: {
-        duration: 900,
+        duration: 800,
+        easing: 'easeOutSine',
       },
       onResize(chart, size) {
         onResize(chart, size);
       },
+      transitions: {},
       plugins: {
         tooltip: generateTooltip(reqResponse).plugins?.tooltip,
         title: generateTitle(reqResponse).plugins?.title,

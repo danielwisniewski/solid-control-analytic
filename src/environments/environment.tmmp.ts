@@ -5,4 +5,23 @@ export const environment = {
   skysparkUrl: 'http://10.115.27.103:3000',
   skysparkProject: 'toyota',
   startupPage: 'halls',
+  sidebarLogo: 'assets/img/white_logo_transparent_background.png',
+  autologinEnabled: false,
+  autologinUser: {
+    username: '',
+    password: '',
+  },
+  chartColorsPalette: [
+    'rgb(255,215,0)',
+    'rgb(78, 121, 167)',
+    'rgb(242, 142, 44)',
+    'rgb(225, 87, 89)',
+    'rgb(118, 183, 178)',
+    'rgb(89, 161, 79)',
+    'rgb(237, 201, 73)',
+    'rgb(175, 122, 161)',
+    'rgb(255, 157, 167)',
+    'rgb(156, 117, 95)',
+    'rgb(186, 176, 171)',
+  ],
 };

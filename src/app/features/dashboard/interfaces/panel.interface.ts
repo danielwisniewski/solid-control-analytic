@@ -5,12 +5,14 @@ export interface Panel {
   tile: number;
   cols: number;
   rows: number;
-  type: 'chart' | 'table';
+  type: 'chart' | 'table' | 'card-stats';
   panelData?: HGrid | undefined;
+  panelId?: string;
   meta?: PanelConfiguration;
   columnsMeta?: ColumnConfiguration[];
   hasRollupSelector?: boolean;
   rollups?: RollupOption[];
+  defaultRollup?: RollupOption;
   parameters?: {
     rollup?: RollupOption;
     [key: string]: any;
@@ -22,7 +24,11 @@ export interface RollupOption {
   value: string;
 }
 
-export interface PanelConfiguration extends ChartMeta, TableMeta {
+export interface PanelConfiguration
+  extends ChartMeta,
+    TableMeta,
+    CardStatsMeta {
+  panelId?: string;
   title?: string;
   showTitle?: boolean;
   subtitle?: string;
@@ -37,6 +43,13 @@ export interface PanelConfiguration extends ChartMeta, TableMeta {
   skipUpdateOnVariableChange?: boolean;
   skipUpdateOnSiteChange?: boolean;
   skipUpdateOnTimerangeChange?: boolean;
+}
+
+interface CardStatsMeta {
+  cardIcon?: string;
+  cardIconColor?: string;
+  cardFooterVisible?: boolean;
+  cardDescription?: string;
 }
 
 interface TableMeta {
@@ -84,4 +97,7 @@ interface ChartMeta {
   spacing?: number;
   tooltipMode?: string;
   stacked?: boolean;
+  dashedLine?: boolean;
+  colorTransparency?: number;
+  gradientColor?: boolean;
 }

@@ -115,7 +115,7 @@ export function generateTimeUnit(
 
   const TIMESTAMP_LIST = generateTimestampLabels(grid);
 
-  if (TIMESTAMP_LIST.length < 2) return 'year';
+  if (TIMESTAMP_LIST.length < 2) return 'day';
 
   const FIRST_TIMESTAMP = TIMESTAMP_LIST.shift();
   const SECOND_TIMESTAMP = TIMESTAMP_LIST[1];
@@ -189,6 +189,7 @@ function generateYAxis(reqResponse: HGrid): ChartOptions {
             },
           },
           suggestedMin: 0,
+          suggestedMax: undefined,
           stacked: !!reqResponse.meta.get<HBool>('stacked')?.value,
           position: index % 2 ? 'right' : 'left',
         },

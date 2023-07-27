@@ -5,19 +5,19 @@
       class="simple-text logo-mini"
     >
       <div class="logo-img">
-        <img src="assets/img/white_logo_transparent_background.png" />
+        <img [src]="sidebarLogo" />
       </div>
     </a>
-    <!-- <a href="https://solid-control.web.app/" class="simple-text logo-normal">
-      NAZWA_PROJEKTU
-    </a> -->
   </div>
   <ul class="nav">
     <ng-container *ngFor="let menuitem of menuItems | async">
       <ng-container [ngSwitch]="menuitem.type">
         <!-- If it is a single link -->
         <ng-container *ngSwitchCase="'link'">
-          <li *ngIf="menuitem.visible && menuitem.type === 'link'">
+          <li
+            *ngIf="menuitem.visible && menuitem.type === 'link'"
+            routerLinkActive="active"
+          >
             <a [routerLink]="[menuitem.path]">
               <i class="{{ menuitem.icontype }}"></i>
               <p>{{ menuitem.title }}</p>
@@ -45,7 +45,10 @@
               [isAnimated]="true"
             >
               <ul class="nav">
-                <li *ngFor="let childitems of menuitem.children">
+                <li
+                  *ngFor="let childitems of menuitem.children"
+                  routerLinkActive="active"
+                >
                   <ng-container [ngSwitch]="childitems.type">
                     <!-- If it is a single link -->
                     <ng-container *ngSwitchCase="'link'">
@@ -86,7 +89,10 @@
                         [isAnimated]="true"
                       >
                         <ul class="nav">
-                          <li *ngFor="let childitem of childitems.children">
+                          <li
+                            *ngFor="let childitem of childitems.children"
+                            routerLinkActive="active"
+                          >
                             <a [routerLink]="[menuitem.path, childitem.path]">
                               <span class="sidebar-mini-icon">{{
                                 childitem.smallTitle

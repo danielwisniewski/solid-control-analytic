@@ -15,6 +15,7 @@ export interface PageState {
   datepicker?: {
     type: 'range' | 'single';
     parameters: any;
+    defaultRange?: string;
   };
   variables?: PageVariable[];
   parameters?: {

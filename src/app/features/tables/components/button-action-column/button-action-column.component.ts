@@ -11,6 +11,9 @@ import { HDict, HGrid, HaysonDict } from 'haystack-core';
 import swal from 'sweetalert2';
 import { UpdateValueService } from '../../services/update-value.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import { changeActivePanelId } from 'src/app/core/store/pages/panels.actions';
 type ActionType = 'function' | 'link' | 'details' | 'functionInput';
 type ButtonType = 'text' | 'icon';
 type ButtonColor = 'primary' | 'info' | 'success' | 'warning' | 'danger';
@@ -42,7 +45,8 @@ export class ButtonActionColumnComponent implements OnInit {
   constructor(
     private service: UpdateValueService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private store: Store<AppState>
   ) {}
 
   private id: string | undefined;
@@ -92,6 +96,8 @@ export class ButtonActionColumnComponent implements OnInit {
   }
 
   onClick() {
+    const panelId = this.grid?.meta.get('panelId')?.toString();
+    if (!!panelId) this.store.dispatch(changeActivePanelId({ id: panelId }));
     if (this.actionType === 'functionInput') this.inputFunction();
     else if (this.actionType === 'link') {
       if (!!this.linkPath) this.router.navigateByUrl(this.linkPath);
@@ -105,7 +111,6 @@ export class ButtonActionColumnComponent implements OnInit {
   }
 
   private inputFunction() {
-    console.log(this.prop, this.funcName);
     if (!(!!this.prop && !!this.funcName)) return;
     swal
       .fire({

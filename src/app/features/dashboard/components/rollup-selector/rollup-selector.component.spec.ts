@@ -4,7 +4,7 @@ import { Store, StoreModule } from '@ngrx/store';
 import { of } from 'rxjs';
 import { AppState } from 'src/app/state';
 import {
-  changeActivePanelIndex,
+  changeActivePanelId,
   changePanelParameters,
 } from 'src/app/core/store/pages/panels.actions';
 
@@ -42,7 +42,7 @@ describe('RollupSelectorComponent', () => {
     const dispatchSpy = spyOn(store, 'dispatch');
     component['updateData']();
     expect(dispatchSpy).toHaveBeenCalledWith(
-      changeActivePanelIndex({ id: tileId })
+      changeActivePanelId({ id: tileId })
     );
     expect(dispatchSpy).toHaveBeenCalledWith(
       changePanelParameters({

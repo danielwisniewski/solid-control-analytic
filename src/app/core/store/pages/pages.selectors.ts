@@ -9,29 +9,18 @@ export const selectPages = createSelector(
   (state) => state.pagesConfig
 );
 
-export const selectActivePage = createSelector(
-  selectPages,
-  selectPagePath,
-  (pages, path) => pages?.find((page) => page.path === path)
+export const selectActivePage = createSelector(selectPagesState, (pages) =>
+  pages.pagesConfig?.find((page) => page.scId === pages.activePageId)
 );
 
-export const selectActivePageIndex = createSelector(
-  selectPages,
-  selectPagePath,
-  (pages, path) => pages?.findIndex((page) => page.path === path)
-);
-
-export const selectActivePanel = createSelector(
-  selectPagesState,
-  selectActivePage,
-  (state, page) =>
-    page?.layout.tiles.find((tile) => tile.tile === state.activePanelIndex)
-);
-
-export const selectPanelById = (id: number) =>
-  createSelector(selectActivePage, (page) =>
-    page?.layout.tiles.find((tile) => tile.tile === id)
+export const selectActivePanel = createSelector(selectPagesState, (state) => {
+  const activePage = state.pagesConfig?.find(
+    (page) => page.scId === state.activePageId
   );
+  return activePage?.layout.tiles.find(
+    (tile) => tile.panelId === state.activePanelId
+  );
+});
 
 export const isCreatorMode = createSelector(
   selectPagesState,

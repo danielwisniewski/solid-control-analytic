@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HStr } from 'haystack-core';
-import { catchError, finalize, take, tap } from 'rxjs';
+import { catchError, finalize, map, switchMap, take, tap } from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { ToastrPopupService } from 'src/app/core/services/toastr-popup.service';
 import swal from 'sweetalert2';
-import { DashboardStore } from '../../dashboard/store/dashboard.store';
 import { queryToZinc } from 'src/app/core/functions/utils';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import { fetchActivePanelData } from 'src/app/core/store/pages/panels.actions';
+import { selectActivePage } from 'src/app/core/store/pages/pages.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +17,7 @@ export class UpdateValueService {
   constructor(
     private req: RequestReadService,
     private message: ToastrPopupService,
-    private dashboardStore: DashboardStore
+    private store: Store<AppState>
   ) {}
 
   updateValue(id: string, prop: string, value: string, type = 'string') {
@@ -68,7 +71,7 @@ export class UpdateValueService {
       .pipe(
         take(1),
         finalize(() => {
-          this.dashboardStore.triggerDataUpdate$.next(true);
+          this.store.dispatch(fetchActivePanelData());
         })
       )
       .subscribe(() => {
@@ -90,26 +93,22 @@ export class UpdateValueService {
     func: string,
     value: string | boolean | Object
   ) {
-    let parameters = {};
-
-    if (!!this.dashboardStore.detailsPageId$.getValue()) {
-      parameters = {
-        ...parameters,
-        detailPageId: this.dashboardStore.detailsPageId$.getValue(),
-      };
-    }
-
-    const jsonParameters =
-      Object.keys(parameters).length > 0
-        ? `, ${JSON.stringify(parameters)}`
-        : '';
-
-    const query = `${func}(${id}, "${prop}", ${value}${jsonParameters})`;
-    const zincQuery = HStr.make(query).toZinc();
-
-    this.req
-      .readExprAll(zincQuery)
+    this.store
+      .select(selectActivePage)
       .pipe(
+        map((res) => res?.parameters),
+        map((params) => {
+          let parameters = params ?? {};
+          const jsonParameters =
+            Object.keys(parameters).length > 0
+              ? `, ${JSON.stringify(parameters)}`
+              : '';
+
+          const query = `${func}(${id}, "${prop}", ${value}${jsonParameters})`;
+          const zincQuery = HStr.make(query).toZinc();
+          return zincQuery;
+        }),
+        switchMap((query) => this.req.readExprAll(query)),
         take(1),
         tap((res) => {
           if (!!res.meta && !!res.meta['err'] && !!res.meta['dis'])
@@ -128,9 +127,10 @@ export class UpdateValueService {
           return err;
         }),
         finalize(() => {
-          this.dashboardStore.triggerDataUpdate$.next(true);
+          this.store.dispatch(fetchActivePanelData());
         })
       )
+
       .subscribe((res: any) => {
         swal.fire({
           title: 'Sukces',

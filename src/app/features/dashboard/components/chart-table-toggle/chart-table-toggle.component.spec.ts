@@ -4,8 +4,8 @@ import { Observable, of } from 'rxjs';
 import { ChartTableToggleComponent } from './chart-table-toggle.component';
 import { AppState } from 'src/app/state';
 import {
-  changeActivePanelIndex,
-  changePanelType,
+  changeActivePanelId,
+  changePanelConfiguration,
 } from 'src/app/core/store/pages/panels.actions';
 
 describe('ChartTableToggleComponent', () => {
@@ -49,8 +49,8 @@ describe('ChartTableToggleComponent', () => {
       const type = 'table';
       const dispatchSpy = spyOn(store, 'dispatch');
       const expectedActions = [
-        changeActivePanelIndex({ id: component.tileId }),
-        changePanelType({ panelType: type }),
+        changeActivePanelId({ id: component.tileId }),
+        changePanelConfiguration({ panelType: type }),
       ];
 
       component.onTypeChange(type);

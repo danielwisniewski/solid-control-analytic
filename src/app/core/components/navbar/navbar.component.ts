@@ -7,6 +7,12 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { AuthService } from '../../auth/auth-service.service';
+import { environment } from 'src/environments/environment';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/state';
+import { selectActivePage } from '../../store/pages/pages.selectors';
+import { filter, map, tap, withLatestFrom } from 'rxjs';
+import { selectRoutes } from '../../store/menu/route.selectors';
 
 @Component({
   selector: 'app-navbar',
@@ -17,16 +23,27 @@ import { AuthService } from '../../auth/auth-service.service';
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   sidebarMiniActive: boolean = true;
   isCollapsed: boolean = true;
-
+  isAutologin: boolean = environment.autologinEnabled;
   private toggleButton!: HTMLElement;
-  // sidebarRoutes = this.dashboardServ.sidebarRoutes;
-  // private listTitles: RouteInfo[] = this.sidebarRoutes.filter(
-  //   (listTitle) => listTitle
-  // );
 
-  title: string = '';
+  constructor(
+    private element: ElementRef,
+    private authService: AuthService,
+    private store: Store<AppState>
+  ) {}
 
-  constructor(private element: ElementRef, private authService: AuthService) {}
+  currentPathTitle$ = this.store.select(selectActivePage).pipe(
+    withLatestFrom(this.store.select(selectRoutes)),
+    map(([res, routes]) =>
+      routes.find((route) => {
+        const path = route.path.split('dashboard/')[1];
+        if (!!path) return path === res?.path;
+        else return false;
+      })
+    ),
+    filter((res) => !!res),
+    map((route) => route?.title)
+  );
 
   ngOnInit(): void {}
 
@@ -71,21 +88,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   sidebarClose(): void {
     if (this.toggleButton.classList.contains('toggled'))
       this.toggleButton.classList.remove('toggled');
-  }
-
-  updateTitle(): string {
-    // let activeRoute: RouteInfo[] = this.listTitles.filter(
-    //   (listTitle: RouteInfo) => {
-    //     const index = this.currentPath.split('/').length;
-    //     return (
-    //       this.currentPath.split('/')[index - 1] ===
-    //       listTitle.path.split('/')[index - 1]
-    //     );
-    //   }
-    // );
-    // this.title = activeRoute[0].title;
-    // return activeRoute[0].title;
-    return '';
   }
 
   onLogout() {

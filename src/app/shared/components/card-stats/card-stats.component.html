@@ -1,24 +1,29 @@
-<div class="card card-stats">
+<div
+  class="card card-stats mb-4 mb-xl-0"
+  [ngStyle]="{ height: 'calc(' + height + 'vh - 50px)' }"
+>
   <div class="card-body">
     <div class="row">
-      <div class="col-5">
-        <div class="info-icon text-center" [class]="iconColor">
+      <div class="col">
+        <h5
+          class="card-title text-uppercase text-muted mb-0"
+          *ngIf="!!showTitle"
+        >
+          {{ title }}
+        </h5>
+        <span class="h2 font-weight-bold mb-0 text-white">{{ value }}</span>
+      </div>
+      <div class="col-auto">
+        <div class="info-icon text-right" [class]="iconColor">
           <i [class]="'tim-icons ' + icon"> </i>
         </div>
       </div>
-      <div class="col-7">
-        <div class="numbers">
-          <p class="card-category">{{ title }}</p>
-          <h3 class="card-title">{{ value }}</h3>
-        </div>
-      </div>
     </div>
-  </div>
-  <div class="card-footer">
-    <hr />
-
-    <div class="stats">
-      <i class="tim-icons icon-refresh-01"> </i> {{ description }}
-    </div>
+    <p class="mt-3 mb-0 text-muted text-sm" *ngIf="!!footerVisible">
+      <span class="mr-2" [class]="arrowColor"
+        ><i [class]="arrowDirection"></i> {{ differenceValue }}</span
+      >
+      <span class="text-nowrap">{{ description }}</span>
+    </p>
   </div>
 </div>

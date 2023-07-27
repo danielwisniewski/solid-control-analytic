@@ -1,49 +1,50 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
-import { DashboardService } from '../../services/dashboard.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { PanelConfigDialogComponent } from 'src/app/features/creator/components/panel-config-dialog/panel-config-dialog.component';
 import { Panel } from '../../interfaces/panel.interface';
 import { AppState } from 'src/app/state';
 import { Store } from '@ngrx/store';
-import { changeActivePanelIndex } from 'src/app/core/store/pages/panels.actions';
+import {
+  changeActivePanelId,
+  downloadPanelReport,
+  fetchPanelData,
+} from 'src/app/core/store/pages/panels.actions';
+import { Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-page-panel',
   templateUrl: './page-panel.component.html',
   styleUrls: ['./page-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  //providers: [PanelStoreService],
 })
 export class PagePanelComponent {
-  constructor(
-    private dashboardService: DashboardService,
-    private modal: MatDialog,
-    //private panelStore: PanelStoreService,
-    private store: Store<AppState>
-  ) {}
+  constructor(private modal: MatDialog, private store: Store<AppState>) {}
 
   @Input() panel: Panel | undefined;
   @Input() height: number = 30;
   @Input() isCreatorMode: boolean = false;
 
-  onDownload() {}
-  // onDownload() {
-  //   if (!!this.panel?.tile)
-  //     this.dashboardService
-  //       .getData(
-  //         this.panel.tile,
-  //         { ...this.panelStore.rollupParameter$.getValue() },
-  //         true
-  //       )
-  //       .pipe(take(1))
-  //       .subscribe();
-  // }
+  configDialogSub: Subscription | undefined;
+
+  onDownload() {
+    if (!!this.panel && !!this.panel.panelId)
+      this.store.dispatch(downloadPanelReport({ id: this.panel.panelId }));
+  }
+
+  ngOnInit() {
+    if (
+      !!this.panel &&
+      !!this.panel.panelId &&
+      !!this.panel.meta?.skipUpdateOnTimerangeChange
+    )
+      this.store.dispatch(fetchPanelData({ id: this.panel.panelId }));
+  }
 
   openDialog(): void {
     if (!this.panel) return;
-    this.store.dispatch(changeActivePanelIndex({ id: this.panel.tile }));
+    this.store.dispatch(changeActivePanelId({ id: this.panel.panelId }));
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -55,9 +56,20 @@ export class PagePanelComponent {
     dialogConfig.width = '600px';
     dialogConfig.height = '800px';
     dialogConfig.data = {
-      tile: this.panel,
+      tile: { ...this.panel },
     };
     dialogConfig.panelClass = 'config-dialog';
     const dialogRef = this.modal.open(PanelConfigDialogComponent, dialogConfig);
+
+    this.configDialogSub = dialogRef
+      .afterClosed()
+      .pipe(
+        tap(() => this.store.dispatch(changeActivePanelId({ id: undefined })))
+      )
+      .subscribe();
+  }
+
+  ngOnDestroy() {
+    this.configDialogSub?.unsubscribe();
   }
 }

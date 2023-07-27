@@ -1,6 +1,6 @@
 import { ChartOptions } from 'chart.js';
 import { getUnit } from './chart-utils';
-import { HGrid, HStr, HUnit, HVal } from 'haystack-core';
+import { HGrid, HStr } from 'haystack-core';
 import { getChartType } from './type.utils';
 
 export function generateTooltip(reqResponse: HGrid): ChartOptions {
@@ -33,9 +33,13 @@ export function generateTooltip(reqResponse: HGrid): ChartOptions {
 
             if (colDis && colDis[0] === colDis[0].toUpperCase()) label = colDis;
 
+            let index = context.datasetIndex;
+
+            if (reqResponse.getColumn(0)?.name === 'ts') index = index + 1;
+
             let UNIT =
               reqResponse
-                .getColumn(context.datasetIndex)
+                .getColumn(index)
                 ?.meta.get<HStr>('unit')
                 ?.toString() || getUnit(reqResponse);
 

@@ -1,0 +1,56 @@
+<mat-expansion-panel class="bg-dark mt-2" *ngIf="!!_panel && !!_meta">
+  <mat-expansion-panel-header>
+    <mat-panel-title> Karta statusu </mat-panel-title>
+    <mat-panel-description> Parametery konfiguracyjne </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <!-- BODY -->
+  <mat-expansion-panel class="mt-2">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Główna część</mat-panel-title>
+      <mat-panel-description> Konfiguracja karty </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field appearance="fill" class="mt-2 w-100 pr-2">
+      <mat-label>Ikona główna</mat-label>
+      <mat-select [(ngModel)]="_meta.cardIcon" (selectionChange)="change()">
+        <mat-option [value]="icon" *ngFor="let icon of icons">
+          <div class="stats">
+            <i class="tim-icons" [class]="icon"> </i>
+            <span class="ml-3"> {{ icon }} </span>
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="mt-2 w-100 pr-2">
+      <mat-label>Kolor ikony</mat-label>
+      <mat-select
+        [(ngModel)]="_meta.cardIconColor"
+        (selectionChange)="change()"
+      >
+        <mat-option [value]="iconColor" *ngFor="let iconColor of iconsColor">
+          <div class="info-icon text-center" [class]="iconColor">
+            <i [class]="'tim-icons ' + _meta.cardIcon"> </i>
+            <span class="ml-3"> {{ iconColor }} </span>
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-expansion-panel>
+
+  <!-- FOOTER -->
+  <mat-expansion-panel class="mt-2">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Stopka</mat-panel-title>
+      <mat-panel-description> Konfiguracja stopki </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <section class="mt-3 w-100 pl-3 d-inline">
+      <mat-checkbox
+        [(ngModel)]="_meta.cardFooterVisible"
+        (ngModelChange)="change()"
+        >Wyświetl stopkę</mat-checkbox
+      >
+    </section>
+  </mat-expansion-panel>
+</mat-expansion-panel>

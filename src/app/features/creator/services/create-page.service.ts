@@ -6,7 +6,6 @@ import {
   RouteInfo,
 } from 'src/app/core/components/sidebar/sidebar.component';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
-import { AppStore } from 'src/app/core/store/app.store.';
 import { defaultRollups } from '../../dashboard/constants/dashboard.constants';
 import { PageState } from '../../dashboard/interfaces/page-config.interface';
 import { queryToZinc } from 'src/app/core/functions/utils';
@@ -15,10 +14,7 @@ import { queryToZinc } from 'src/app/core/functions/utils';
   providedIn: 'root',
 })
 export class CreatePageService {
-  constructor(
-    private readReq: RequestReadService,
-    private appStore: AppStore
-  ) {}
+  constructor(private readReq: RequestReadService) {}
 
   addNewPage(page: RouteInfo | ChildrenItems) {
     const newPage: PageState = {
@@ -31,116 +27,7 @@ export class CreatePageService {
       layout: {
         colNumber: 12,
         rowHeight: 10,
-        tiles: [
-          {
-            tile: 1,
-            cols: 5,
-            rows: 3,
-            type: 'chart',
-            hasRollupSelector: false,
-            rollups: defaultRollups,
-            meta: {
-              title: '',
-              showTitle: false,
-              subtitle: '',
-              showSubtitle: false,
-              showTileTypeSelector: true,
-              hasDownloadButton: false,
-              noDataTitle: 'Nie znaleziono danych',
-              noDataSubtitle: 'Spróbuj wybrać inne urządzenie lub czasookres',
-              chartType: 'donut',
-              showLegend: true,
-              legendPosition: 'right',
-              filterColumns: false,
-              treeFromRelation: 'submeterOf.val',
-              treeToRelation: 'id.val',
-              pivotAllowed: true,
-              stacked: false,
-            },
-            columnsMeta: [],
-          },
-          {
-            tile: 2,
-            cols: 7,
-            rows: 3,
-            type: 'chart',
-            hasRollupSelector: false,
-            rollups: defaultRollups,
-            meta: {
-              title: '',
-              showTitle: false,
-              subtitle: '',
-              showSubtitle: false,
-              showTileTypeSelector: true,
-              hasDownloadButton: false,
-              noDataTitle: 'Nie znaleziono danych',
-              noDataSubtitle: 'Spróbuj wybrać inne urządzenie lub czasookres',
-              chartType: 'bar',
-              showLegend: true,
-              legendPosition: 'bottom',
-              filterColumns: false,
-              treeFromRelation: 'submeterOf.val',
-              treeToRelation: 'id.val',
-              pivotAllowed: true,
-              stacked: true,
-            },
-            columnsMeta: [],
-          },
-          {
-            tile: 3,
-            cols: 6,
-            rows: 3,
-            type: 'chart',
-            hasRollupSelector: false,
-            rollups: defaultRollups,
-            meta: {
-              title: '',
-              showTitle: false,
-              subtitle: '',
-              showSubtitle: false,
-              showTileTypeSelector: true,
-              hasDownloadButton: false,
-              noDataTitle: 'Nie znaleziono danych',
-              noDataSubtitle: 'Spróbuj wybrać inne urządzenie lub czasookres',
-              chartType: 'bar',
-              showLegend: true,
-              legendPosition: 'bottom',
-              filterColumns: false,
-              treeFromRelation: 'submeterOf.val',
-              treeToRelation: 'id.val',
-              pivotAllowed: true,
-              stacked: false,
-            },
-            columnsMeta: [],
-          },
-          {
-            tile: 4,
-            cols: 6,
-            rows: 3,
-            type: 'chart',
-            hasRollupSelector: false,
-            rollups: defaultRollups,
-            meta: {
-              title: '',
-              showTitle: false,
-              subtitle: '',
-              showSubtitle: false,
-              hasDownloadButton: false,
-              showTileTypeSelector: true,
-              noDataTitle: 'Nie znaleziono danych',
-              noDataSubtitle: 'Spróbuj wybrać inne urządzenie lub czasookres',
-              chartType: 'bar',
-              showLegend: true,
-              legendPosition: 'bottom',
-              filterColumns: false,
-              treeFromRelation: 'submeterOf.val',
-              treeToRelation: 'id.val',
-              pivotAllowed: true,
-              stacked: false,
-            },
-            columnsMeta: [],
-          },
-        ],
+        tiles: [],
       },
       datepicker: {
         type: 'range',
@@ -158,16 +45,6 @@ export class CreatePageService {
 
     const query = `(${data}).recNew`;
     const zincQuery = HStr.make(query).toZinc();
-    return this.readReq.readExprAll(zincQuery).pipe(take(1)).subscribe();
-  }
-
-  updateConfiguration(config: PageState) {
-    const query = `read(appConfig and dashboard and config->scId == "${
-      config.scId
-    }").set("config", ${JSON.stringify(config)}).recEdit`;
-
-    const zincQuery = queryToZinc(query);
-
     return this.readReq.readExprAll(zincQuery).pipe(take(1)).subscribe();
   }
 

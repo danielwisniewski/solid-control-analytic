@@ -1,0 +1,72 @@
+<mat-expansion-panel class="bg-dark mt-2" *ngIf="!!_panel && !!_meta">
+  <mat-expansion-panel-header>
+    <mat-panel-title> Nagłówki </mat-panel-title>
+    <mat-panel-description>
+      Konfiguracja tytułu i podtytułu
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <mat-form-field appearance="fill" class="mt-3 pr-2" style="width: 70%">
+    <input matInput type="text" [(ngModel)]="_meta.title" (change)="change()" />
+    <mat-hint>Tytuł</mat-hint>
+  </mat-form-field>
+  <section class="mt-3 w-25 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_meta.showTitle"
+      (ngModelChange)="change()"
+      class="pl-1"
+      >Pokaż</mat-checkbox
+    >
+    <mat-checkbox
+      [checked]="!_meta.title"
+      (change)="changeAuto('title')"
+      class="pl-3"
+      >Auto</mat-checkbox
+    >
+  </section>
+
+  <mat-form-field appearance="fill" class="mt-3 pr-2" style="width: 70%">
+    <input
+      matInput
+      type="text"
+      [(ngModel)]="_meta.subtitle"
+      (change)="change()"
+    />
+    <mat-hint>Podtytuł</mat-hint>
+  </mat-form-field>
+  <section class="mt-3 w-25 d-inline">
+    <mat-checkbox [(ngModel)]="_meta.showSubtitle" (ngModelChange)="change()"
+      >Pokaż</mat-checkbox
+    >
+    <mat-checkbox
+      [checked]="!_meta.subtitle"
+      (change)="changeAuto('subtitle')"
+      class="pl-3"
+      >Auto</mat-checkbox
+    >
+  </section>
+
+  <mat-form-field appearance="fill" class="w-100 mt-3 pr-2">
+    <textarea
+      matInput
+      type="text"
+      [(ngModel)]="_meta.noDataTitle"
+      (change)="change()"
+    ></textarea>
+    <mat-hint>Tytuł, gdy brak danych</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field
+    appearance="fill"
+    class="w-100 mt-3 pr-2"
+    *ngIf="_panel.type !== 'card-stats'"
+  >
+    <textarea
+      matInput
+      type="text"
+      [(ngModel)]="_meta.noDataSubtitle"
+      (change)="change()"
+    ></textarea>
+    <mat-hint>Podtytuł, gdy brak danych</mat-hint>
+  </mat-form-field>
+</mat-expansion-panel>

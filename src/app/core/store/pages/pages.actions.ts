@@ -16,12 +16,21 @@ export const changeDetailsPageState = createAction(
   props<{ id: string | undefined }>()
 );
 
-export const changeActivePageIndex = createAction(
+export const changeActivePageId = createAction(
   '[Pages] Change active page',
-  props<{ index: number }>()
+  props<{ index: string }>()
 );
 
 export const changePageVariable = createAction(
   '[Pages] Change active page variable',
   props<{ name: string; val: string; dis: string }>()
+);
+
+export const savePageConfiguration = createAction(
+  '[Pages] Save page configuration and send to Skyspark'
+);
+
+export const updatePageConfig = createAction(
+  '[Pages] Update page configuration',
+  props<{ config: PageState }>()
 );

@@ -13,6 +13,7 @@ import { CreatePageService } from '../../services/create-page.service';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
 import { selectRoutes } from 'src/app/core/store/menu/route.selectors';
+import { addRoute } from 'src/app/core/store/menu/route.actions';
 
 @Component({
   selector: 'app-menu-builder',
@@ -76,7 +77,7 @@ export class MenuBuilderComponent implements OnInit, OnDestroy {
       type: 'link',
       visible: true,
     };
-    this.routes.push(newRoute);
+    this.store.dispatch(addRoute({ route: newRoute }));
   }
 
   onAddSubmenu() {

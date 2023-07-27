@@ -6,7 +6,7 @@
     <span
       (click)="openDialog()"
       *ngIf="isCreatorMode"
-      style="font-size: 18px"
+      style="font-size: 18px; z-index: 10"
       class="ml-4"
     >
       <span> <i class="tim-icons icon-pencil"></i> </span>
@@ -19,7 +19,7 @@
       {{ panel?.panelData?.meta?.get("title") }}
     </h3>
     <app-chart-table-toggle
-      [tileId]="panel?.tile ?? -1"
+      [tile]="panel"
       *ngIf="!!panel?.meta?.showTileTypeSelector"
       class="text-start"
     >
@@ -45,7 +45,6 @@
     <ng-container *ngIf="panel?.type === 'chart'">
       <app-base-chart
         [chartConfiguration]="panel?.panelData"
-        [panelId]="panel?.tile"
         [height]="height.toString()"
       >
       </app-base-chart>
@@ -58,6 +57,14 @@
         [height]="height.toString()"
       >
       </app-grid-table>
+    </ng-container>
+    <ng-container *ngIf="panel?.type === 'card-stats'">
+      <app-card-stats
+        [data]="panel?.panelData"
+        style="width: -webkit-fill-available"
+        [height]="height.toString()"
+      >
+      </app-card-stats>
     </ng-container>
   </div>
 </div>

@@ -5,38 +5,14 @@ import {
   Input,
   ChangeDetectorRef,
 } from '@angular/core';
-import {
-  PageState,
-  PageVariable,
-} from '../../../interfaces/page-config.interface';
-import { HDict } from 'haystack-core';
-import { DashboardStore } from '../../../store/dashboard.store';
-import { DashboardService } from '../../../services/dashboard.service';
-import {
-  Observable,
-  Subscription,
-  auditTime,
-  combineLatest,
-  distinctUntilChanged,
-  distinctUntilKeyChanged,
-  filter,
-  map,
-  merge,
-  shareReplay,
-  switchMap,
-  tap,
-} from 'rxjs';
-import { SiteStore } from 'src/app/core/store/site.store';
+import { PageVariable } from '../../../interfaces/page-config.interface';
+import { Subscription, take } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
-import { selectPagePath } from 'src/app/core/store/router/router.reducer';
-import { selectActivePage } from 'src/app/core/store/pages/pages.selectors';
-import { Panel } from '../../../interfaces/panel.interface';
-import {
-  changeActivePanelIndex,
-  changePanelParameters,
-} from 'src/app/core/store/pages/panels.actions';
 import { changePageVariable } from 'src/app/core/store/pages/pages.actions';
+import { DashboardService } from '../../../services/dashboard.service';
+import { selectActiveSite } from 'src/app/core/store/sites/site.selectors';
+import { HRef } from 'haystack-core';
 
 @Component({
   selector: 'app-dashboard-variable-dropdown',
@@ -46,129 +22,58 @@ import { changePageVariable } from 'src/app/core/store/pages/pages.actions';
 })
 export class DashboardVariableDropdownComponent implements OnInit {
   @Input() variable: PageVariable | undefined;
-  data: HDict[] | undefined;
+
   constructor(
-    private storeOld: DashboardStore,
-    private pageService: DashboardService,
-    private siteStore: SiteStore,
-    private cdr: ChangeDetectorRef,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private dashboardService: DashboardService,
+    private cdr: ChangeDetectorRef
   ) {}
-  activeOption$: Observable<
-    { dis: string; val: string; name: string } | undefined
-  > = this.store.select(selectActivePage).pipe(
-    tap((page) => {
-      this.activePage = page;
-      this.tilesToUpdate = this.activePage?.layout.tiles.filter(
-        (tile) => !tile.meta?.skipUpdateOnVariableChange
-      );
-    }),
-    filter((page) => !!page?.activeVariables && !!this.variable),
-    // tap((res) => console.log(res)),
-    map((page) =>
-      page?.activeVariables?.find(
-        (variable) => variable.name === this.variable?.name
-      )
-    ),
-    map((variable) => {
-      if (!!variable) return variable;
-      else if (this.variable?.type === 'values') {
-        this.options = this.variable.options;
-        const defaultParameter = this.variable.options[0];
-        return defaultParameter;
-      }
-    }),
-    distinctUntilChanged(),
-    tap((res) => this.updateData(res))
-  );
 
-  sub: Subscription | undefined;
+  activeOption: { dis: string; val: string; name: string } | undefined;
+
+  sub: Subscription = this.store.select(selectActiveSite).subscribe(() => {
+    if (
+      !this.variable?.skipUpdateOnSiteChange &&
+      this.variable?.type === 'query'
+    )
+      this.fetchVariables();
+  });
+
   options: { dis: string; val: any }[] | undefined;
+
   ngOnInit(): void {
-    if (this.variable?.type === 'values') this.valueTypeVariable();
-    // if (this.variable?.type === 'query') {
-    //   this.sub = merge(this.siteStore.activeSite$)
-    //     .pipe(
-    //       auditTime(150),
-    //       switchMap(() => {
-    //         return this.pageService.getData(0);
-    //       }),
-    //       map((res) => res?.getRows().toHayson()),
-    //       tap((res) => {
-    //         this.options = res as any;
-    //         if (!!this.options) {
-    //           this.activeOption = this.options[0];
-    //           this.storeOld.updatePageVariables({
-    //             [`var-${this.variable?.name}`]: this.activeOption?.val,
-    //           });
-    //         }
-    //         this.cdr.detectChanges();
-    //       }),
-    //       shareReplay(1)
-    //     )
-    //     .subscribe();
-    // } else if (this.variable?.type === 'values') {
-    //   this.options = this.variable.options;
-    //   this.activeOption = this.variable?.options[0];
-    //   this.storeOld.updatePageVariables({
-    //     [`var-${this.variable?.name}`]: this.activeOption?.val,
-    //   });
-    // }
-  }
-
-  private activePage: PageState | undefined;
-  private tilesToUpdate: Panel[] | undefined = [];
-  // private pageSub = this.store
-  //   .select(selectActivePage)
-  //   .pipe(
-  //     tap((page) => {
-  //       this.activePage = page;
-  //       this.tilesToUpdate = this.activePage?.layout.tiles.filter(
-  //         (tile) => !tile.meta?.skipUpdateOnVariableChange
-  //       );  //       // if (this.variable?.type === 'values') this.valueTypeVariable();
-  //     })
-  //   )
-  //   .subscribe();
-
-  private updateData(option: any) {
-    this.tilesToUpdate?.forEach((tile) => {
-      this.store.dispatch(changeActivePanelIndex({ id: tile.tile ?? -1 }));
-      this.store.dispatch(
-        changePanelParameters({
-          parameter: `var-${this.variable!.name}`,
-          value: option.val,
-        })
-      );
-    });
-  }
-
-  private valueTypeVariable() {
-    if (!!this.variable && !!this.tilesToUpdate) {
+    if (!this.variable) return;
+    if (this.variable.type === 'values') {
       this.options = this.variable.options;
+
       const defaultParameter = this.variable.options[0];
       this.changeActiveOption(defaultParameter);
-      // this.tilesToUpdate.forEach((tile) => {
-      //   const panelVariable = tile.parameters?.[`var-${this.variable!.name}`];
-      //   const varToSend = !!panelVariable ? panelVariable : defaultParameter;
-      //   this.store.dispatch(changeActivePanelIndex({ id: tile.tile ?? -1 }));
-      //   this.store.dispatch(
-      //     changePanelParameters({
-      //       parameter: `var-${this.variable!.name}`,
-      //       value: varToSend.val,
-      //     })
-      //   );
-      //   this.store.dispatch(
-      //     changePageVariable({
-      //       name: this.variable!.name,
-      //       dis: varToSend.dis,
-      //       val: varToSend.val,
-      //     })
-      //   );
-      // });
+    }
+    if (this.variable.type === 'query') {
+      this.fetchVariables();
     }
   }
 
+  private fetchVariables() {
+    this.dashboardService
+      .fetchParametersOptions()
+      .pipe(take(1))
+      .subscribe((res) => {
+        this.options = res as any;
+        if (!!this.options && !!this.variable && this.options.length > 0) {
+          this.changeActiveOption(this.options[0]);
+          this.activeOption = {
+            name: this.variable?.name,
+            val: this.options[0].val,
+            dis: this.options[0].dis,
+          };
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
   changeActiveOption(option: any) {
+    this.activeOption = option;
     this.store.dispatch(
       changePageVariable({
         name: this.variable!.name,
@@ -179,7 +84,6 @@ export class DashboardVariableDropdownComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.sub?.unsubscribe();
-    //this.pageSub.unsubscribe();
+    this.sub.unsubscribe();
   }
 }

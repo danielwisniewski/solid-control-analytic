@@ -12,14 +12,23 @@
       </span>
     </h2>
   </div>
-  <div *ngFor="let variable of (pageConfig$ | async)?.variables">
-    <app-dashboard-variable-dropdown [variable]="variable">
-    </app-dashboard-variable-dropdown>
+  <div *ngIf="isCreatorMode$ | async" style="flex-grow: 2">
+    <button
+      [disabled]="!(isSavedRequired$ | async)?.isSaveRequired"
+      (click)="onSaveConfig()"
+      class="btn btn-sm btn-primary w-75"
+    >
+      Zapisz
+    </button>
   </div>
   <div *ngIf="!!(pageConfig$ | async)?.showSiteSelector">
     <app-site-dropdown-button
       [showPortfolioOption]="false"
     ></app-site-dropdown-button>
+  </div>
+  <div *ngFor="let variable of (pageConfig$ | async)?.variables">
+    <app-dashboard-variable-dropdown [variable]="variable">
+    </app-dashboard-variable-dropdown>
   </div>
   <div *ngIf="!!(pageConfig$ | async)?.showTimerangeSelector">
     <app-timerange-dropdown></app-timerange-dropdown>

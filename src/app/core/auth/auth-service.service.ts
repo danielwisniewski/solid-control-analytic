@@ -20,7 +20,8 @@ export class AuthService {
         tap((status: boolean) => {
           if (!status) {
             localStorage.clear();
-            this.router.navigate(['login']);
+            const route = environment.autologinEnabled ? 'autologin' : 'login';
+            this.router.navigate([route]);
           } else {
             this.AppStore.fetchAppConfig();
           }
@@ -54,9 +55,35 @@ export class AuthService {
       );
   }
 
+  onAutologin(username: string, password: string) {
+    const loginData = btoa(
+      JSON.stringify({
+        name: username,
+        password: password,
+      })
+    );
+    return this.http
+      .get<any>(
+        `${environment.skysparkUrl}/auth/generateToken?username=${loginData}`
+      )
+      .pipe(
+        take(1),
+        map((res) => {
+          if (typeof res !== 'string') {
+            const token = res.data.Authorization;
+            localStorage.setItem('token', token);
+            this.userLoggedIn$.next(true);
+            this.router.navigate(['']);
+          }
+          return res;
+        })
+      )
+      .subscribe();
+  }
+
   logout() {
     return this.http
-      .get(`${environment.skysparkServer}/user/logout`)
+      .get(`${environment.skysparkUrl}/close`)
       .pipe(
         take(1),
         map(() => {

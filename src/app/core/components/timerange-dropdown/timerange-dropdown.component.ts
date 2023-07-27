@@ -1,21 +1,20 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   BsDatepickerConfig,
   BsDaterangepickerConfig,
   BsLocaleService,
 } from 'ngx-bootstrap/datepicker';
 
-import { DateTime, DateTimeFormatOptions } from 'luxon';
-
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { plLocale } from 'ngx-bootstrap/locale';
 import { TimerangeStore } from 'src/app/core/store/timerange.store';
-import { Observable, combineLatest, filter, map } from 'rxjs';
+import {
+  Observable,
+  distinctUntilChanged,
+  filter,
+  map,
+  withLatestFrom,
+} from 'rxjs';
 import { AppState } from 'src/app/state';
 import { Store } from '@ngrx/store';
 import {
@@ -23,49 +22,97 @@ import {
   selectTimerangeConfiguration,
 } from '../../store/timerange/timerange.selectors';
 import { setActiveTimerange } from '../../store/timerange/timerange.actions';
+import {
+  generateDateSpan,
+  generateSpan,
+  generateDisplayText,
+  generateDateInputFormat,
+  generateDashboardTimeRanges,
+  verifyTimerange,
+  generateDefaultTimerange,
+} from './timerange.utils';
+import { selectActivePage } from '../../store/pages/pages.selectors';
 
 @Component({
   selector: 'app-timerange-dropdown',
   templateUrl: './timerange-dropdown.component.html',
   styleUrls: ['./timerange-dropdown.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimerangeDropdownComponent implements OnInit {
+export class TimerangeDropdownComponent implements OnInit, OnDestroy {
   constructor(
     private localeService: BsLocaleService,
     private TimerangeStore: TimerangeStore,
     private store: Store<AppState>
   ) {}
 
-  @Input() parameters: any = {};
-  type$ = combineLatest(
-    this.store.select(selectTimerangeConfiguration),
-    this.store.select(selectActiveTimerange)
-  )
-    .pipe(filter(([config, timerange]) => !!config && !!timerange))
-    .subscribe(([config, timerange]) => {
+  type: string = 'range';
+  private dateInputFormat: string = 'yyyy-MM-dd';
+  private parameters: any = {};
+  private ranges = this.TimerangeStore.ranges;
+
+  bsDateRangeConfig: BsDaterangepickerConfig = new BsDaterangepickerConfig();
+
+  bsDateConfig: BsDatepickerConfig = new BsDatepickerConfig();
+
+  pageChange = this.store
+    .select(selectActivePage)
+    .pipe(
+      map((res) => res?.scId),
+      distinctUntilChanged(),
+      withLatestFrom(
+        this.store.select(selectTimerangeConfiguration),
+        this.store.select(selectActiveTimerange)
+      )
+    )
+    .subscribe(([id, config, timerange]) => {
+      this.store.dispatch(setActiveTimerange({ dates: 'processing...' }));
       this.type = config?.type ?? 'range';
       this.parameters = config?.parameters;
+      console.log(timerange);
+      const isTimerangeNeedsChange = verifyTimerange(
+        config,
+        this.type,
+        this.TimerangeStore.ranges,
+        timerange,
+        this.parameters
+      );
 
-      if (config?.type === 'single' && timerange.startsWith('toDateSpan')) {
-        const generatedDates = this.generateSpan(new Date());
-
+      if (!!isTimerangeNeedsChange) {
         this.store.dispatch(
           setActiveTimerange({
-            dates: generatedDates,
+            dates: isTimerangeNeedsChange,
           })
         );
-      } else if (config?.type === 'range' && timerange.startsWith('toSpan')) {
-        const generatedDates = this.generateDateSpan([
-          DateTime.local().startOf('week').toJSDate(),
-          new Date(),
-        ]);
-
-        this.store.dispatch(setActiveTimerange({ dates: generatedDates }));
       }
-    });
 
-  type: string = 'range';
+      this.ranges = generateDashboardTimeRanges(
+        this.parameters,
+        this.TimerangeStore.ranges
+      );
+
+      this.dateInputFormat = generateDateInputFormat(
+        this.type,
+        this.parameters
+      );
+
+      if (
+        this.type == 'range' &&
+        (this.parameters.minMode != 'day' || !this.parameters.minMode)
+      ) {
+        this.parameters = {
+          ...this.parameters,
+          minMode: 'day',
+          startView: 'day',
+        };
+      }
+
+      this.bsDateRangeConfig = {
+        ...this.bsDateRangeConfig,
+        ...this.parameters,
+        ranges: this.ranges,
+      };
+    });
 
   bsRangeValue: Observable<Date[]> = this.store
     .select(selectActiveTimerange)
@@ -91,10 +138,6 @@ export class TimerangeDropdownComponent implements OnInit {
     })
   );
 
-  bsDateRangeConfig: BsDaterangepickerConfig = new BsDaterangepickerConfig();
-
-  bsDateConfig: BsDatepickerConfig = new BsDatepickerConfig();
-
   ngOnInit(): void {
     this.localeService.use('pl');
     defineLocale('pl', plLocale);
@@ -102,13 +145,14 @@ export class TimerangeDropdownComponent implements OnInit {
     this.bsDateRangeConfig = {
       ...this.bsDateRangeConfig,
       adaptivePosition: true,
-      ranges: this.TimerangeStore.ranges,
+      ranges: this.ranges,
       preventChangeToNextMonth: true,
       containerClass: 'theme-blue',
       dateInputFormat: 'DD-MM-YYYY',
       maxDate: new Date(),
       showPreviousMonth: true,
       customTodayClass: 'bg-info',
+      selectWeekDateRange: true,
       ...this.parameters,
     };
 
@@ -125,9 +169,9 @@ export class TimerangeDropdownComponent implements OnInit {
   onHidden(event: any) {
     let result: string = '';
     if (this.type === 'range') {
-      result = this.generateDateSpan(event);
+      result = generateDateSpan(event, this.dateInputFormat);
     } else if (this.type === 'single') {
-      result = this.generateSpan(event);
+      result = generateSpan(event, this.dateInputFormat);
     }
 
     if (!result) return;
@@ -140,47 +184,11 @@ export class TimerangeDropdownComponent implements OnInit {
     .pipe(
       filter((val) => typeof val !== 'undefined'),
       map((values) => {
-        const format: DateTimeFormatOptions = { month: 'long', day: 'numeric' };
-        if (this.type === 'range') {
-          const dates: string[] = values
-            .replace('toDateSpan(', '')
-            .replace(')', '')
-            .split('..');
-          const start = DateTime.fromJSDate(new Date(dates[0])).toLocaleString(
-            format
-          );
-          const end = DateTime.fromJSDate(new Date(dates[1])).toLocaleString(
-            format
-          );
-
-          return `${start} - ${end}`;
-        } else {
-          const date = values.replace('toSpan(', '').replace(')', '');
-          const start = DateTime.fromJSDate(new Date(date)).toLocaleString(
-            format
-          );
-          return `${start}`;
-        }
+        return generateDisplayText(values, this.type, this.parameters);
       })
     );
 
-  private generateDateSpan(dates: Date[]): string {
-    const start: string = DateTime.fromJSDate(dates[0])
-      .toFormat('yyyy-MM-dd')
-      .toString();
-
-    const end: string = DateTime.fromJSDate(dates[1])
-      .toFormat('yyyy-MM-dd')
-      .toString();
-
-    return `toDateSpan(${start}..${end})`;
-  }
-
-  private generateSpan(date: Date): string {
-    const start: string = DateTime.fromJSDate(date)
-      .toFormat('yyyy-MM-dd')
-      .toString();
-
-    return `toSpan(${start})`;
+  ngOnDestroy(): void {
+    this.pageChange.unsubscribe();
   }
 }

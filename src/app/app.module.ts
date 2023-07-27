@@ -19,9 +19,10 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { RouterEffects } from './core/store/router/router.effects';
 import { PagesEffects } from './core/store/pages/pages.effects';
 import { SitesEffects } from './core/store/sites/sites.effects';
+import { AutoLoginComponent } from './core/auth/auto-login/auto-login.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AutoLoginComponent],
   imports: [
     CommonModule,
     RouterModule,

@@ -4,12 +4,19 @@ import { LoginPageComponent } from './core/auth/login-page/login-page.component'
 import { MainLayoutComponent } from './core/components/main-layout/main-layout.component';
 import { LoginActivateGuard } from './core/guards/login-activate.guard';
 import { environment } from 'src/environments/environment';
+import { AutoLoginComponent } from './core/auth/auto-login/auto-login.component';
 
 const routes: Routes = [
   {
     path: '',
     redirectTo: `dashboard/${environment.startupPage}`,
     pathMatch: 'full',
+  },
+  {
+    path: 'autologin',
+    component: AutoLoginComponent,
+    loadChildren: () =>
+      import('./core/modules/login.module').then((m) => m.LoginModule),
   },
   {
     path: 'login',

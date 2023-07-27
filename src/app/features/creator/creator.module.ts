@@ -15,12 +15,24 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { PanelConfigMainParametersComponent } from './components/panel-config-dialog/panel-config-main-parameters/panel-config-main-parameters.component';
+import { PanelConfigRollupComponent } from './components/panel-config-dialog/panel-config-rollup/panel-config-rollup.component';
+import { PanelConfigChartComponent } from './components/panel-config-dialog/panel-config-chart/panel-config-chart.component';
+import { PanelConfigTitlesComponent } from './components/panel-config-dialog/panel-config-titles/panel-config-titles.component';
+import { PanelConfigTableComponent } from './components/panel-config-dialog/panel-config-table/panel-config-table.component';
+import { PanelConfigCardStatusComponent } from './components/panel-config-dialog/panel-config-card-status/panel-config-card-status.component';
 
 @NgModule({
   declarations: [
     MenuBuilderComponent,
     PageConfigTopBarComponent,
     PanelConfigDialogComponent,
+    PanelConfigMainParametersComponent,
+    PanelConfigRollupComponent,
+    PanelConfigChartComponent,
+    PanelConfigTitlesComponent,
+    PanelConfigTableComponent,
+    PanelConfigCardStatusComponent,
   ],
   imports: [
     CommonModule,

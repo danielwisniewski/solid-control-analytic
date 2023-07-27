@@ -1,0 +1,164 @@
+<mat-expansion-panel class="bg-dark mt-2" *ngIf="!!_panel && !!_meta">
+  <mat-expansion-panel-header>
+    <mat-panel-title> Wykres </mat-panel-title>
+    <mat-panel-description> Konfiguracja wykresu </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <mat-form-field appearance="fill" class="mt-2 w-100">
+    <mat-label>Typ wykresu</mat-label>
+    <mat-select [(ngModel)]="_meta.chartType" (selectionChange)="change()">
+      <mat-option value="bar">Słupkowy</mat-option>
+      <mat-option value="line">Liniowy</mat-option>
+      <mat-option value="pie">Pie</mat-option>
+      <mat-option value="ranking">Ranking</mat-option>
+      <mat-option value="donut">Donut</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <section *ngIf="_meta.chartType == 'bar'" class="mt-3 w-100">
+    <mat-checkbox [(ngModel)]="_meta.stacked" (ngModelChange)="change()"
+      >Wykres typu stacked</mat-checkbox
+    >
+  </section>
+
+  <!-- LEGENDA -->
+  <mat-expansion-panel class="mt-2">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Legenda</mat-panel-title>
+      <mat-panel-description> Konfiguracja legendy </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-form-field appearance="fill" class="mt-2 pr-2 w-75">
+      <mat-label>Położenie legendy</mat-label>
+      <mat-select
+        [(ngModel)]="_meta.legendPosition"
+        (selectionChange)="change()"
+      >
+        <mat-option value="top">Nad wykresem</mat-option>
+        <mat-option value="bottom">Pod wykresem</mat-option>
+        <mat-option value="right">Po prawej stronie</mat-option>
+        <mat-option value="left">Po lewej stronie</mat-option>
+        <mat-option value="chartArea">Na wykresie</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <section class="mt-3 w-25 pl-3 d-inline">
+      <mat-checkbox [(ngModel)]="_meta.showLegend" (ngModelChange)="change()"
+        >Pokazuj</mat-checkbox
+      >
+    </section>
+    <mat-form-field
+      appearance="fill"
+      class="mt-2 w-75"
+      *ngIf="!!_meta.customLabelTextActive"
+    >
+      <mat-label>Wyświetlana nazwa danych</mat-label>
+      <mat-select
+        [(ngModel)]="_meta.customLabelText"
+        (selectionChange)="change()"
+      >
+        <mat-option value="equipRef">Nazwa urządzenia</mat-option>
+        <mat-option value="siteRef">Nazwa budynku</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <section class="mt-2 w-25 pl-3 d-inline">
+      <mat-checkbox
+        [(ngModel)]="_meta.customLabelTextActive"
+        (ngModelChange)="change()"
+        >Włącz</mat-checkbox
+      >
+    </section>
+  </mat-expansion-panel>
+
+  <!-- TOOLTIP -->
+  <mat-expansion-panel class="mt-2">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Tooltip</mat-panel-title>
+      <mat-panel-description>Konfiguracja tooltipu</mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-form-field appearance="fill" class="mt-2 pr-2 w-50">
+      <mat-label>Typ tooltipu</mat-label>
+      <mat-select [(ngModel)]="_meta.tooltipMode" (selectionChange)="change()">
+        <mat-option value="point">Punkt</mat-option>
+        <mat-option
+          value="index"
+          *ngIf="_meta.chartType == 'bar' || _meta.chartType == 'line'"
+          >Pozycja z osi x</mat-option
+        >
+        <mat-option value="dataset">Wszystkie wartości</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-expansion-panel>
+
+  <!-- STYLE -->
+  <mat-expansion-panel class="mt-2">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Styl wykresu</mat-panel-title>
+      <mat-panel-description
+        >Konfiguracja wyglądu wykresu</mat-panel-description
+      >
+    </mat-expansion-panel-header>
+    <section class="mt-3 w-100 pl-3">
+      <mat-checkbox [(ngModel)]="_meta.dashedLine" (ngModelChange)="change()"
+        >Linia przerwywana</mat-checkbox
+      >
+    </section>
+    <section class="mt-3 w-100 pl-3">
+      <mat-checkbox [(ngModel)]="_meta.gradientColor" (ngModelChange)="change()"
+        >Kolor jako gradient</mat-checkbox
+      >
+    </section>
+    <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+      <input
+        matInput
+        min="0"
+        max="1"
+        step="0.1"
+        type="number"
+        [(ngModel)]="_meta.colorTransparency"
+        (change)="change()"
+      />
+      <mat-hint>Przezroczystość</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+      <input
+        matInput
+        min="0"
+        max="10"
+        step="0.1"
+        type="number"
+        [(ngModel)]="_meta.borderWidth"
+        (change)="change()"
+      />
+      <mat-hint>Grubość lini</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+      <input
+        matInput
+        min="0"
+        max="30"
+        step="1"
+        type="number"
+        [(ngModel)]="_meta.borderRadius"
+        (change)="change()"
+      />
+      <mat-hint>Zaokrąglenie</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="fill"
+      class="w-50 mt-3 pr-2"
+      *ngIf="_meta.chartType == 'pie' || _meta.chartType == 'donut'"
+    >
+      <input
+        matInput
+        min="0"
+        max="30"
+        step="1"
+        type="number"
+        [(ngModel)]="_meta.spacing"
+        (change)="change()"
+      />
+      <mat-hint>Odstępy</mat-hint>
+    </mat-form-field>
+  </mat-expansion-panel>
+</mat-expansion-panel>

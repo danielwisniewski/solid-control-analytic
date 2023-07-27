@@ -1,6 +1,6 @@
 <div class="dropdown">
   <button
-    *ngIf="type === 'range'"
+    *ngIf="type == 'range'"
     aria-expanded="false"
     aria-haspopup="true"
     placeholder="Daterangepicker"
@@ -16,7 +16,7 @@
   </button>
 
   <button
-    *ngIf="type === 'single'"
+    *ngIf="type == 'single'"
     aria-expanded="false"
     aria-haspopup="true"
     placeholder="Daterangepicker"

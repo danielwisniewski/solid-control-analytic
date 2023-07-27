@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
 import { changeActiveSite, updateSites } from './site.actions';
 import { tap, withLatestFrom } from 'rxjs';
-import { selectActivePage } from '../pages/pages.selectors';
+import { selectPagesState } from '../pages/pages.selectors';
 import { fetchPanelData } from '../pages/panels.actions';
 
 @Injectable()
@@ -13,20 +13,26 @@ export class SitesEffects {
     () =>
       this.actions$.pipe(
         ofType(changeActiveSite, updateSites),
-        withLatestFrom(this.store.select(selectActivePage)),
-        tap(([action, page]) => {
+        withLatestFrom(this.store.select(selectPagesState)),
+        tap(([action, state]) => {
           if (action.type === '[Site] Change Active Site') {
             localStorage.setItem('site', JSON.stringify(action.site.toJSON()));
           }
 
-          page?.layout.tiles.forEach((tile) => {
-            if (
-              !!tile.meta?.skipUpdateOnSiteChange &&
-              action.type === '[Site] Change Active Site'
-            )
-              return;
-            this.store.dispatch(fetchPanelData({ id: tile.tile }));
-          });
+          if (!!state && !!state.pagesConfig)
+            state?.pagesConfig.forEach((page) => {
+              if (page.scId === state.activePageId) {
+                page.layout.tiles.forEach((tile) => {
+                  if (
+                    (!!tile.meta?.skipUpdateOnSiteChange &&
+                      action.type === '[Site] Change Active Site') ||
+                    !tile.panelId
+                  )
+                    return;
+                  this.store.dispatch(fetchPanelData({ id: tile.panelId }));
+                });
+              }
+            });
         })
       ),
     { dispatch: false }

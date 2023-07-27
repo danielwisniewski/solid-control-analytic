@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
 import { selectRoutes } from '../../store/menu/route.selectors';
 import { updateRoute } from '../../store/menu/route.actions';
+import { environment } from 'src/environments/environment';
 
 export interface RouteInfo {
   path: string;
@@ -43,6 +44,8 @@ export interface ChildrenItems2 {
 })
 export class SidebarComponent {
   constructor(private store: Store<AppState>) {}
+
+  sidebarLogo: string = environment.sidebarLogo;
 
   menuItems: Observable<RouteInfo[]> = this.store
     .select(selectRoutes)

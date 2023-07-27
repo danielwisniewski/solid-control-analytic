@@ -15,6 +15,7 @@ import { CoreComponentsModule } from 'src/app/core/modules/core-components.modul
 import { TablesModule } from '../tables/tables.module';
 import { CreatorModule } from '../creator/creator.module';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     DashboardRoutingModule,
     SharedModule,
     ChartsModule,
+    DragDropModule,
     CreatorModule,
     CoreComponentsModule,
     TablesModule,

@@ -17,21 +17,24 @@ export class TimerangeEffects {
     () =>
       this.actions$.pipe(
         ofType(setActiveTimerange),
-        filter((data) => data.dates !== ''),
+        filter((data) => data.dates !== '' && data.dates !== 'processing...'),
         distinctUntilChanged(),
         tap((action) => {
           const localStorageKey = 'activeTimerange';
           localStorage.setItem(localStorageKey, action.dates);
         }),
         withLatestFrom(this.store.select(selectPagesState)),
-        tap(([action, page]) => {
-          if (!!page && !!page.pagesConfig)
-            page?.pagesConfig[page.activePageIndex].layout.tiles.forEach(
-              (tile) => {
-                if (!!tile.meta?.skipUpdateOnTimerangeChange) return;
-                this.store.dispatch(fetchPanelData({ id: tile.tile }));
+        tap(([action, state]) => {
+          if (!!state && !!state.pagesConfig)
+            state?.pagesConfig.forEach((page) => {
+              if (page.scId === state.activePageId) {
+                page.layout.tiles.forEach((tile) => {
+                  if (!!tile.meta?.skipUpdateOnTimerangeChange || !tile.panelId)
+                    return;
+                  this.store.dispatch(fetchPanelData({ id: tile.panelId }));
+                });
               }
-            );
+            });
         })
       ),
     { dispatch: false }

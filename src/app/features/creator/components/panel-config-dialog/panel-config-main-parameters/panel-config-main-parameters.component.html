@@ -1,0 +1,83 @@
+<mat-expansion-panel class="bg-dark mt-2" *ngIf="!!_panel && !!_meta">
+  <mat-expansion-panel-header>
+    <mat-panel-title> Główne ustawienia </mat-panel-title>
+    <mat-panel-description>
+      Główne parametery konfiguracyjne
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <mat-form-field appearance="fill" class="mt-2 w-50 pr-2">
+    <mat-label>Typ panelu</mat-label>
+    <mat-select [(ngModel)]="_panel.type" (selectionChange)="change()">
+      <mat-option value="chart">Wykres</mat-option>
+      <mat-option value="table">Tabela</mat-option>
+      <mat-option value="card-stats">Karta statusu</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+    <input
+      matInput
+      type="number"
+      [(ngModel)]="_panel.cols"
+      (ngModelChange)="change()"
+    />
+    <mat-hint>Szerokość</mat-hint>
+  </mat-form-field>
+  <mat-form-field appearance="fill" class="w-25 mt-3 pr-2">
+    <input
+      matInput
+      type="number"
+      [(ngModel)]="_panel.rows"
+      (ngModelChange)="change()"
+    />
+    <mat-hint>Wysokość</mat-hint>
+  </mat-form-field>
+  <h3 class="w-100 mt-3 pt-3" class="text-center">Pozostałe parametery</h3>
+  <section class="mt-5 w-100 pl-3 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_meta.skipUpdateOnSiteChange"
+      (ngModelChange)="change()"
+      >Nie aktualizuj podczas zmiany budynku</mat-checkbox
+    >
+  </section>
+  <section class="mt-3 w-100 pl-3 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_meta.skipUpdateOnTimerangeChange"
+      (ngModelChange)="change()"
+      >Nie aktualizuj podczas zmiany zakresu czasu</mat-checkbox
+    >
+  </section>
+  <section class="mt-3 w-100 pl-3 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_meta.skipUpdateOnVariableChange"
+      (ngModelChange)="change()"
+      >Nie aktualizuj podczas wyboru zmiennej</mat-checkbox
+    >
+  </section>
+  <section class="mt-3 w-100 pl-3 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_meta.showTileTypeSelector"
+      (ngModelChange)="change()"
+      >Pokaż suwak do zmiany widoku pomiędzy wykresem, a tabelą</mat-checkbox
+    >
+  </section>
+  <section class="mt-3 w-100 pl-3 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_panel.hasRollupSelector"
+      (ngModelChange)="change()"
+      >Pokaż menu do zmiany rollupu na wykresie</mat-checkbox
+    >
+  </section>
+  <section class="mt-3 w-100 pl-3 d-inline">
+    <mat-checkbox
+      [(ngModel)]="_meta.hasDownloadButton"
+      (ngModelChange)="change()"
+      >Pokaż przycisk do pobrania raportu</mat-checkbox
+    >
+  </section>
+  <section class="mt-3 w-100 pl-3 d-inline">
+    <mat-checkbox [(ngModel)]="_meta.pivotAllowed" (ngModelChange)="change()"
+      >Pozwalaj na zamianę wierszy z kolumnami w tabeli</mat-checkbox
+    >
+  </section>
+</mat-expansion-panel>

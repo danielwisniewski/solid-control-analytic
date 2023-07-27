@@ -1,6 +1,6 @@
 import { ChartDataset, ChartType } from 'chart.js';
-import { HGrid, HNum, HRef } from 'haystack-core';
-import { CHART_COLOR } from './chart-utils';
+import { HBool, HGrid, HNum, HRef } from 'haystack-core';
+import { CHART_COLOR, generateGradientStroke } from './chart-utils';
 import { chartjsType, getChartType } from './type.utils';
 import { generateTitle } from './chart-title.utils';
 import { generateUnitsObject } from './scales.utils';
@@ -33,8 +33,13 @@ function generateTimeseriesDataset(
     if (!columnName) continue;
 
     const label: string = generateLabelName(reqResponse, columnName);
-
-    const generatedColors = generateColors(colorCounter, colors);
+    const colorTransparency =
+      reqResponse.meta.get<HNum>('colorTransparency')?.value ?? 0.7;
+    const generatedColors = generateColors(
+      colorCounter,
+      colors,
+      colorTransparency
+    );
 
     const TYPE: ChartType = reqResponse.getColumn(i)?.meta.has('chartType')
       ? (reqResponse
@@ -59,9 +64,11 @@ function generateTimeseriesDataset(
       label: label,
       type: TYPE ?? 'bar',
       pointRadius: 0,
+      borderDash: !!reqResponse.meta.get<HBool>('dashedLine')?.value
+        ? [10, 10]
+        : [0, 0],
       borderWidth: reqResponse.meta.get<HNum>('borderWidth')?.value ?? 2,
       borderRadius: reqResponse.meta.get<HNum>('borderRadius')?.value ?? 0,
-
       animation: {
         duration: 900,
       },
@@ -107,14 +114,16 @@ function generatePieDataset(
   };
 
   for (let i = 0; i < reqResponse.getColumnsLength(); i++) {
+    if (reqResponse.getColumn(i)?.name === 'ts') continue;
     const columnName = reqResponse.getColumnNames()[i];
     if (
       typeof reqResponse.getRows()[0].get(columnName)?.toString() ===
       'undefined'
     )
       continue;
-
-    const generatedColors = generateColors(i, colors);
+    const colorTransparency =
+      reqResponse.meta.get<HNum>('colorTransparency')?.value ?? 0.7;
+    const generatedColors = generateColors(i, colors, colorTransparency);
 
     CHART_DATASET.data.push(
       generateDataByColumnIndex(reqResponse, columnName)[0]
@@ -160,13 +169,17 @@ export function calculatePrecision(val: HNum): number {
   else return +Number(val.value).toFixed(1);
 }
 
-function generateColors(index: number, colors: string[]) {
+function generateColors(
+  index: number,
+  colors: string[],
+  transparent: number = 0.7
+) {
   const SOLID_COLOR =
     typeof colors[index] !== 'undefined' ? colors[index] : CHART_COLOR[index];
 
   const TRANSPARENT_COLOR = SOLID_COLOR.replace('rgb', 'rgba').replace(
     ')',
-    ', 0.7)'
+    `, ${transparent})`
   );
   const HOVER_COLOR = SOLID_COLOR.replace('rgb', 'rgba').replace(')', ', 0.7)');
   const AREA_COLOR = SOLID_COLOR.replace('rgb', 'rgba').replace(')', ', 0.1)');

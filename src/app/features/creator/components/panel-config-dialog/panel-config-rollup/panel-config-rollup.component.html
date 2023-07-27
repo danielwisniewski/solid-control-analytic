@@ -1,0 +1,52 @@
+<mat-expansion-panel class="bg-dark mt-2" *ngIf="!!_panel && !!_rollups">
+  <mat-expansion-panel-header>
+    <mat-panel-title> Rollup </mat-panel-title>
+    <mat-panel-description>
+      Konfiguracja parametrów rollupu
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <div style="font-size: 12px">
+    <div *ngFor="let rollup of _rollups; let rollupIndex = index">
+      <mat-form-field appearance="fill" class="w-25 mt-3 pr-2 sm">
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="rollup.display"
+          (change)="changeRollup(rollup, rollupIndex)"
+        />
+        <mat-hint>Wyświetlana nazwa</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="w-25 mt-3 pr-2 sm">
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="rollup.value"
+          (change)="changeRollup(rollup, rollupIndex)"
+        />
+        <mat-hint>Przesyłana wartość</mat-hint>
+      </mat-form-field>
+      <button
+        class="w-25 mt-3 btn btn-sm btn-danger btn-simple"
+        style="max-width: 45px"
+        (click)="_rollups.splice(rollupIndex, 1); change()"
+      >
+        X
+      </button>
+      <section class="mt-3 w-25">
+        <mat-checkbox
+          [checked]="_panel.defaultRollup?.value == rollup.value"
+          (change)="changeDefaultRollup(rollup)"
+          >Default</mat-checkbox
+        >
+      </section>
+    </div>
+  </div>
+
+  <button
+    class="mt-5 btn btn-simple text-center w-100 btn-success"
+    (click)="addNewRollupOption()"
+  >
+    Dodaj opcję
+  </button>
+</mat-expansion-panel>

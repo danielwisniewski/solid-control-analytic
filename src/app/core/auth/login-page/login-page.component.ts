@@ -36,6 +36,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.authService
       .login(user.login, user.password)
       .pipe(
+        take(1),
         catchError((err: any) => {
           this.loginError = err.error.message;
           return err.error.message;

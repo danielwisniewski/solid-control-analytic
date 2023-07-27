@@ -7,29 +7,26 @@ export interface TimerangeState {
 }
 
 export const initialState: TimerangeState = {
-  activeTimerange: ``,
+  activeTimerange: '',
 };
 
 export const timerangeReducer = createReducer(
   initialState,
   on(setActiveTimerange, (state, { dates }) => {
-    if (!!localStorage.getItem('activeTimerange') && dates === '') {
+    if (dates === 'processing...') {
+      return {
+        ...state,
+        activeTimerange: `processing...`,
+      };
+    } else if (!!localStorage.getItem('activeTimerange') && dates === '') {
       return {
         ...state,
         activeTimerange: localStorage.getItem('activeTimerange') as string,
       };
-    } else if (dates === '') {
+    } else
       return {
         ...state,
-        activeTimerange: `toSpan(${DateTime.local()
-          .toFormat('yyyy-MM-dd')
-          .toString()})`,
+        activeTimerange: dates,
       };
-    }
-
-    return {
-      ...state,
-      activeTimerange: dates,
-    };
   })
 );

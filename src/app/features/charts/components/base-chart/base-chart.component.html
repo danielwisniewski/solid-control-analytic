@@ -5,16 +5,27 @@
 >
   <canvas
     baseChart
-    [data]="chartConfig?.data"
-    [options]="chartConfig?.options"
     [datasets]="chartConfig?.data?.datasets"
     [labels]="chartConfig?.data?.labels"
+    [options]="chartConfig?.options"
     [type]="chartConfig?.type ?? 'bar'"
     [height]="'calc(' + height + 'vh - 50px)'"
   >
   </canvas>
   <app-loading-spinner
     [style]="{ height: 'calc(' + height + 'vh - 50px)' }"
-    *ngIf="!chartConfig"
+    style="top: 50px"
+    *ngIf="!chartConfig && !chart"
   ></app-loading-spinner>
 </div>
+
+<!-- <canvas
+baseChart
+[data]="chartConfig?.data"
+[options]="chartConfig?.options"
+[datasets]="chartConfig?.data?.datasets"
+[labels]="chartConfig?.data?.labels"
+[type]="chartConfig?.type ?? 'bar'"
+[height]="'calc(' + height + 'vh - 50px)'"
+>
+</canvas> -->

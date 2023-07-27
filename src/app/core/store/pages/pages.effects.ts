@@ -2,13 +2,19 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
-import { changeActivePageIndex, loadPages } from './pages.actions';
+import {
+  changeActivePageId,
+  changePageVariable,
+  loadPages,
+  savePageConfiguration,
+} from './pages.actions';
 import {
   distinctUntilChanged,
   filter,
   map,
   mergeMap,
-  startWith,
+  of,
+  take,
   tap,
   withLatestFrom,
 } from 'rxjs';
@@ -17,7 +23,6 @@ import {
   selectPagesState,
   selectSkysparkFunc,
 } from './pages.selectors';
-import { PageState } from 'src/app/features/dashboard/interfaces/page-config.interface';
 import { selectPagePath } from '../router/router.reducer';
 import { selectActiveSiteId } from '../sites/site.selectors';
 import { selectActiveTimerange } from '../timerange/timerange.selectors';
@@ -28,7 +33,11 @@ import {
   fetchPanelData,
   setPanelData,
   changePanelParameters,
-  changeActivePanelIndex,
+  changeActivePanelId,
+  fetchActivePanelData,
+  updatePanelConfig,
+  copyPanelConfiguration,
+  downloadPanelReport,
 } from './panels.actions';
 import { setActiveTimerange } from '../timerange/timerange.actions';
 
@@ -45,13 +54,27 @@ export class PagesEffects {
         distinctUntilChanged(),
         tap(([pages, route]) => {
           this.store.dispatch(setActiveTimerange({ dates: '' }));
+          const activePage = pages.pages.find((page) => page.path === route);
+          if (!activePage) return;
+          this.store.dispatch(changeActivePageId({ index: activePage?.scId }));
 
-          const activePageIndex = pages.pages.findIndex(
-            (page) => page.path === route
-          );
-          this.store.dispatch(
-            changeActivePageIndex({ index: activePageIndex })
-          );
+          if (!!localStorage.getItem('copiedPanel')) {
+            const panel = JSON.parse(localStorage.getItem('copiedPanel')!);
+            this.store.dispatch(copyPanelConfiguration({ panel: panel }));
+          }
+        })
+      ),
+    { dispatch: false }
+  );
+
+  onFetchActivePanelData = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(fetchActivePanelData),
+        withLatestFrom(this.store.select(selectPagesState)),
+        tap(([action, state]) => {
+          if (!!state.activePanelId)
+            this.store.dispatch(fetchPanelData({ id: state.activePanelId }));
         })
       ),
     { dispatch: false }
@@ -60,7 +83,7 @@ export class PagesEffects {
   onFetchPanelData$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(fetchPanelData),
+        ofType(fetchPanelData, downloadPanelReport),
         withLatestFrom(
           this.store.select(selectActiveSiteId),
           this.store.select(selectSkysparkFunc),
@@ -68,38 +91,37 @@ export class PagesEffects {
           this.store.select(selectActivePage),
           this.store.select(selectPagesState)
         ),
-        tap(([action, activeSite, skysparkFunc, timerange, page, state]) => {
-          this.store.dispatch(
-            setPanelData({
-              data: {
-                pageIndex: state.activePageIndex,
-                panelId: action.id,
-                panelData: undefined,
-              },
-            })
-          );
-        }),
+        tap(([action, activeSite, skysparkFunc, timerange, page, state]) =>
+          console.log(timerange)
+        ),
         filter(
           ([action, activeSite, skysparkFunc, timerange, page, state]) =>
-            !!activeSite && !!skysparkFunc && !!timerange && action.id > -1
+            !!activeSite &&
+            !!skysparkFunc &&
+            !!timerange &&
+            !!action.id &&
+            timerange !== 'processing...'
         ),
         map(([action, activeSite, skysparkFunc, timerange, page, state]) => {
           const activePanel = page?.layout.tiles.find(
-            (tile) => tile.tile === action.id
+            (tile) => tile.panelId === action.id
           );
-          let parameters = activePanel?.parameters ?? {};
+          let parameters = { ...activePanel?.parameters } ?? {};
 
           if (!!state.detailsPageId)
             parameters = { ...parameters, detailsPageId: state.detailsPageId };
 
-          let reqParameters = page?.variables?.map(
-            (vars) => `var-${vars.name}`
-          );
+          let reqParameters: string[] = [];
+
+          if (!!page?.variables)
+            reqParameters = page?.variables?.map((vars) => `var-${vars.name}`);
+
           if (!!activePanel?.meta?.skipUpdateOnVariableChange)
             reqParameters = [];
+
           if (!!activePanel?.hasRollupSelector) reqParameters?.push('rollup');
 
-          const isQueryValid = reqParameters?.every((param) =>
+          const isQueryValid = reqParameters.every((param) =>
             Object.keys(parameters).includes(param)
           );
 
@@ -110,49 +132,43 @@ export class PagesEffects {
               ? `, ${JSON.stringify(parameters)}`
               : '';
           return {
-            query: `${skysparkFunc}(${action.id},${timerange},${activeSite}${jsonParameters})`,
+            query: `${skysparkFunc}(${activePanel?.tile},${timerange},${activeSite}${jsonParameters})`,
             panelId: action.id,
+            action: action.type,
           };
         }),
         filter((res) => !!res),
-        distinctUntilChanged(),
+        // tap((query) => {
+        //   this.store.dispatch(
+        //     setPanelData({
+        //       data: {
+        //         panelId: query!.panelId,
+        //         panelData: undefined,
+        //       },
+        //     })
+        //   );
+        // }),
         mergeMap((query) => {
-          return this.req.readExprAll(queryToZinc(query!.query)).pipe(
-            withLatestFrom(this.store.select(selectPagesState)),
-            tap(([res, state]) => {
-              this.store.dispatch(
-                setPanelData({
-                  data: {
-                    pageIndex: state.activePageIndex,
-                    panelId: query!.panelId,
-                    panelData: HGrid.make(res),
-                  },
-                })
-              );
-            })
-          );
-        })
-      ),
-    { dispatch: false }
-  );
-
-  onPageChange$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(changeActivePageIndex),
-        withLatestFrom(this.store.select(selectActivePage)),
-        filter(([action, page]) => !!page && !!action),
-        map(([action, page]) => page!),
-        distinctUntilChanged(),
-        map((page: PageState) => {
-          const hasQueryVariable =
-            !!page.variables && page.variables.length > 0;
-          page.layout.tiles.forEach((tile) => {
-            if (!!tile.hasRollupSelector) return;
-            if (!!hasQueryVariable && !tile.meta?.skipUpdateOnVariableChange)
-              return;
-            this.store.dispatch(fetchPanelData({ id: tile.tile }));
-          });
+          if (query!.action === '[Pages] Fetch active panel data') {
+            return this.req.readExprAll(queryToZinc(query!.query)).pipe(
+              withLatestFrom(this.store.select(selectPagesState)),
+              tap(([res, state]) => {
+                this.store.dispatch(
+                  setPanelData({
+                    data: {
+                      panelId: query!.panelId,
+                      panelData: HGrid.make(res),
+                    },
+                  })
+                );
+              })
+            );
+          } else {
+            const VIEW_NAME = 'tableReport';
+            const STATE = `{ funcData: "${query!.query}" }`;
+            this.req.generateExportRequest(VIEW_NAME, STATE, 'Report');
+            return of(undefined);
+          }
         })
       ),
     { dispatch: false }
@@ -162,12 +178,106 @@ export class PagesEffects {
     () =>
       this.actions$.pipe(
         ofType(changePanelParameters),
+        tap(() => {
+          this.store.dispatch(changeActivePanelId({ id: undefined }));
+        })
+      ),
+    { dispatch: false }
+  );
+
+  onVariableChange$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(changePageVariable),
+        withLatestFrom(this.store.select(selectActivePage)),
+        tap(([action, state]) => {
+          state?.layout.tiles.forEach((tile) => {
+            if (
+              !!tile.parameters &&
+              !!tile.parameters[`var-${action.name}`] &&
+              tile.parameters[`var-${action.name}`] == action?.val
+            )
+              return;
+            if (!tile.meta?.skipUpdateOnVariableChange && !!tile.panelId) {
+              this.store.dispatch(
+                changePanelParameters({
+                  panelId: tile.panelId,
+                  parameter: `var-${action.name}`,
+                  value: action.val,
+                })
+              );
+              this.store.dispatch(fetchPanelData({ id: tile.panelId }));
+            }
+          });
+        })
+      ),
+    { dispatch: false }
+  );
+
+  onUpdatePanelConfig$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(updatePanelConfig),
         withLatestFrom(this.store.select(selectPagesState)),
-        tap(([res, state]) =>
-          this.store.dispatch(fetchPanelData({ id: state.activePanelId }))
-        ),
-        tap(([res, state]) => {
-          this.store.dispatch(changeActivePanelIndex({ id: -1 }));
+        tap(([action, state]) => {
+          if (!!state.activePanelId && !!action.panel?.panelData) {
+            this.store.dispatch(
+              setPanelData({
+                data: {
+                  panelId: state.activePanelId,
+                  panelData: action.panel.panelData.newCopy(),
+                },
+              })
+            );
+          }
+        })
+      ),
+    { dispatch: false }
+  );
+
+  onCopyPanelConfiguration$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(copyPanelConfiguration),
+        tap((action) => {
+          const config = { ...action.panel };
+          if (!!config) {
+            delete config.panelData;
+            delete config.panelId;
+            const stringifiedConfig = JSON.stringify(config);
+            localStorage.setItem('copiedPanel', stringifiedConfig);
+          }
+        })
+      ),
+    { dispatch: false }
+  );
+
+  onSavePageConfiguration$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(savePageConfiguration),
+        withLatestFrom(this.store.select(selectActivePage)),
+        tap(([action, page]) => {
+          let pageConfig = { ...page };
+          if (!pageConfig || !pageConfig.layout) return;
+          if (!!pageConfig.activeVariables) delete pageConfig.activeVariables;
+          pageConfig.parameters = {};
+          pageConfig = {
+            ...pageConfig,
+            layout: {
+              ...pageConfig.layout,
+              tiles: pageConfig.layout.tiles.map((tile) => {
+                const { panelData, parameters, ...rest } = tile;
+                return rest;
+              }),
+            },
+          };
+          const pageId = pageConfig.scId;
+          const stringifiedConfig = JSON.stringify(pageConfig);
+          const query = `read(appConfig and dashboard and config->scId == "${pageId}").set("config", ${stringifiedConfig}).recEdit`;
+          const zincQuery = queryToZinc(query);
+
+          return this.req.readExprAll(zincQuery).pipe(take(1)).subscribe();
         })
       ),
     { dispatch: false }

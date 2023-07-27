@@ -1,18 +1,26 @@
 import {
   Component,
-  OnInit,
   ChangeDetectionStrategy,
   Inject,
   OnDestroy,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Subscription, filter, merge, tap } from 'rxjs';
+import { Subscription, filter, map, tap } from 'rxjs';
 import { PageState } from 'src/app/features/dashboard/interfaces/page-config.interface';
-import { DashboardStore } from 'src/app/features/dashboard/store/dashboard.store';
 import { CreatePageService } from '../../services/create-page.service';
-import { HGrid, HaysonDict } from 'haystack-core';
+import { GridColumn } from 'haystack-core';
 import { Panel } from 'src/app/features/dashboard/interfaces/panel.interface';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import {
+  selectActivePage,
+  selectPagesState,
+} from 'src/app/core/store/pages/pages.selectors';
+import {
+  copyPanelConfiguration,
+  deletePanel,
+  pastePanelConfiguration,
+} from 'src/app/core/store/pages/panels.actions';
 
 @Component({
   selector: 'app-panel-config-dialog',
@@ -20,115 +28,54 @@ import { Panel } from 'src/app/features/dashboard/interfaces/panel.interface';
   styleUrls: ['./panel-config-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PanelConfigDialogComponent implements OnInit, OnDestroy {
+export class PanelConfigDialogComponent implements OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
       tile: Panel;
-      grid: HGrid;
     },
-    private store: DashboardStore,
-    private cdr: ChangeDetectorRef,
-    private createPageService: CreatePageService
+    private createPageService: CreatePageService,
+    private store: Store<AppState>
   ) {}
-  sub: Subscription | undefined;
 
-  columns = this.data.grid.getColumns();
+  columns: GridColumn[] | undefined;
 
-  ngOnInit(): void {
-    this.sub = merge(
-      this.store.activePage$,
-      this.store.activePageByCreatorModule$
+  subs: Subscription = this.store
+    .select(selectActivePage)
+    .pipe(
+      map((res) =>
+        res?.layout?.tiles?.find(
+          (tile) => tile.panelId === this.data.tile.panelId
+        )
+      ),
+      filter((res) => !!res),
+      tap((res) => {
+        this.panel = res;
+        this.columns = res?.panelData?.getColumns();
+      })
     )
-      .pipe(filter((res) => !!res))
-      .subscribe((res) => {
-        res?.layout.tiles.map((r) => {
-          if (!r.columnsMeta) r.columnsMeta = [];
-        });
-        this.pageConfig = res;
+    .subscribe();
+  panel: Panel | undefined;
 
-        this.cdr.detectChanges();
-      });
+  isCopiedConfig$ = this.store.select(selectPagesState);
+
+  onCopyConfig() {
+    if (!!this.panel)
+      this.store.dispatch(copyPanelConfiguration({ panel: this.panel }));
   }
 
-  getIndex(metaName: string, columnName: string): number {
-    return (
-      this.data.tile.columnsMeta?.findIndex(
-        (r) => r.columnName === columnName
-      ) ?? -1
-    );
-  }
-
-  changeMeta(columnName: string, metaName: string, valueFromTemplate: any) {
-    let valueToProcess = valueFromTemplate;
-
-    if (typeof valueToProcess === 'object' && !!valueToProcess.target)
-      valueToProcess = valueToProcess.target.value;
-
-    if (!!this.pageConfig && !!this.data.tile) {
-      const tileIndex = this.pageConfig?.layout.tiles.findIndex(
-        (r) => r.tile == this.data.tile?.tile
-      );
-
-      if (!this.pageConfig.layout.tiles[tileIndex].columnsMeta)
-        this.pageConfig.layout.tiles[tileIndex].columnsMeta = [];
-
-      let columnMetaIndex =
-        this.pageConfig.layout.tiles[tileIndex].columnsMeta?.findIndex(
-          (r) => r.columnName === columnName
-        ) ?? -1;
-
-      if (columnMetaIndex > -1)
-        this.pageConfig.layout.tiles[tileIndex].columnsMeta![columnMetaIndex] =
-          {
-            ...this.pageConfig.layout.tiles[tileIndex].columnsMeta![
-              columnMetaIndex
-            ],
-            [metaName]: valueToProcess,
-          };
-      else {
-        this.pageConfig.layout.tiles[tileIndex].columnsMeta?.push({
-          columnName: columnName,
-          [metaName]: valueToProcess,
-        });
-      }
-
-      this.store.activeTile$.next(this.data.tile.tile);
-      this.store.activePageByCreatorModule$.next(this.pageConfig);
-    }
-  }
-
-  change() {
-    if (!!this.pageConfig && !!this.data.tile) {
-      const tileIndex = this.pageConfig?.layout.tiles.findIndex(
-        (r) => r.tile == this.data.tile?.tile
-      );
-      (this.pageConfig.layout.tiles[tileIndex] = this.data.tile),
-        this.store.activeTile$.next(this.data.tile.tile);
-      this.store.activePageByCreatorModule$.next(this.pageConfig);
-    }
+  onPasteConfig() {
+    this.store.dispatch(pastePanelConfiguration());
   }
 
   onRemovePanel() {
-    if (!!this.pageConfig && !!this.data.tile) {
-      const tileIndex = this.pageConfig?.layout.tiles.findIndex(
-        (r) => r.tile == this.data.tile?.tile
-      );
-      this.pageConfig.layout.tiles.splice(tileIndex, 1);
-      this.store.activePageByCreatorModule$.next(this.pageConfig);
-    }
+    if (!!this.panel?.panelId)
+      this.store.dispatch(deletePanel({ id: this.panel.panelId }));
   }
 
   pageConfig: PageState | undefined;
 
   ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-  }
-
-  onSave() {
-    if (!!this.pageConfig)
-      this.createPageService.updateConfiguration(this.pageConfig);
-
-    this.change();
+    this.subs.unsubscribe();
   }
 }

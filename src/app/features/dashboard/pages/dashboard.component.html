@@ -1,8 +1,12 @@
-<div class="content">
+<div class="content" *ngIf="pageConfig$ | async; else loadingTmpl">
   <app-dashboard-top-bar></app-dashboard-top-bar>
+
   <mat-grid-list
     [cols]="(pageConfig$ | async)?.layout?.colNumber ?? 12"
     [rowHeight]="((pageConfig$ | async)?.layout?.rowHeight ?? 30) + 'vh'"
+    cdkDropList
+    [cdkDropListDisabled]="!(isCreatorMode$ | async)"
+    (cdkDropListDropped)="drop($event)"
   >
     <mat-grid-tile
       *ngFor="
@@ -10,6 +14,8 @@
         let index = index;
         trackBy: trackBy
       "
+      cdkDrag
+      [cdkDragDisabled]="!(isCreatorMode$ | async)"
       [colspan]="panel.cols"
       [rowspan]="panel.rows"
     >
@@ -22,3 +28,10 @@
     </mat-grid-tile>
   </mat-grid-list>
 </div>
+
+<ng-template #loadingTmpl>
+  <app-loading-spinner
+    #loadingTmlp
+    style="position: absolute; top: 50%; left: 50%"
+  ></app-loading-spinner>
+</ng-template>

@@ -8,6 +8,9 @@ import { TableColumn } from '@swimlane/ngx-datatable';
 import { HDict, HGrid, HaysonDict } from 'haystack-core';
 import swal from 'sweetalert2';
 import { UpdateValueService } from '../../services/update-value.service';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/state';
+import { changeActivePanelId } from 'src/app/core/store/pages/panels.actions';
 
 @Component({
   selector: 'app-delete-button-column',
@@ -25,7 +28,10 @@ export class DeleteButtonColumnComponent implements OnInit {
   @Input() value: boolean | undefined;
   @Input() grid: HGrid | undefined;
 
-  constructor(private service: UpdateValueService) {}
+  constructor(
+    private service: UpdateValueService,
+    private store: Store<AppState>
+  ) {}
   displayTag: string = 'deleteButton';
 
   private dictRow: HDict | undefined;
@@ -50,6 +56,10 @@ export class DeleteButtonColumnComponent implements OnInit {
 
   onDelete() {
     if (!this.id) return;
+
+    const panelId = this.grid?.meta.get('panelId')?.toString();
+    if (!!panelId) this.store.dispatch(changeActivePanelId({ id: panelId }));
+
     swal
       .fire({
         title: 'Czy jesteś pewien?',

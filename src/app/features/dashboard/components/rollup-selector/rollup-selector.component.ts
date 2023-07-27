@@ -9,11 +9,15 @@ import { Panel, RollupOption } from '../../interfaces/panel.interface';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
 import {
-  changeActivePanelIndex,
+  changeActivePanelId,
   changePanelParameters,
+  fetchPanelData,
 } from 'src/app/core/store/pages/panels.actions';
-import { selectPagePath } from 'src/app/core/store/router/router.reducer';
-import { tap } from 'rxjs';
+
+interface RollupData {
+  panelId: string;
+  rollup: RollupOption;
+}
 
 @Component({
   selector: 'app-rollup-selector',
@@ -26,41 +30,89 @@ export class RollupSelectorComponent implements OnInit {
 
   @Input() tile: Panel | undefined;
 
-  activeRollup: RollupOption = {
-    display: 'D',
-    value: '1day',
-  };
-
-  private pageSub = this.store
-    .select(selectPagePath)
-    .pipe(tap(() => this.updateData()))
-    .subscribe();
+  activeRollup: RollupOption | undefined;
 
   ngOnInit(): void {
-    this.updateData();
+    if (!this.tile) return;
+    if (!!this.getRollupFromLocalStorage()) {
+      this.activeRollup = this.getRollupFromLocalStorage();
+    }
+    if (!this.activeRollup) {
+      if (!!this.tile.defaultRollup)
+        this.activeRollup = this.tile.defaultRollup;
+      else if (!!this.tile.rollups) {
+        const rollupIndex = Math.floor(this.tile.rollups.length / 2) - 1;
+        this.activeRollup = this.tile?.rollups[rollupIndex];
+      } else {
+        this.activeRollup = {
+          display: 'D',
+          value: '1day',
+        };
+      }
+    }
+    if (!this.tile.parameters?.rollup) this.updateData();
   }
 
   private updateData() {
-    console.log(this.tile);
-    if (!this.tile?.tile) return;
-    this.store.dispatch(changeActivePanelIndex({ id: this.tile?.tile ?? -1 }));
+    if (!this.tile || !this.tile.panelId) return;
     this.store.dispatch(
-      changePanelParameters({ parameter: 'rollup', value: this.activeRollup })
+      changePanelParameters({
+        panelId: this.tile.panelId,
+        parameter: 'rollup',
+        value: this.activeRollup,
+      })
     );
+    this.store.dispatch(fetchPanelData({ id: this.tile.panelId }));
   }
 
   onRollupChangeFunc(rollup: RollupOption | undefined) {
     if (!!rollup && !!this.tile) {
       this.activeRollup = rollup;
+      this.saveRollupToLocalStorage();
       this.updateData();
     }
   }
 
-  trackBy(index: number, item: RollupOption) {
-    return item.display;
+  private saveRollupToLocalStorage() {
+    let storedData = this.getLocalStoredData();
+
+    if (!!this.tile?.panelId && !!this.activeRollup) {
+      const tempData = {
+        panelId: this.tile.panelId,
+        rollup: this.activeRollup,
+      };
+      const index = storedData?.findIndex(
+        (r) => r.panelId === this.tile?.panelId
+      );
+      if (!!storedData && !!index && index > -1) {
+        storedData[index] = tempData;
+      } else storedData = [tempData];
+
+      localStorage.setItem('activeRollups', JSON.stringify(storedData));
+    }
   }
 
-  ngOnDestroy() {
-    this.pageSub.unsubscribe();
+  private getRollupFromLocalStorage(): RollupOption | undefined {
+    const storedData = this.getLocalStoredData();
+    let result: RollupOption | undefined = undefined;
+
+    if (!!storedData && !!this.tile && !!this.tile.panelId) {
+      result = storedData.find((r) => r.panelId === this.tile!.panelId)?.rollup;
+    }
+
+    return result;
+  }
+
+  private getLocalStoredData(): RollupData[] | undefined {
+    let storedData: RollupData[] | undefined = undefined;
+
+    if (
+      localStorage.getItem('activeRollups') != null &&
+      typeof localStorage.getItem('activeRollups') == 'string'
+    ) {
+      storedData = JSON.parse(localStorage.getItem('activeRollups') as string);
+    }
+
+    return storedData;
   }
 }

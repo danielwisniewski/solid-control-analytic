@@ -1,9 +1,9 @@
 <div class="radio-switch ml-1">
   <label
-    *ngFor="let rollup of tile?.rollups; let i = index; trackBy: trackBy"
+    *ngFor="let rollup of tile?.rollups; let i = index"
     class="radio-switch__label"
     [ngClass]="{
-      'radio-switch__label--selected': activeRollup.value === rollup.value
+      'radio-switch__label--selected': activeRollup?.value === rollup.value
     }"
   >
     <input

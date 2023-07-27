@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DateTime } from 'luxon';
 import { BehaviorSubject } from 'rxjs';
 
-interface IRange {
+export interface IRange {
   value: Date[];
   label: string;
 }
@@ -37,6 +37,20 @@ export class TimerangeStore {
     },
     {
       value: [
+        DateTime.local().minus({ day: 2 }).startOf('day').toJSDate(),
+        new Date(),
+      ],
+      label: 'Ostatnie 2 dni',
+    },
+    {
+      value: [
+        DateTime.local().minus({ day: 7 }).startOf('day').toJSDate(),
+        new Date(),
+      ],
+      label: 'Ostatnie 7 dni',
+    },
+    {
+      value: [
         DateTime.local().minus({ month: 1 }).startOf('month').toJSDate(),
         DateTime.local().minus({ month: 1 }).endOf('month').toJSDate(),
       ],
@@ -55,6 +69,31 @@ export class TimerangeStore {
     },
     {
       value: [
+        DateTime.local().minus({ day: 90 }).startOf('day').toJSDate(),
+        new Date(),
+      ],
+      label: 'Ostatnie 90 dni',
+    },
+    {
+      value: [
+        DateTime.local().minus({ quarter: 1 }).startOf('quarter').toJSDate(),
+        DateTime.local().minus({ quarter: 1 }).endOf('quarter').toJSDate(),
+      ],
+      label: 'Zeszły kwartał',
+    },
+    {
+      value: [DateTime.local().startOf('quarter').toJSDate(), new Date()],
+      label: 'Obecny kwartał',
+    },
+    {
+      value: [
+        DateTime.local().minus({ month: 6 }).startOf('month').toJSDate(),
+        new Date(),
+      ],
+      label: 'Ostatnie 6 miesięcy',
+    },
+    {
+      value: [
         DateTime.local().minus({ year: 1 }).startOf('year').toJSDate(),
         DateTime.local().minus({ year: 1 }).endOf('year').toJSDate(),
       ],
@@ -63,6 +102,13 @@ export class TimerangeStore {
     {
       value: [DateTime.local().startOf('year').toJSDate(), new Date()],
       label: 'Obecny rok',
+    },
+    {
+      value: [
+        DateTime.local().minus({ year: 2 }).startOf('year').toJSDate(),
+        new Date(),
+      ],
+      label: 'Ostatnie 2 lata',
     },
   ];
 

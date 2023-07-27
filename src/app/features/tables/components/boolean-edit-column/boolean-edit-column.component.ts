@@ -7,6 +7,9 @@ import {
 import { TableColumn } from '@swimlane/ngx-datatable';
 import { HaysonDict, HDict, HGrid, HMarker } from 'haystack-core';
 import { UpdateValueService } from '../../services/update-value.service';
+import { AppState } from 'src/app/state';
+import { Store } from '@ngrx/store';
+import { changeActivePanelId } from 'src/app/core/store/pages/panels.actions';
 
 @Component({
   selector: 'app-boolean-edit-column',
@@ -26,10 +29,16 @@ export class BooleanEditColumnComponent implements OnInit {
   private prop: string | undefined;
 
   private dictRow: HDict | undefined;
-  constructor(private service: UpdateValueService) {}
+  constructor(
+    private service: UpdateValueService,
+    private store: Store<AppState>
+  ) {}
 
   onClick() {
     this.value = !this.value;
+    const panelId = this.grid?.meta.get('panelId');
+    if (!!panelId)
+      this.store.dispatch(changeActivePanelId({ id: panelId.toString() }));
     this.action();
   }
 
