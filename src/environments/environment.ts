@@ -6,8 +6,10 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 export const environment = {
   production: false,
-  skysparkServer: 'http://solid-control.synology.me:3000/skyspark',
-  skysparkUrl: 'http://solid-control.synology.me:3000',
+  // skysparkServer: 'http://solid-control.synology.me:3000/skyspark',
+  // skysparkUrl: 'http://solid-control.synology.me:3000',
+  skysparkServer: 'http://localhost:3000/skyspark',
+  skysparkUrl: 'http://localhost:3000',
   skysparkProject: 'demo',
   startupPage: 'portfolio',
   sidebarLogo: 'assets/img/white_logo_transparent_background.png',

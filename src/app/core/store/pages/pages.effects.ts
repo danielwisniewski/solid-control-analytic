@@ -165,7 +165,7 @@ export class PagesEffects {
             );
           } else {
             const VIEW_NAME = 'tableReport';
-            const STATE = `{ funcData: "${query!.query}" }`;
+            const STATE = `{ funcData: ${queryToZinc(query!.query)} }`;
             this.req.generateExportRequest(VIEW_NAME, STATE, 'Report');
             return of(undefined);
           }
