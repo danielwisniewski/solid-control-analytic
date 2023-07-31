@@ -13,7 +13,7 @@ export const changePanelParameters = createAction(
 );
 
 export const fetchPanelData = createAction(
-  '[Pages] Fetch active panel data',
+  '[Pages] Fetch panel data by Id',
   props<{ id: string }>()
 );
 

@@ -9,6 +9,9 @@ import {
 } from 'src/app/core/store/pages/pages.selectors';
 import { isCreatorMode } from 'src/app/core/store/pages/pages.selectors';
 import { savePageConfiguration } from 'src/app/core/store/pages/pages.actions';
+import { map, tap, withLatestFrom } from 'rxjs';
+import { selectActiveTimerange } from 'src/app/core/store/timerange/timerange.selectors';
+import { setActiveTimerange } from 'src/app/core/store/timerange/timerange.actions';
 
 @Component({
   selector: 'app-dashboard-top-bar',
@@ -19,7 +22,14 @@ import { savePageConfiguration } from 'src/app/core/store/pages/pages.actions';
 export class DashboardTopBarComponent {
   constructor(private modal: MatDialog, private store: Store<AppState>) {}
 
-  pageConfig$ = this.store.select(selectActivePage);
+  pageConfig$ = this.store.select(selectActivePage).pipe(
+    withLatestFrom(this.store.select(selectActiveTimerange)),
+    tap(([config, timerange]) => {
+      if (!config?.showTimerangeSelector && !timerange)
+        this.store.dispatch(setActiveTimerange({ dates: 'toSpan(today())' }));
+    }),
+    map(([config, timerange]) => config)
+  );
 
   isSavedRequired$ = this.store.select(selectPagesState);
 

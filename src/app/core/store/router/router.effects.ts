@@ -15,8 +15,6 @@ import {
   changeDetailsPageState,
 } from '../pages/pages.actions';
 import { selectPages } from '../pages/pages.selectors';
-import { selectActiveTimerange } from '../timerange/timerange.selectors';
-import { setActiveTimerange } from '../timerange/timerange.actions';
 
 @Injectable()
 export class RouterEffects {

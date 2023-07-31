@@ -1,6 +1,5 @@
 import { RouterReducerState, getSelectors } from '@ngrx/router-store';
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { selectPages } from '../pages/pages.selectors';
+import { createFeatureSelector } from '@ngrx/store';
 
 export interface RouterState {
   router: RouterReducerState<any>;

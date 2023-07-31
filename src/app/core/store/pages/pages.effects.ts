@@ -91,9 +91,6 @@ export class PagesEffects {
           this.store.select(selectActivePage),
           this.store.select(selectPagesState)
         ),
-        tap(([action, activeSite, skysparkFunc, timerange, page, state]) =>
-          console.log(timerange)
-        ),
         filter(
           ([action, activeSite, skysparkFunc, timerange, page, state]) =>
             !!activeSite &&
@@ -103,6 +100,7 @@ export class PagesEffects {
             timerange !== 'processing...'
         ),
         map(([action, activeSite, skysparkFunc, timerange, page, state]) => {
+          console.log(action);
           const activePanel = page?.layout.tiles.find(
             (tile) => tile.panelId === action.id
           );
@@ -149,7 +147,7 @@ export class PagesEffects {
         //   );
         // }),
         mergeMap((query) => {
-          if (query!.action === '[Pages] Fetch active panel data') {
+          if (query!.action === '[Pages] Fetch panel data by Id') {
             return this.req.readExprAll(queryToZinc(query!.query)).pipe(
               withLatestFrom(this.store.select(selectPagesState)),
               tap(([res, state]) => {
