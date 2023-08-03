@@ -13,9 +13,8 @@
   >
   </canvas>
   <app-loading-spinner
-    [style]="{ height: 'calc(' + height + 'vh - 50px)' }"
-    style="top: 50px"
-    *ngIf="!chartConfig && !chart"
+    [style]="{ height: 'calc(' + height + 'vh)' }"
+    *ngIf="(!chartConfig && !chart) || isLoading"
   ></app-loading-spinner>
 </div>
 

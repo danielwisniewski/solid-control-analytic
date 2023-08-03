@@ -11,7 +11,13 @@ export function generateTitle(reqResponse: HGrid): ChartOptions {
             ? reqResponse.meta.get('noDataTitle')?.toString()
             : 'Nie znaleziono danych',
           font: {
-            size: 17,
+            size(ctx, options) {
+              const width = ctx.chart.width;
+              let size = Math.round(width / 40);
+              if (size > 17) size = 17;
+              if (size < 13) size = 13;
+              return size;
+            },
           },
         },
         subtitle: {
@@ -34,7 +40,13 @@ export function generateTitle(reqResponse: HGrid): ChartOptions {
           display: !!reqResponse.meta.get<HBool>('showSubtitle')?.value,
           text: reqResponse.meta.get<HStr>('subtitle')?.toString(),
           font: {
-            size: 14,
+            size(ctx, options) {
+              const width = ctx.chart.width;
+              let size = Math.round(width / 40);
+              if (size > 14) size = 14;
+              if (size < 12) size = 12;
+              return size;
+            },
           },
         },
       },

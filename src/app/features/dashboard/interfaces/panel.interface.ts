@@ -17,6 +17,7 @@ export interface Panel {
     rollup?: RollupOption;
     [key: string]: any;
   };
+  sizeCorrection?: number;
 }
 
 export interface RollupOption {
@@ -43,6 +44,8 @@ export interface PanelConfiguration
   skipUpdateOnVariableChange?: boolean;
   skipUpdateOnSiteChange?: boolean;
   skipUpdateOnTimerangeChange?: boolean;
+  pointRadius?: number;
+  lineType?: string;
 }
 
 interface CardStatsMeta {

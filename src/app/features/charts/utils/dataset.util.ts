@@ -1,5 +1,5 @@
 import { ChartDataset, ChartType } from 'chart.js';
-import { HBool, HGrid, HNum, HRef } from 'haystack-core';
+import { HBool, HGrid, HNum, HRef, HStr } from 'haystack-core';
 import { CHART_COLOR, generateGradientStroke } from './chart-utils';
 import { chartjsType, getChartType } from './type.utils';
 import { generateTitle } from './chart-title.utils';
@@ -58,12 +58,17 @@ function generateTimeseriesDataset(
     const unitObject = generateUnitsObject(reqResponse);
 
     const yAxisID = unitObject.find((r) => r.unit === unit)?.axisName ?? 'y0';
-
     const CHART_DATASET: ChartDataset = {
       data: generateDataByColumnIndex(reqResponse, columnName),
       label: label,
       type: TYPE ?? 'bar',
-      pointRadius: 0,
+      stepped:
+        reqResponse.meta.get<HStr>('lineType')?.value == 'stepper'
+          ? true
+          : false,
+      tension:
+        reqResponse.meta.get<HStr>('lineType')?.value == 'smooth' ? 0.5 : 0,
+      pointRadius: reqResponse.meta.get<HNum>('pointRadius')?.value ?? 0,
       borderDash: !!reqResponse.meta.get<HBool>('dashedLine')?.value
         ? [10, 10]
         : [0, 0],
@@ -72,6 +77,7 @@ function generateTimeseriesDataset(
       animation: {
         duration: 900,
       },
+
       pointBackgroundColor: generatedColors.solidColor,
       backgroundColor: generatedColors.transparentColor,
       borderColor: generatedColors.solidColor,
@@ -91,6 +97,7 @@ function generatePieDataset(
   const CHART_DATASET: ChartDataset = {
     data: [],
     pointRadius: 1,
+
     borderWidth: reqResponse.meta.get<HNum>('borderWidth')?.value ?? 0.7,
     borderRadius:
       reqResponse.getColumnsLength() < 2

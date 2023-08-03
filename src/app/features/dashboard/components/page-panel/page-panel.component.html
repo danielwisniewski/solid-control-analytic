@@ -1,6 +1,6 @@
 <div class="card card-chart">
   <div
-    class="card-header mt-0 pt-1 pb-1 d-flex justify-content-between"
+    class="card-header mt-0 pt-1 pb-1 d-flex justify-content-between;"
     style="height: 40px"
   >
     <span
@@ -11,22 +11,33 @@
     >
       <span> <i class="tim-icons icon-pencil"></i> </span>
     </span>
-    <h3
-      style="flex-grow: 10; flex-shrink: 1"
-      class="text-start ml-3"
-      *ngIf="!!panel?.meta?.showTitle"
-    >
-      {{ panel?.panelData?.meta?.get("title") }}
-    </h3>
+    <div style="flex-shrink: 1; flex-grow: 2; min-width: 0">
+      <h3
+        #heading
+        class="text-start ml-3"
+        *ngIf="!!panel?.meta?.showTitle"
+        style="
+          font-size: 20px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        "
+      >
+        {{ panel?.panelData?.meta?.get("title") }}
+      </h3>
+    </div>
+
     <app-chart-table-toggle
       [tile]="panel"
       *ngIf="!!panel?.meta?.showTileTypeSelector"
       class="text-start"
+      style="flex-shrink: 0"
     >
     </app-chart-table-toggle>
     <app-rollup-selector
       *ngIf="!!panel?.hasRollupSelector && panel?.type === 'chart'"
       [tile]="panel ?? undefined"
+      style="flex-shrink: 0"
       >{{ !!panel?.hasRollupSelector }}</app-rollup-selector
     >
     <span
@@ -42,7 +53,7 @@
     </span>
   </div>
   <div class="card-body p-1">
-    <ng-container *ngIf="panel?.type === 'chart'">
+    <ng-container *ngIf="panel?.type === 'chart'" style="min-height: 650px">
       <app-base-chart
         [chartConfiguration]="panel?.panelData"
         [height]="height.toString()"

@@ -80,6 +80,12 @@ export const pagesReducer = createReducer(
       isCreatorMode: status,
     };
   }),
+  on(PagesActions.changeDetailsPageState, (state, { id }) => {
+    return {
+      ...state,
+      detailsPageId: id,
+    };
+  }),
   on(setPanelData, (state, { data }) => {
     const { panelId, panelData } = data;
     let updatedState = { ...state };

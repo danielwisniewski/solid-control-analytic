@@ -1,15 +1,30 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 
 import { HaysonGrid, HGrid, HRef } from 'haystack-core';
-import { interval, Observable, switchMap, take, tap } from 'rxjs';
+import {
+  interval,
+  Observable,
+  skip,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+} from 'rxjs';
+import { changePageVariable } from 'src/app/core/store/pages/pages.actions';
+import { selectActiveVariable } from 'src/app/core/store/pages/pages.selectors';
+import { selectPagePath } from 'src/app/core/store/router/router.reducer';
+import { selectActiveSite } from 'src/app/core/store/sites/site.selectors';
+import { selectActiveTimerange } from 'src/app/core/store/timerange/timerange.selectors';
+import { AppState } from 'src/app/state';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequestReadService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private store: Store<AppState>) {}
 
   readByFilter(filter: string): Observable<HaysonGrid> {
     const text = `ver:"3.0"
@@ -41,7 +56,9 @@ export class RequestReadService {
     expr
     "${expr}"`;
 
-    return this.http.post(`${environment.skysparkServer}/eval`, text);
+    return this.http
+      .post(`${environment.skysparkServer}/eval`, text)
+      .pipe(takeUntil(this.store.select(selectPagePath).pipe(skip(1))));
   }
 
   readExprAll(expr: string): Observable<HaysonGrid> {
@@ -49,7 +66,13 @@ export class RequestReadService {
     expr
     ${expr}`;
 
-    return this.http.post(`${environment.skysparkServer}/eval`, text);
+    return this.http
+      .post(`${environment.skysparkServer}/eval`, text)
+      .pipe(
+        takeUntil(this.store.select(selectPagePath).pipe(skip(1))),
+        takeUntil(this.store.select(selectActiveSite).pipe(skip(1))),
+        takeUntil(this.store.select(selectActiveTimerange).pipe(skip(1)))
+      );
   }
 
   generateExportRequest(viewName: string, state: any, filename: string) {

@@ -159,10 +159,10 @@ export class GridTableGenerator {
             const index = this.expandedRows.findIndex(
               (row) => row == r.get('id')?.toZinc(true)
             );
-
-            // if (index > -1) r = r.set('treeStatus', 'expanded');
-            // else r = r.set('treeStatus', 'collapsed');
-            return r;
+            let dict = r.newCopy();
+            if (index > -1) dict = dict.set('treeStatus', 'expanded');
+            else dict = dict.set('treeStatus', 'collapsed');
+            return dict;
           })
           .toHayson() as HaysonDict[];
       } else this.rows = this.grid?.getRows().toHayson() as HaysonDict[];

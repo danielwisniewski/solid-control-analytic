@@ -12,7 +12,6 @@ import { AppState } from 'src/app/state';
 import { changePageVariable } from 'src/app/core/store/pages/pages.actions';
 import { DashboardService } from '../../../services/dashboard.service';
 import { selectActiveSite } from 'src/app/core/store/sites/site.selectors';
-import { HRef } from 'haystack-core';
 
 @Component({
   selector: 'app-dashboard-variable-dropdown',

@@ -1,6 +1,6 @@
 <div class="d-flex" style="justify-content: space-between; flex-wrap: wrap">
-  <div style="flex-grow: 4">
-    <h2 class="text-start">
+  <div style="flex-grow: 4; padding-left: 30px" class="col-sm-12 col-lg-auto">
+    <h2 class="text-center text-lg-left mb-2">
       {{ (pageConfig$ | async)?.title }}
       <span
         *ngIf="isCreatorMode$ | async"
@@ -12,7 +12,11 @@
       </span>
     </h2>
   </div>
-  <div *ngIf="isCreatorMode$ | async" style="flex-grow: 2">
+  <div
+    *ngIf="isCreatorMode$ | async"
+    style="flex-grow: 2"
+    class="col-sm-12 col-md-auto"
+  >
     <button
       [disabled]="!(isSavedRequired$ | async)?.isSaveRequired"
       (click)="onSaveConfig()"
@@ -21,16 +25,25 @@
       Zapisz
     </button>
   </div>
-  <div *ngIf="!!(pageConfig$ | async)?.showSiteSelector">
+  <div
+    *ngIf="!!(pageConfig$ | async)?.showSiteSelector"
+    class="col-sm-12 col-md-auto"
+  >
     <app-site-dropdown-button
       [showPortfolioOption]="false"
     ></app-site-dropdown-button>
   </div>
-  <div *ngFor="let variable of (pageConfig$ | async)?.variables">
+  <div
+    *ngFor="let variable of (pageConfig$ | async)?.variables"
+    class="col-sm-12 col-md-auto"
+  >
     <app-dashboard-variable-dropdown [variable]="variable">
     </app-dashboard-variable-dropdown>
   </div>
-  <div *ngIf="!!(pageConfig$ | async)?.showTimerangeSelector">
+  <div
+    *ngIf="!!(pageConfig$ | async)?.showTimerangeSelector"
+    class="col-sm-12 col-md-auto"
+  >
     <app-timerange-dropdown></app-timerange-dropdown>
   </div>
 </div>

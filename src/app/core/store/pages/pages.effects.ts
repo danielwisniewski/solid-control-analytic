@@ -5,6 +5,7 @@ import { AppState } from 'src/app/state';
 import {
   changeActivePageId,
   changePageVariable,
+  fetchAllPanelsData,
   loadPages,
   savePageConfiguration,
 } from './pages.actions';
@@ -23,7 +24,7 @@ import {
   selectPagesState,
   selectSkysparkFunc,
 } from './pages.selectors';
-import { selectPagePath } from '../router/router.reducer';
+import { selectPagePath, selectDetailsPageId } from '../router/router.reducer';
 import { selectActiveSiteId } from '../sites/site.selectors';
 import { selectActiveTimerange } from '../timerange/timerange.selectors';
 import { RequestReadService } from '../../services/requests/read/request-read.service';
@@ -49,12 +50,14 @@ export class PagesEffects {
         ofType(loadPages),
         withLatestFrom(
           this.store.select(selectPagePath),
-          this.store.select(selectActivePage)
+          this.store.select(selectDetailsPageId)
         ),
-        distinctUntilChanged(),
-        tap(([pages, route]) => {
+        tap(([pages, route, detailsPage]) => {
           this.store.dispatch(setActiveTimerange({ dates: '' }));
-          const activePage = pages.pages.find((page) => page.path === route);
+          const pageToFind = !!detailsPage ? `${route}/details` : route;
+          const activePage = pages.pages.find(
+            (page) => page.path === pageToFind
+          );
           if (!activePage) return;
           this.store.dispatch(changeActivePageId({ index: activePage?.scId }));
 
@@ -80,6 +83,21 @@ export class PagesEffects {
     { dispatch: false }
   );
 
+  onFetchAllPanelsData = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(fetchAllPanelsData),
+        withLatestFrom(this.store.select(selectActivePage)),
+        tap(([action, page]) => {
+          page?.layout.tiles.forEach((tile) => {
+            if (!!tile.panelId)
+              this.store.dispatch(fetchPanelData({ id: tile.panelId }));
+          });
+        })
+      ),
+    { dispatch: false }
+  );
+
   onFetchPanelData$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -91,6 +109,9 @@ export class PagesEffects {
           this.store.select(selectActivePage),
           this.store.select(selectPagesState)
         ),
+        // tap(([action, activeSite, skysparkFunc, timerange, page, state]) =>
+        //   console.log(action)
+        // ),
         filter(
           ([action, activeSite, skysparkFunc, timerange, page, state]) =>
             !!activeSite &&
@@ -100,10 +121,10 @@ export class PagesEffects {
             timerange !== 'processing...'
         ),
         map(([action, activeSite, skysparkFunc, timerange, page, state]) => {
-          console.log(action);
           const activePanel = page?.layout.tiles.find(
             (tile) => tile.panelId === action.id
           );
+
           let parameters = { ...activePanel?.parameters } ?? {};
 
           if (!!state.detailsPageId)
@@ -136,16 +157,18 @@ export class PagesEffects {
           };
         }),
         filter((res) => !!res),
-        // tap((query) => {
-        //   this.store.dispatch(
-        //     setPanelData({
-        //       data: {
-        //         panelId: query!.panelId,
-        //         panelData: undefined,
-        //       },
-        //     })
-        //   );
-        // }),
+        tap((query) => {
+          if (query!.action === '[Pages] Fetch panel data by Id') {
+            this.store.dispatch(
+              setPanelData({
+                data: {
+                  panelId: query!.panelId,
+                  panelData: undefined,
+                },
+              })
+            );
+          }
+        }),
         mergeMap((query) => {
           if (query!.action === '[Pages] Fetch panel data by Id') {
             return this.req.readExprAll(queryToZinc(query!.query)).pipe(

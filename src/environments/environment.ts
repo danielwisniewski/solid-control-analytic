@@ -6,10 +6,10 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 export const environment = {
   production: false,
-  // skysparkServer: 'http://solid-control.synology.me:3000/skyspark',
-  // skysparkUrl: 'http://solid-control.synology.me:3000',
-  skysparkServer: 'http://localhost:3000/skyspark',
-  skysparkUrl: 'http://localhost:3000',
+  skysparkServer: 'http://solid-control.synology.me:3000/skyspark',
+  skysparkUrl: 'http://solid-control.synology.me:3000',
+  // skysparkServer: 'http://localhost:3000/skyspark',
+  // skysparkUrl: 'http://localhost:3000',
   skysparkProject: 'demo',
   startupPage: 'portfolio',
   sidebarLogo: 'assets/img/white_logo_transparent_background.png',
@@ -19,21 +19,16 @@ export const environment = {
     password: '',
   },
   chartColorsPalette: [
-    'rgb(248, 248, 248)', // Off-white
-    'rgb(57, 107, 159)', // Darker steel blue
-    'rgb(51, 51, 51)', // Charcoal
-    'rgb(89, 161, 79)', // Nice green
-    'rgb(255,215,0)',
-    'rgb(78, 121, 167)',
-    'rgb(242, 142, 44)',
-    'rgb(225, 87, 89)',
-    'rgb(118, 183, 178)',
-    'rgb(89, 161, 79)',
-    'rgb(237, 201, 73)',
-    'rgb(175, 122, 161)',
-    'rgb(255, 157, 167)',
-    'rgb(156, 117, 95)',
-    'rgb(186, 176, 171)',
+    'rgb(255, 179, 71)', // Yellow
+    'rgb(35, 166, 245)', // Light Blue
+    'rgb(145, 103, 250)', // Purple
+    'rgb(103, 191, 92)', // Green
+    'rgb(251, 72, 103)', // Red
+    'rgb(245, 166, 35)', // Orange
+    'rgb(66, 133, 244)', // Blue
+    'rgb(247, 131, 198)', // Pink
+    'rgb(100, 181, 246)', // Sky Blue
+    'rgb(255, 140, 0)', // Orange-Yellow
   ],
   imports: [StoreDevtoolsModule.instrument()],
 };

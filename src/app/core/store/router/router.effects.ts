@@ -36,7 +36,8 @@ export class RouterEffects {
         filter(([router, url, detailsPage, pages, pagePath]) => !!pages),
         tap(([router, url, detailsPage, pages, pagePath]) => {
           if (url.includes('/dashboard/')) {
-            const activePage = pages?.find((page) => page.path === pagePath);
+            const pageToFind = !!detailsPage ? `${pagePath}/details` : pagePath;
+            const activePage = pages?.find((page) => page.path === pageToFind);
             if (!!activePage) {
               this.store.dispatch(
                 changeActivePageId({ index: activePage.scId })

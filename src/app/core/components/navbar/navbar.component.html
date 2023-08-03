@@ -57,8 +57,8 @@
             href="#"
             (click)="$event.preventDefault()"
           >
-            <div class="photo">
-              <img alt="Profile Photo" src="assets/img/mike.jpg" />
+            <div class="initial-avatar">
+              {{ username$ | async | uppercase }}
             </div>
             <b class="caret d-none d-lg-block d-xl-block"> </b>
             <p class="d-lg-none">Wyloguj</p>

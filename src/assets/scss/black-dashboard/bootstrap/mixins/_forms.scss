@@ -101,7 +101,10 @@
           $icon
             $custom-select-bg
             no-repeat
-            math.div($custom-select-feedback-icon-position, $custom-select-feedback-icon-size);
+            math.div(
+              $custom-select-feedback-icon-position,
+              $custom-select-feedback-icon-size
+            );
       }
 
       &:focus {

@@ -172,6 +172,7 @@ function generateYAxis(reqResponse: HGrid): ChartOptions {
         ...yAxisChartOptions.scales,
         [`y${index}`]: {
           type: 'linear',
+          display: true,
           grid: {
             color: GRID_COLOR,
             drawTicks: true,

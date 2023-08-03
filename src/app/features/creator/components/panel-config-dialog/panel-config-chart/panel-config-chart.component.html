@@ -123,6 +123,18 @@
         matInput
         min="0"
         max="10"
+        step="1"
+        type="number"
+        [(ngModel)]="_meta.pointRadius"
+        (change)="change()"
+      />
+      <mat-hint>Wielkość punktu</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="w-50 mt-3 pr-2">
+      <input
+        matInput
+        min="0"
+        max="10"
         step="0.1"
         type="number"
         [(ngModel)]="_meta.borderWidth"
@@ -159,6 +171,18 @@
         (change)="change()"
       />
       <mat-hint>Odstępy</mat-hint>
+    </mat-form-field>
+    <mat-form-field
+      appearance="fill"
+      class="mt-2 pr-2 w-50"
+      *ngIf="_meta.chartType == 'line'"
+    >
+      <mat-label>Typ wykresu liniowego</mat-label>
+      <mat-select [(ngModel)]="_meta.lineType" (selectionChange)="change()">
+        <mat-option value="line">Linear</mat-option>
+        <mat-option value="smooth">Smooth</mat-option>
+        <mat-option value="stepper">Step</mat-option>
+      </mat-select>
     </mat-form-field>
   </mat-expansion-panel>
 </mat-expansion-panel>

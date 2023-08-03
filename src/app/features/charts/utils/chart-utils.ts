@@ -39,19 +39,19 @@ export function onResize(
   size: { width: number; height: number }
 ) {
   if (
-    chart.options &&
-    chart.options.scales &&
-    chart.options.scales['y'] &&
-    chart.options.scales['y'].ticks &&
-    chart.options.scales['y'].type !== 'category'
+    !!chart.options &&
+    !!chart.options.scales &&
+    !!chart.options.scales['y0'] &&
+    chart.options.scales['y0'].type !== 'category'
   ) {
-    if (size.width < 600) chart.options.scales['y'].ticks.display = false;
-    else chart.options.scales['y'].ticks.display = true;
+    if (size.width < 450) chart.options.scales['y0'].display = false;
+    else chart.options.scales['y0'].display = true;
+
+    chart.update();
   }
 
   if (chart.options && chart.options.plugins && chart.options.plugins.legend) {
-    if (size.height < 300 && size.width < 400)
-      chart.options.plugins.legend.display = false;
+    if (size.width < 450) chart.options.plugins.legend.position = 'bottom';
     else chart.options.plugins.legend.display = true;
   }
 }

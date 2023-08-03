@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription, map, skip, take, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AppStore } from '../store/app.store.';
+import { HGrid } from 'haystack-core';
 @Injectable({
   providedIn: 'root',
 })
@@ -82,8 +83,9 @@ export class AuthService {
   }
 
   logout() {
+    const grid = new HGrid().toZinc();
     return this.http
-      .get(`${environment.skysparkUrl}/close`)
+      .post(`${environment.skysparkServer}/close`, grid)
       .pipe(
         take(1),
         map(() => {

@@ -30,6 +30,7 @@ export class BaseChartComponent implements AfterViewInit {
 
   @Input() height: string = '30vh';
   chartConfig: ChartConfiguration | undefined;
+  isLoading: boolean = false;
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   ngAfterViewInit(): void {
@@ -56,13 +57,15 @@ export class BaseChartComponent implements AfterViewInit {
           this.convertToGradientColor();
 
         this.chart!.update();
+        this.isLoading = false;
         this.cdr.detectChanges();
       } else {
         this.chartConfig = this.chartGenService.generateChart(newValue);
+        this.isLoading = false;
         if (!!newValue.meta.get<HBool>('gradientColor')?.value)
           this.convertToGradientColor();
       }
-    }
+    } else this.isLoading = true;
   }
 
   private convertToGradientColor() {

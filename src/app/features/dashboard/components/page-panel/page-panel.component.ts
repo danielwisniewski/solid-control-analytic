@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  Input,
+  ElementRef,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
@@ -20,11 +27,17 @@ import { Subscription, tap } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePanelComponent {
-  constructor(private modal: MatDialog, private store: Store<AppState>) {}
+  constructor(
+    private modal: MatDialog,
+    private store: Store<AppState>,
+    private renderer: Renderer2
+  ) {}
 
   @Input() panel: Panel | undefined;
   @Input() height: number = 30;
   @Input() isCreatorMode: boolean = false;
+
+  @ViewChild('heading', { static: false }) headingRef: ElementRef | undefined;
 
   configDialogSub: Subscription | undefined;
 
@@ -40,6 +53,27 @@ export class PagePanelComponent {
       !!this.panel.meta?.skipUpdateOnTimerangeChange
     )
       this.store.dispatch(fetchPanelData({ id: this.panel.panelId }));
+  }
+
+  ngAfterViewChecked() {
+    this.adjustFontSizeIfNeeded();
+  }
+
+  adjustFontSizeIfNeeded() {
+    if (!!this.headingRef) {
+      const headingElement = this.headingRef.nativeElement;
+      if (headingElement.offsetWidth < headingElement.scrollWidth) {
+        const scaleFactor =
+          headingElement.offsetWidth / headingElement.scrollWidth;
+        const originalFontSize = parseFloat(
+          window.getComputedStyle(headingElement).fontSize
+        );
+        let newFontSize = originalFontSize * scaleFactor;
+        if (newFontSize < 16) newFontSize = 16;
+        if (newFontSize > 20) newFontSize = 20;
+        this.renderer.setStyle(headingElement, 'fontSize', `${newFontSize}px`);
+      }
+    }
   }
 
   openDialog(): void {

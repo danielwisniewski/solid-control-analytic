@@ -21,6 +21,7 @@ import { changeActiveSite, updateSites } from './sites/site.actions';
 import { AppState } from 'src/app/state';
 import { generateRoutes } from './menu/route.actions';
 import { loadPages } from './pages/pages.actions';
+import { setUsername } from './user/user.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +42,8 @@ export class AppStore {
           const version: string =
             GRID.first?.get('moduleVersion')?.toString() ?? '3.0';
           localStorage.setItem('version', version);
+          const username = GRID.first?.get('whoami')?.toString() ?? 'user';
+          this.store.dispatch(setUsername({ username: username }));
           return this.req.readExpr('scAppConfig()');
         }),
         filter((res) => !!res && !!res.rows),

@@ -1,66 +1,110 @@
 /* You can add global styles to this file, and also import other style files */
+// .styled-scrollbars {
+//   /* Foreground, Background */
+//   scrollbar-color: #999 #333;
+// }
+// .styled-scrollbars::-webkit-scrollbar {
+//   width: 3px; /* Mostly for vertical scrollbars */
+//   height: 10px; /* Mostly for horizontal scrollbars */
+// }
+// .styled-scrollbars::-webkit-scrollbar-thumb {
+//   /* Foreground */
+//   background: #999;
+// }
+// .styled-scrollbars::-webkit-scrollbar-track {
+//   /* Background */
+//   background: #333;
+// }
+
+// @mixin scroll-style(
+//   $size: 10px,
+//   $thumb: none,
+//   $thumb-color: grey,
+//   $thumb-radius: 10px,
+//   $track-color: transparent,
+//   $track-radius: 10px
+// ) {
+//   // Respaldo para Firefox
+//   scrollbar-color: $thumb-color $track-color;
+//   scrollbar-width: thin;
+
+//   // Navegadores basados en webkit
+//   &::-webkit-scrollbar {
+//     width: $size;
+//     height: $size;
+//     &-track {
+//       background-color: $track-color;
+//       border-radius: $track-radius;
+//     }
+//     &-thumb {
+//       background-color: $thumb-color;
+//       background-image: $thumb;
+//       border-radius: $thumb-radius;
+//     }
+//   }
+// }
+
+// .scroll {
+//   @include scroll-style(
+//     $size: var(--scroll-size, 10px),
+//     $thumb: var(--scroll-thumb, none),
+//     $thumb-color: var(--scroll-thumb-color, grey),
+//     $thumb-radius: var(--scroll-thumb-radius, var(--scroll-radius)),
+//     $track-color: var(--scroll-track, transparent),
+//     $track-radius: var(--scroll-track-radius, var(--scroll-radius))
+//   );
+
+//   // Ejemplo 3
+//   &-3 {
+//     --scroll-size: 5px;
+//     --scroll-radius: 10px;
+//     --scroll-track: rgb(255 255 255 / 10%);
+//     --scroll-thumb-color: #fff;
+//   }
+// }
+
 .styled-scrollbars {
-  /* Foreground, Background */
+  /* For Firefox */
   scrollbar-color: #999 #333;
+  scrollbar-width: thin;
+
+  /* For webkit-based browsers (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #999;
+  }
+  &::-webkit-scrollbar-track {
+    background: #333;
+  }
+
+  /* For Edge */
+  -ms-overflow-style: none; /* This will hide the default scrollbar */
+  scrollbar-width: thin; /* This property is for Edge 79+ */
 }
-.styled-scrollbars::-webkit-scrollbar {
-  width: 3px; /* Mostly for vertical scrollbars */
-  height: 10px; /* Mostly for horizontal scrollbars */
-}
+
+/* For Edge, customize the scrollbar with pseudo-elements */
 .styled-scrollbars::-webkit-scrollbar-thumb {
   /* Foreground */
   background: #999;
 }
+
 .styled-scrollbars::-webkit-scrollbar-track {
   /* Background */
   background: #333;
 }
 
-@mixin scroll-style(
-  $size: 10px,
-  $thumb: none,
-  $thumb-color: grey,
-  $thumb-radius: 10px,
-  $track-color: transparent,
-  $track-radius: 10px
-) {
-  // Respaldo para Firefox
-  scrollbar-color: $thumb-color $track-color;
-  scrollbar-width: thin;
-
-  // Navegadores basados en webkit
-  &::-webkit-scrollbar {
-    width: $size;
-    height: $size;
-    &-track {
-      background-color: $track-color;
-      border-radius: $track-radius;
-    }
-    &-thumb {
-      background-color: $thumb-color;
-      background-image: $thumb;
-      border-radius: $thumb-radius;
-    }
-  }
+/* This selector targets the scrollbar thumb in Edge (use appropriate color) */
+.styled-scrollbars::-webkit-scrollbar-thumb:hover {
+  /* Hover effect for Edge scrollbar thumb */
+  background: #666;
 }
 
-.scroll {
-  @include scroll-style(
-    $size: var(--scroll-size, 10px),
-    $thumb: var(--scroll-thumb, none),
-    $thumb-color: var(--scroll-thumb-color, grey),
-    $thumb-radius: var(--scroll-thumb-radius, var(--scroll-radius)),
-    $track-color: var(--scroll-track, transparent),
-    $track-radius: var(--scroll-track-radius, var(--scroll-radius))
-  );
-
-  // Ejemplo 3
-  &-3 {
-    --scroll-size: 5px;
-    --scroll-radius: 10px;
-    --scroll-track: rgb(255 255 255 / 10%);
-    --scroll-thumb-color: #fff;
-  }
+/* Optional: Customize the scrollbar corner in Edge */
+.styled-scrollbars::-webkit-scrollbar-corner {
+  background: #333;
 }
 
 // /* Importing Bootstrap SCSS file. */
@@ -69,9 +113,3 @@
 // /* Importing Datepicker SCSS file. */
 // @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
 @import "~@angular/material/prebuilt-themes/pink-bluegrey.css";
-
-.config-dialog {
-  //background: linear-gradient(0deg, #3358f4 0%, #1d8cf8 100%);
-  // background-color: #212529 !important;
-  //background-color: white;
-}

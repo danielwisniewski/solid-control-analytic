@@ -1,3 +1,18 @@
 button {
   background: transparent !important;
 }
+.initial-avatar {
+  /* Center the content */
+  align-items: center;
+  display: flex;
+  justify-content: center;
+
+  /* Colors */
+  background-color: #d1d5dbb9;
+  color: #fff;
+
+  /* Rounded border */
+  border-radius: 50%;
+  height: 2rem;
+  width: 2rem;
+}

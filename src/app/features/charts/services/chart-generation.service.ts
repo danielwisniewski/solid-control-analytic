@@ -3,12 +3,12 @@ import { ChartConfiguration, ChartOptions, Chart } from 'chart.js';
 
 import 'chartjs-adapter-luxon';
 
-import { HGrid, HNum, HaysonNum, HaysonVal } from 'haystack-core';
+import { HGrid } from 'haystack-core';
 
 import {
   CHART_COLOR,
+  GRID_COLOR,
   TEXT_COLOR,
-  generateGradientStroke,
   onResize,
 } from '../utils/chart-utils';
 import { generateScales } from '../utils/scales.utils';
@@ -28,6 +28,7 @@ export class ChartGenerationService {
     Chart.register(ChartDataLabels);
     Chart.defaults.font.family = 'Poppins, sans-serif';
     Chart.defaults.color = TEXT_COLOR;
+    Chart.defaults.borderColor = GRID_COLOR;
   }
 
   /**

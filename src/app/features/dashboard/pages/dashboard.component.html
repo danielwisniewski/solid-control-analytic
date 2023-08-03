@@ -17,11 +17,15 @@
       cdkDrag
       [cdkDragDisabled]="!(isCreatorMode$ | async)"
       [colspan]="panel.cols"
-      [rowspan]="panel.rows"
+      [rowspan]="panel.rows * (panel.sizeCorrection ?? 1)"
     >
       <app-page-panel
         [panel]="panel"
-        [height]="((pageConfig$ | async)?.layout?.rowHeight ?? 10) * panel.rows"
+        [height]="
+          ((pageConfig$ | async)?.layout?.rowHeight ?? 10) *
+          panel.rows *
+          (panel.sizeCorrection ?? 1)
+        "
         [isCreatorMode]="!!(isCreatorMode$ | async)"
       >
       </app-page-panel>

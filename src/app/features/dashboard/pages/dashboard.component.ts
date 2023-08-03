@@ -1,5 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Observable, distinctUntilChanged, tap } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
+import { Observable, distinctUntilChanged, map, tap } from 'rxjs';
 import { PageState } from '../interfaces/page-config.interface';
 import { AppState } from 'src/app/state';
 import { Store } from '@ngrx/store';
@@ -28,6 +33,39 @@ export class DashboardComponent {
       distinctUntilChanged(),
       tap((res) => {
         this.tiles = res?.layout.tiles;
+      }),
+      map((res) => {
+        const viewportHeight: number = window.innerHeight;
+        const viewportWidth: number = window.innerWidth;
+        if (!!res && !!res.layout) {
+          const transformedTiles = res.layout.tiles.map((tile) => {
+            const isChart: boolean =
+              tile.type == 'chart' || tile.type == 'table';
+            const rows: number = tile.rows;
+            const rowHeight: number = res!.layout.rowHeight;
+            const height: number = rows * rowHeight * 0.01 * viewportHeight;
+            let sizeCorrection = 1;
+            let cols = tile.cols;
+            if (viewportWidth < 950) cols = res!.layout.colNumber;
+            if (isChart && height < 315) {
+              sizeCorrection = 2;
+            }
+            return {
+              ...tile,
+              sizeCorrection: sizeCorrection,
+              cols: cols,
+            };
+          });
+
+          res = {
+            ...res,
+            layout: {
+              ...res.layout,
+              tiles: transformedTiles,
+            },
+          };
+        }
+        return res;
       })
     );
 

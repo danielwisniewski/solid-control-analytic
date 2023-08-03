@@ -33,7 +33,11 @@ export const selectDetailsPageId = createSelector(
 );
 
 export const selectSkysparkFunc = createSelector(
-  selectPages,
-  selectPagePath,
-  (pages, path) => pages?.find((page) => page.path === path)?.skysparkFunc
+  selectActivePage,
+  (page) => page?.skysparkFunc
+);
+
+export const selectActiveVariable = createSelector(
+  selectActivePage,
+  (state) => state?.activeVariables
 );

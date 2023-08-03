@@ -6,6 +6,10 @@ export const loadPages = createAction(
   props<{ pages: PageState[] }>()
 );
 
+export const fetchAllPanelsData = createAction(
+  '[Pages] Fetch data from all panels'
+);
+
 export const changeCreatorModeState = createAction(
   '[Pages] Change creator mode state',
   props<{ status: boolean }>()

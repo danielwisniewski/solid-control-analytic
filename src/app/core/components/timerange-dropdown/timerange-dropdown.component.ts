@@ -29,7 +29,6 @@ import {
   generateDateInputFormat,
   generateDashboardTimeRanges,
   verifyTimerange,
-  generateDefaultTimerange,
 } from './timerange.utils';
 import { selectActivePage } from '../../store/pages/pages.selectors';
 
@@ -69,7 +68,6 @@ export class TimerangeDropdownComponent implements OnInit, OnDestroy {
       this.store.dispatch(setActiveTimerange({ dates: 'processing...' }));
       this.type = config?.type ?? 'range';
       this.parameters = config?.parameters;
-      console.log(timerange);
       const isTimerangeNeedsChange = verifyTimerange(
         config,
         this.type,

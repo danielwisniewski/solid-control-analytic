@@ -9,6 +9,7 @@ import {
 import { RouterState } from '../core/store/router/router.reducer';
 import { RouterReducerState, routerReducer } from '@ngrx/router-store';
 import { PagesState, pagesReducer } from '../core/store/pages/pages.reducer';
+import { UserState, userReducer } from '../core/store/user/user.reducer';
 
 export interface AppState {
   site: SiteState;
@@ -16,6 +17,7 @@ export interface AppState {
   timerange: TimerangeState;
   router: RouterReducerState<any>;
   pages: PagesState;
+  user: UserState;
 }
 
 export const appReducer: ActionReducerMap<AppState> = {
@@ -24,4 +26,5 @@ export const appReducer: ActionReducerMap<AppState> = {
   timerange: timerangeReducer,
   router: routerReducer,
   pages: pagesReducer,
+  user: userReducer,
 };

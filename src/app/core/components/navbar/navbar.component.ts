@@ -11,8 +11,9 @@ import { environment } from 'src/environments/environment';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state';
 import { selectActivePage } from '../../store/pages/pages.selectors';
-import { filter, map, tap, withLatestFrom } from 'rxjs';
+import { Observable, filter, map, tap, withLatestFrom } from 'rxjs';
 import { selectRoutes } from '../../store/menu/route.selectors';
+import { selectActiveUsername } from '../../store/user/user.selector';
 
 @Component({
   selector: 'app-navbar',
@@ -43,6 +44,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     ),
     filter((res) => !!res),
     map((route) => route?.title)
+  );
+
+  username$: Observable<string> = this.store.select(selectActiveUsername).pipe(
+    map((res) => {
+      const usernameArr = res.split(' ');
+      if (usernameArr.length < 2) return usernameArr[0][0];
+      else return usernameArr[0][0] + usernameArr[1][0];
+    })
   );
 
   ngOnInit(): void {}

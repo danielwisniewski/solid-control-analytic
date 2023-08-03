@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HStr } from 'haystack-core';
-import { catchError, finalize, map, switchMap, take, tap } from 'rxjs';
+import {
+  catchError,
+  finalize,
+  map,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
 import { RequestReadService } from 'src/app/core/services/requests/read/request-read.service';
 import { ToastrPopupService } from 'src/app/core/services/toastr-popup.service';
 import swal from 'sweetalert2';
@@ -8,7 +16,12 @@ import { queryToZinc } from 'src/app/core/functions/utils';
 import { AppState } from 'src/app/state';
 import { Store } from '@ngrx/store';
 import { fetchActivePanelData } from 'src/app/core/store/pages/panels.actions';
-import { selectActivePage } from 'src/app/core/store/pages/pages.selectors';
+import {
+  selectActivePage,
+  selectActivePanel,
+  selectPagesState,
+} from 'src/app/core/store/pages/pages.selectors';
+import { fetchAllPanelsData } from 'src/app/core/store/pages/pages.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -94,11 +107,16 @@ export class UpdateValueService {
     value: string | boolean | Object
   ) {
     this.store
-      .select(selectActivePage)
+      .select(selectActivePanel)
       .pipe(
         map((res) => res?.parameters),
-        map((params) => {
-          let parameters = params ?? {};
+        withLatestFrom(this.store.select(selectPagesState)),
+        map(([params, state]) => {
+          let parameters = { ...params } ?? {};
+
+          if (!!state.detailsPageId)
+            parameters = { ...parameters, detailsPageId: state.detailsPageId };
+
           const jsonParameters =
             Object.keys(parameters).length > 0
               ? `, ${JSON.stringify(parameters)}`
@@ -127,7 +145,7 @@ export class UpdateValueService {
           return err;
         }),
         finalize(() => {
-          this.store.dispatch(fetchActivePanelData());
+          this.store.dispatch(fetchAllPanelsData());
         })
       )
 
