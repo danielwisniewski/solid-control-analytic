@@ -12,11 +12,8 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
-import { changePageVariable } from 'src/app/core/store/pages/pages.actions';
-import { selectActiveVariable } from 'src/app/core/store/pages/pages.selectors';
 import { selectPagePath } from 'src/app/core/store/router/router.reducer';
 import { selectActiveSite } from 'src/app/core/store/sites/site.selectors';
-import { selectActiveTimerange } from 'src/app/core/store/timerange/timerange.selectors';
 import { AppState } from 'src/app/state';
 import { environment } from 'src/environments/environment';
 
@@ -66,13 +63,11 @@ export class RequestReadService {
     expr
     ${expr}`;
 
-    return this.http
-      .post(`${environment.skysparkServer}/eval`, text)
-      .pipe(
-        takeUntil(this.store.select(selectPagePath).pipe(skip(1))),
-        takeUntil(this.store.select(selectActiveSite).pipe(skip(1))),
-        takeUntil(this.store.select(selectActiveTimerange).pipe(skip(1)))
-      );
+    return this.http.post(`${environment.skysparkServer}/eval`, text).pipe(
+      takeUntil(this.store.select(selectPagePath).pipe(skip(1))),
+      takeUntil(this.store.select(selectActiveSite).pipe(skip(1)))
+      //takeUntil(this.store.select(selectActiveTimerange).pipe(skip(1)))
+    );
   }
 
   generateExportRequest(viewName: string, state: any, filename: string) {
